@@ -1,9 +1,10 @@
 #***************************************************************************
 #*                                                                         *
-#*  This file is part of the FreeCAD_Workbench_Starter project.            *
+#*  This file is part of the OSE project.            *
 #*                                                                         *
 #*                                                                         *
 #*  Copyright (C) 2017                                                     *
+#*  Ruslan Krenzler                                                        *
 #*  Stephen Kaiser <freesol29@gmail.com>                                   *
 #*                                                                         *
 #*  This library is free software; you can redistribute it and/or          *
@@ -23,10 +24,10 @@
 #*                                                                         *
 #***************************************************************************
 
-class OSE_ExampleWorkbench (Workbench):
+class OSE_PipingWorkbench (Workbench):
 
-    MenuText = "OSE Example Workbench"
-    ToolTip = "An example workbench for Open Source Ecology part design"
+    MenuText = "OSE Piping Workbench"
+    ToolTip = "A piping workbench for Open Source Ecology part design"
     #Icon = """paste here the contents of a 16x16 xpm icon"""
 
 
@@ -34,7 +35,7 @@ class OSE_ExampleWorkbench (Workbench):
         "This function is executed when FreeCAD starts"
         import OSEBase, OSE_CommandButton # import here all the needed files that create your FreeCAD commands
         self.list = ["OSE_CommandButton"] # A list of command names created in the line above
-        self.appendToolbar("D3D", self.list) # creates a new toolbar with your commands
+        self.appendToolbar("Piping", self.list) # creates a new toolbar with your commands
         self.appendMenu("Command Menu", self.list) # creates a new menu
 
         #FreeCADGui.addIconPath(":/Resources/icons")
@@ -54,10 +55,10 @@ class OSE_ExampleWorkbench (Workbench):
     def ContextMenu(self, recipient):
         "This is executed whenever the user right-clicks on screen"
         # "recipient" will be either "view" or "tree"
-        self.appendContextMenu("D3D commands", self.list) # add commands to the context menu
+        self.appendContextMenu("Piping commands", self.list) # add commands to the context menu
 
     def GetClassName(self): 
         # this function is mandatory if this is a full python workbench
         return "Gui::PythonWorkbench"
        
-Gui.addWorkbench(OSE_ExampleWorkbench())
+Gui.addWorkbench(OSE_PipingWorkbench())
