@@ -32,31 +32,12 @@ DIMENSIONS_USED = ["OD", "Thk"]
 # Maybe there is no more problems with boolean operations.
 RELATIVE_EPSILON = 0.1
 
-def nestedObjects(group):
-	res = []
-	if group.OutList == []:
-		res.append(group)
-	else:
-		# Append children first.
-		for o in group.OutList:
-			res += nestedObjects(o)
-		res.append(group)
-	return res
 
-def toSolid(document, part, name):
-	"""Convert object to a solid.
-		Basically those are commands, which FreeCAD runs when user converts a part to a solid.
-	"""
-	s = part.Shape.Faces
-	s = Part.Solid(Part.Shell(s))
-	o = document.addObject("Part::Feature", name)
-	o.Label=name
-	o.Shape=s
-	return o
 
 class Error(Exception):
-    """Base class for exceptions in this module."""
-    pass
+	"""Base class for exceptions in this module."""
+	def __init__(self, message):
+		super(Error, self).__init__(message)
 
 
 class UnplausibleDimensions(Error):
@@ -206,44 +187,6 @@ class PipeFromTable:
 		part.Label = partName
 		return part
 
-class PartTableModel(QtCore.QAbstractTableModel): 
-	def __init__(self, headers, data, parent=None, *args):
-		self.headers = headers
-		self.table_data = data
-		QtCore.QAbstractTableModel.__init__(self, parent, *args) 
-	
-	def rowCount(self, parent): 
-		return len(self.table_data) 
- 
-	def columnCount(self, parent):
-		return len(self.headers) 
- 
-	def data(self, index, role):
-		if not index.isValid(): 
-			return None
-		elif role != QtCore.Qt.DisplayRole: 
-			return None
-		return self.table_data[index.row()][index.column()] 
-
-	def getPartName(self, rowIndex):
-		name_index = self.headers.index("Name")
-		return self.table_data[rowIndex][name_index]
-
-	def getPartRowIndex(self, partName):
-		""" Return row index of the part with name partName.
-		:param :partName name of the part
-		:return: index of the first row whose part name is equal to partName
-				return -1 if no row find.
-		"""
-		name_index = self.headers.index("Name")
-		for row_i in range(name_index, len(self.table_data)):
-			if self.table_data[row_i][name_index] == partName:
-				return row_i
-		return -1
-	def headerData(self, col, orientation, role):
-		if orientation ==QtCore. Qt.Horizontal and role == QtCore.Qt.DisplayRole:
-			return self.headers[col]
-		return None
 
 # Test macros.
 def TestPipe():
