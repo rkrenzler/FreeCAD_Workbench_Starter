@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Ruslan Krenzler.
-# Date: 09 February 2018
-# Create a corner-fitting. 
+# Date: 20 Januar December 2018
+# Create a coupling fitting using a gui.
 
 import math
 import os.path
@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 import FreeCAD
 
 import OSEBase
-from outerCorner import *
+from coupling import *
 from piping import *
 
 
@@ -55,7 +55,7 @@ class PartTableModel(QtCore.QAbstractTableModel):
 
 class MainDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
-	QSETTINGS_NAME = "outer corner user input"
+	QSETTINGS_NAME = "coupling user input"
 	def __init__(self, document, table):
 		super(MainDialog, self).__init__()
 		self.document = document
@@ -78,12 +78,15 @@ class MainDialog(QtGui.QDialog):
 		self.show()
 
 # The following lines are from QtDesigner .ui-file processed by pyside-uic
-# pyside-uic --indent=0 create-outer-corner.ui -o tmp.py
-# You need to adjust image paths to
-# os.path.join(OSEBase.IMAGE_PATH, "outer-corner-dimensions.png")
+# pyside-uic --indent=0 create-coupling.ui -o tmp.py
+#
+# The file paths needs to be adjusted manually. For example
+# self.label.setPixmap(QtGui.QPixmap(GetMacroPath()+"coupling-dimensions.png"))
+# os.path.join(OSEBase.IMAGE_PATH, "coupling-dimensions.png")
+# access datata in some special FreeCAD directory.
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
-		Dialog.resize(803, 666)
+		Dialog.resize(803, 592)
 		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
 		self.verticalLayout.setObjectName("verticalLayout")
 		self.checkBoxCreateSolid = QtGui.QCheckBox(Dialog)
@@ -95,14 +98,9 @@ class MainDialog(QtGui.QDialog):
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 		self.tableViewParts.setObjectName("tableViewParts")
 		self.verticalLayout.addWidget(self.tableViewParts)
-		self.label_2 = QtGui.QLabel(Dialog)
-		self.label_2.setTextFormat(QtCore.Qt.AutoText)
-		self.label_2.setWordWrap(True)
-		self.label_2.setObjectName("label_2")
-		self.verticalLayout.addWidget(self.label_2)
 		self.label = QtGui.QLabel(Dialog)
 		self.label.setText("")
-		self.label.setPixmap(QtGui.QPixmap(os.path.join(OSEBase.IMAGE_PATH, "outer-corner-dimensions.png")))
+		self.label.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "coupling-dimensions.png"))
 		self.label.setAlignment(QtCore.Qt.AlignCenter)
 		self.label.setObjectName("label")
 		self.verticalLayout.addWidget(self.label)
@@ -118,10 +116,8 @@ class MainDialog(QtGui.QDialog):
 		QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 	def retranslateUi(self, Dialog):
-		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create Outer Corner", None, QtGui.QApplication.UnicodeUTF8))
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create coupling", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
-		self.label_2.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, PID, and POD. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-
 
 	def initTable(self):
 		# Read table data from CSV
@@ -159,8 +155,8 @@ class MainDialog(QtGui.QDialog):
 		partName = self.getSelectedPartName()
 		createSolid = self.checkBoxCreateSolid.isChecked()
 		if partName is not None:
-			corner = OuterCornerFromTable(self.document, self.table)
-			corner.create(partName, createSolid)
+			coupling = CouplingFromTable(self.document, self.table)
+			coupling.create(partName, createSolid)
 			self.document.recompute()
 			# Save user input for the next dialog call.
 			self.saveInput()
@@ -185,9 +181,7 @@ class MainDialog(QtGui.QDialog):
 		self.checkBoxCreateSolid.setCheckState(checkState)
 		self.selectPartByName(settings.value("LastSelectedPartName"))
 
-
 # Before working with macros, try to load the dimension table.
-
 def GuiCheckTable():
 	# Check if the CSV file exists.
 	if os.path.isfile(CSV_TABLE_PATH) == False:

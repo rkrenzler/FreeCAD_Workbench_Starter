@@ -7,7 +7,6 @@ import math
 import csv
 import os.path
 
-from PySide import QtCore, QtGui
 import FreeCAD
 import Part
 

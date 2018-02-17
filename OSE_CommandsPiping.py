@@ -24,7 +24,7 @@
 #***************************************************************************
 
 import FreeCAD, Part, OSEBase
-import pipeGui, outerCornerGui
+import pipeGui, couplingGui, outerCornerGui
 from FreeCAD import Gui
 
 class OSE_CreatePipeClass():
@@ -51,6 +51,31 @@ class OSE_CreatePipeClass():
         are met or not. This function is optional."""
         return True
 
+class OSE_CreateCouplingClass():
+    """Command to add the printer frame"""
+
+    def GetResources(self):
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateCoupling.svg', # the name of a svg file available in the resources
+#                'Accel' : "Shift+S", # a default shortcut (optional)
+                'MenuText': "Add a coupling",
+                'ToolTip' : "Adds a coupling."}
+
+    def Activated(self):
+        "Do something here when button is clicked"
+        if Gui.ActiveDocument == None:
+            FreeCAD.newDocument()
+        doc=FreeCAD.activeDocument()
+	table = couplingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+#        FreeCAD.Console.PrintMessage("Showing outer coupling UI.")
+	form = couplingGui.MainDialog(doc, table)
+	form.exec_()
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        return True
+
+
 class OSE_CreateOuterCornerClass():
     """Command to add the printer frame"""
 
@@ -75,5 +100,6 @@ class OSE_CreateOuterCornerClass():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass()) 
+Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass())
+Gui.addCommand('OSE_CreateCoupling', OSE_CreateCouplingClass())  
 Gui.addCommand('OSE_CreateOuterCorner', OSE_CreateOuterCornerClass()) 
