@@ -220,7 +220,7 @@ class CouplingFromTable:
 		part.Label = partName
 		return part
 
-	
+
 # Test macros.
 def TestCoupling():
 	document = FreeCAD.activeDocument()

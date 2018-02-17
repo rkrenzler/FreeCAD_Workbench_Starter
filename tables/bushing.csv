@@ -1,0 +1,4 @@
+Name,PipeSize,PipeSize1,Schedule,L,N,PID,POD1,PID1,Approx. Wt.
+Test Bushing 1,6 cm,4 cm,,8 cm,6 cm,8 cm,4 cm,2 cm,0.2 kg
+Test Bushing 2,4 in,1 in,,3 in,2 in,4 in,2 in,1 in,100 g
+Test Bushing 3,"NPS 3""","NPS 1""",40,2 in,1 in,3.042 in,1.315 in,1.029 in,0.1 lbs
