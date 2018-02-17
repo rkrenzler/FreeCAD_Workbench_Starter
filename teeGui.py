@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Ruslan Krenzler.
-# Date: 27 January 2018
-# Create a bushing-fitting.
+# Date: 06 February 2018
+# Create a tee-fitting.
 
 import math
 import os.path
@@ -10,7 +10,7 @@ from PySide import QtCore, QtGui
 import FreeCAD
 
 import OSEBase
-from bushing import *
+from tee import *
 from piping import *
 
 
@@ -55,7 +55,7 @@ class PartTableModel(QtCore.QAbstractTableModel):
 
 class MainDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
-	QSETTINGS_NAME = "bushing user input"
+	QSETTINGS_NAME = "tee user input"
 	def __init__(self, document, table):
 		super(MainDialog, self).__init__()
 		self.document = document
@@ -78,14 +78,19 @@ class MainDialog(QtGui.QDialog):
 		self.show()
 
 # The following lines are from QtDesigner .ui-file processed by pyside-uic
-# pyside-uic --indent=0 create-bushing.ui -o tmp.py
+# pyside-uic --indent=0 create-tee.ui -o tmp.py
 #
 # The file paths needs to be adjusted manually. For example
-# os.path.join(OSEBase.IMAGE_PATH, "bushing-dimensions.png")
+# os.path.join(OSEBase.IMAGE_PATH, "tee-dimensions.png")
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
-		Dialog.resize(803, 666)
-		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
+		Dialog.resize(685, 660)
+		Dialog.setSizeGripEnabled(False)
+		self.verticalLayout_2 = QtGui.QVBoxLayout(Dialog)
+		self.verticalLayout_2.setObjectName("verticalLayout_2")
+		self.verticalLayout = QtGui.QVBoxLayout()
+		self.verticalLayout.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
+		self.verticalLayout.setContentsMargins(0, -1, -1, -1)
 		self.verticalLayout.setObjectName("verticalLayout")
 		self.checkBoxCreateSolid = QtGui.QCheckBox(Dialog)
 		self.checkBoxCreateSolid.setChecked(True)
@@ -103,7 +108,7 @@ class MainDialog(QtGui.QDialog):
 		self.verticalLayout.addWidget(self.label_2)
 		self.label = QtGui.QLabel(Dialog)
 		self.label.setText("")
-		self.label.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "bushing-dimensions.png"))
+		self.label.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "tee-dimensions.png"))
 		self.label.setAlignment(QtCore.Qt.AlignCenter)
 		self.label.setObjectName("label")
 		self.verticalLayout.addWidget(self.label)
@@ -112,6 +117,7 @@ class MainDialog(QtGui.QDialog):
 		self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
 		self.buttonBox.setObjectName("buttonBox")
 		self.verticalLayout.addWidget(self.buttonBox)
+		self.verticalLayout_2.addLayout(self.verticalLayout)
 
 		self.retranslateUi(Dialog)
 		QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), Dialog.accept)
@@ -119,9 +125,10 @@ class MainDialog(QtGui.QDialog):
 		QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 	def retranslateUi(self, Dialog):
-		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create Bushing", None, QtGui.QApplication.UnicodeUTF8))
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create Tee", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
-		self.label_2.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: L, N, POD, PID1, and POD1. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+		self.label_2.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>Only dimensions used are: M, M1, G, G1, G2, H1, H1, H2, POD, POD1, PID, PID2. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+
 
 
 	def initTable(self):
@@ -160,8 +167,8 @@ class MainDialog(QtGui.QDialog):
 		partName = self.getSelectedPartName()
 		createSolid = self.checkBoxCreateSolid.isChecked()
 		if partName is not None:
-			bushing = BushingFromTable(self.document, self.table)
-			bushing.create(partName, createSolid)
+			tee = TeeFromTable(self.document, self.table)
+			tee.create(partName, createSolid)
 			self.document.recompute()
 			# Save user input for the next dialog call.
 			self.saveInput()
@@ -191,18 +198,18 @@ def GuiCheckTable():
 	# Check if the CSV file exists.
 	if os.path.isfile(CSV_TABLE_PATH) == False:
 		text = "This macro requires %s  but this file does not exist."%(CSV_TABLE_PATH)
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the bushing failed.", text)
+		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the tee failed.", text)
 		msgBox.exec_()
 		exit(1) # Error
 
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%CSV_TABLE_PATH) 
+	print("Trying to load CSV file with dimensions: %s"%CSV_TABLE_PATH) 
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 
 	if table.hasValidData == False:
 		text = 'Invalid %s.\n'\
 			'It must contain columns %s.'%(CSV_TABLE_PATH, ", ".join(DIMENSIONS_USED))
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the bushing failed.", text)
+		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the tee failed.", text)
 		msgBox.exec_()
 		exit(1) # Error
 

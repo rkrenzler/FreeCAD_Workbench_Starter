@@ -2,7 +2,7 @@
 # Author: Ruslan Krenzler.
 # Date: 20 Januar December 2018
 # Create a coupling fitting.
-# Version 0.3
+
 
 import math
 import csv
