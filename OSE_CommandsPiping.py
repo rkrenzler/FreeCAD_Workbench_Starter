@@ -24,7 +24,7 @@
 #***************************************************************************
 
 import FreeCAD, Part, OSEBase
-import pipeGui
+import pipeGui, outerCornerGui
 from FreeCAD import Gui
 
 class OSE_CreatePipeClass():
@@ -32,9 +32,9 @@ class OSE_CreatePipeClass():
 
     def GetResources(self):
         return {'Pixmap'  : OSEBase.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
-                'Accel' : "Shift+S", # a default shortcut (optional)
+#                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a pipe",
-                'ToolTip' : "Adds a pipe"}
+                'ToolTip' : "Adds a pipe into the center of the document."}
 
     def Activated(self):
         "Do something here when button is clicked"
@@ -42,7 +42,7 @@ class OSE_CreatePipeClass():
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
 	table = pipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-        FreeCAD.Console.PrintMessage("Showing pipe UI.")
+ #       FreeCAD.Console.PrintMessage("Showing pipe UI.")
 	form = pipeGui.MainDialog(doc, table)
 	form.exec_()
 
@@ -51,4 +51,29 @@ class OSE_CreatePipeClass():
         are met or not. This function is optional."""
         return True
 
+class OSE_CreateOuterCornerClass():
+    """Command to add the printer frame"""
+
+    def GetResources(self):
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateOuterCorner.svg', # the name of a svg file available in the resources
+#                'Accel' : "Shift+S", # a default shortcut (optional)
+                'MenuText': "Add a outer corner",
+                'ToolTip' : "Adds a outer corner."}
+
+    def Activated(self):
+        "Do something here when button is clicked"
+        if Gui.ActiveDocument == None:
+            FreeCAD.newDocument()
+        doc=FreeCAD.activeDocument()
+	table = outerCornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+#        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
+	form = outerCornerGui.MainDialog(doc, table)
+	form.exec_()
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        return True
+
 Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass()) 
+Gui.addCommand('OSE_CreateOuterCorner', OSE_CreateOuterCornerClass()) 
