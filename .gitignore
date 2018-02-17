@@ -99,3 +99,15 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# LibreCAD backup files.
+*.dxf~
+# LyX backup files.
+*.lyx~
+# gedit backup files
+\#*
+# Temporary file with GUI-python code, created using pyside-uic from .ui file.
+tmp.py
+# FreeCAD backup files.
+*.fcstd1
+
