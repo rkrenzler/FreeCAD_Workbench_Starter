@@ -1,10 +1,9 @@
 #***************************************************************************
 #*                                                                         *
-#*  This file is part of the OSE project.            *
+#*  This file is part of the FreeCAD_Workbench_Starter project.            *
 #*                                                                         *
 #*                                                                         *
 #*  Copyright (C) 2017                                                     *
-#*  Ruslan Krenzler                                                        *
 #*  Stephen Kaiser <freesol29@gmail.com>                                   *
 #*                                                                         *
 #*  This library is free software; you can redistribute it and/or          *
@@ -24,41 +23,32 @@
 #*                                                                         *
 #***************************************************************************
 
-class OSE_PipingWorkbench (Workbench):
+import FreeCAD, Part, OSEBase
+import pipe
+from FreeCAD import Gui
 
-    MenuText = "OSE Piping Workbench"
-    ToolTip = "A piping workbench for Open Source Ecology part design"
-    #Icon = """paste here the contents of a 16x16 xpm icon"""
+class OSE_CreatePipeClass():
+    """Command to add the printer frame"""
 
-
-    def Initialize(self):
-        "This function is executed when FreeCAD starts"
-        import OSEBase, OSE_CommandsPiping # import here all the needed files that create your FreeCAD commands
-        self.list = ["OSE_CreatePipe"] # A list of command names created in the line above
-        self.appendToolbar("Piping", self.list) # creates a new toolbar with your commands
-        self.appendMenu("Command Menu", self.list) # creates a new menu
-
-        #FreeCADGui.addIconPath(":/Resources/icons")
-        #FreeCADGui.addLanguagePath(":/translations")
-        #FreeCADGui.addPreferencePage(":/ui/preferences-ose.ui","OSE")
-        #FreeCADGui.addPreferencePage(":/ui/preferences-osedefaults.ui","OSE")
-        #self.appendMenu(["An existing Menu", "My submenu"], self.list) # appends a submenu to an existing menu
+    def GetResources(self):
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
+                'Accel' : "Shift+S", # a default shortcut (optional)
+                'MenuText': "Add a pipe",
+                'ToolTip' : "Adds a pipe"}
 
     def Activated(self):
-        "This function is executed when the workbench is activated"
-        return
+        "Do something here when button is clicked"
+        if Gui.ActiveDocument == None:
+            FreeCAD.newDocument()
+        doc=FreeCAD.activeDocument()
+	table = pipe.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        FreeCAD.Console.PrintMessage("Showing pipe UI.")
+	form = pipe.MainDialog(table)
+	form.exec_()
 
-    def Deactivated(self):
-        "This function is executed when the workbench is deactivated"
-        return
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        return True
 
-    def ContextMenu(self, recipient):
-        "This is executed whenever the user right-clicks on screen"
-        # "recipient" will be either "view" or "tree"
-        self.appendContextMenu("Piping commands", self.list) # add commands to the context menu
-
-    def GetClassName(self): 
-        # this function is mandatory if this is a full python workbench
-        return "Gui::PythonWorkbench"
-       
-Gui.addWorkbench(OSE_PipingWorkbench())
+Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass()) 
