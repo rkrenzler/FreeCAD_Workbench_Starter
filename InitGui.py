@@ -24,19 +24,24 @@
 #*                                                                         *
 #***************************************************************************
 
+
 class OSE_PipingWorkbench (Workbench):
 
     MenuText = "OSE Piping Workbench"
     ToolTip = "A piping workbench for Open Source Ecology part design"
-    #Icon = """paste here the contents of a 16x16 xpm icon"""
 
-
+    def __init__(self):
+	# This is the only place, where I could initialize the workbach icon.
+        import os, OSEBase
+        self.__class__.Icon = os.path.join(OSEBase.ICON_PATH,"Workbench.svg")
     def Initialize(self):
         "This function is executed when FreeCAD starts"
+
         import OSEBase, OSE_CommandsPiping # import here all the needed files that create your FreeCAD commands
         self.list = ["OSE_CreatePipe"] # A list of command names created in the line above
         self.appendToolbar("Piping", self.list) # creates a new toolbar with your commands
         self.appendMenu("Command Menu", self.list) # creates a new menu
+	#OSE_PipingWorkbench.Icon = os.path.join(OSEBase.ICON_PATH,"Workbench.svg")
 
         #FreeCADGui.addIconPath(":/Resources/icons")
         #FreeCADGui.addLanguagePath(":/translations")
