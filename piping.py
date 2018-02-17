@@ -4,6 +4,7 @@
 # General classes for pipe and fittng parts.
 
 import csv
+import Part
 
 def nestedObjects(parent):
 	"""
@@ -14,7 +15,7 @@ def nestedObjects(parent):
 		res.append(parent)
 	else:
 		# Append children first.
-		for o in group.OutList:
+		for o in parent.OutList:
 			res += nestedObjects(o)
 		res.append(parent)
 	return res
