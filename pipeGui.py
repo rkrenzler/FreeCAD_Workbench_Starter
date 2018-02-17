@@ -14,11 +14,6 @@ import OSEBase
 from pipe import *
 from piping import *
 
-tu = FreeCAD.Units.parseQuantity
-
-# This is the path to the dimensions table. 
-# It must contain unique values in the column "Name" and also, dimensions listened below.
-
 
 class PartTableModel(QtCore.QAbstractTableModel): 
 	def __init__(self, headers, data, parent=None, *args):
@@ -168,37 +163,39 @@ class MainDialog(QtGui.QDialog):
 
 	def accept(self):
 		"""User clicked OK"""
-		# If there is no active document, show a warning message and do nothing.
-		if self.document is not None:
-		# Get suitable row from the the table.
-			length = tu(self.lineEditLength.text())
-			if length == "":
-				msgBox = QtGui.QMessageBox()
-				msgBox.setText("Set length.")
-				msgBox.exec_()
-				return
-
-			partName = self.getSelectedPartName()
-			createSolid = self.checkBoxCreateSolid.isChecked()
-			if partName is not None:
-				pipe = PipeFromTable(self.document, self.table)
-				pipe.create(partName, length, createSolid)
-				self.document.recompute()
-				# Save user input for the next dialog call.
-				self.saveInput()
-				# Call parent class.
-				super(MainDialog, self).accept()
-			else:
-				msgBox = QtGui.QMessageBox()
-				msgBox.setText("Select part")
-				msgBox.exec_()
-		else:
-			text = "I have not found any active document were I can create a pipe fitting.\n"\
+		# If there is no active document, show a warning message and exit dialog.
+		if self.document is None:
+			text = "I have not found any active document were I can create a corner fitting.\n"\
 				"Use menu File->New to create a new document first, "\
-				"then try to create the pipe again."
-			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the pipe failed.", text)
+				"then try to create the corner fitting again."
+			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the corner fitting failed.", text)
 			msgBox.exec_()
 			super(MainDialog, self).accept()
+			return
+
+		# Get suitable row from the the table.
+		length = tu(self.lineEditLength.text())
+		if length == "":
+			msgBox = QtGui.QMessageBox()
+			msgBox.setText("Set length.")
+			msgBox.exec_()
+			return
+
+		partName = self.getSelectedPartName()
+		createSolid = self.checkBoxCreateSolid.isChecked()
+		if partName is not None:
+			pipe = PipeFromTable(self.document, self.table)
+			pipe.create(partName, length, createSolid)
+			self.document.recompute()
+			# Save user input for the next dialog call.
+			self.saveInput()
+			# Call parent class.
+			super(MainDialog, self).accept()
+		else:
+			msgBox = QtGui.QMessageBox()
+			msgBox.setText("Select part")
+			msgBox.exec_()
+
 
 	def saveInput(self):
 		"""Store user input for the next run."""
@@ -225,6 +222,7 @@ def GuiCheckTable():
 		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the pipe failed.", text)
 		msgBox.exec_()
 		exit(1) # Error
+
         FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%CSV_TABLE_PATH) 
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
@@ -237,7 +235,8 @@ def GuiCheckTable():
 		exit(1) # Error
 	return table
 
+#doc=FreeCAD.activeDocument()
 #table = GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#form = MainDialog(table)
+#form = MainDialog(doc, table)
 
 
