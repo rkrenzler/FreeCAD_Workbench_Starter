@@ -1,5 +1,5 @@
-# FreeCAD_Workbench_Starter
-Example for getting a basic FreeCAD workbench started
+# OSE piping workbench
+This will be a OSE piping workbench. As a start point it uses https://github.com/skaiser/FreeCAD_Workbench_Starter.git
 
 [Python Style Guide](https://www.python.org/dev/peps/pep-0008/)
 
@@ -12,13 +12,6 @@ Example for getting a basic FreeCAD workbench started
 ````
 $ mkdir ~/.FreeCAD/Mod
 $ cd ~/.FreeCAD/Mod
-$ git clone https://github.com/skaiser/FreeCAD_Workbench_Starter.git
-````
-
-Create a soft link in your home directory to make it easier to add things like icons from the file browser windows.
-
-````
-$ cd
-$ ln -s ~/.FreeCAD/Mod/ .
+$ git clone https://github.com/rkrenzler/ose-piping-workbench.git
 ````
 
