@@ -14,7 +14,7 @@
    height="64px"
    id="svg2821"
    sodipodi:version="0.32"
-   inkscape:version="0.91 r13725"
+   inkscape:version="0.92.2 (unknown)"
    sodipodi:docname="CreatePipe.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    version="1.1">
@@ -124,9 +124,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.802002"
-     inkscape:cx="18.761343"
-     inkscape:cy="-57.934625"
+     inkscape:zoom="5.0968313"
+     inkscape:cx="1.1056944"
+     inkscape:cy="28.706946"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:document-units="px"
@@ -204,15 +204,12 @@
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="csc" />
     <ellipse
-       style="fill:#fce94f;stroke:#302b00;stroke-width:1.75000007;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.5;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:20.4"
-       id="path2994"
-       transform="matrix(1.1428571,0,0,1.1428571,71,-17.571428)"
-       d="m -14,25 a 21,7 0 1 1 -42,0 21,7 0 1 1 42,0 z"
-       sodipodi:type="arc"
-       sodipodi:ry="7"
-       sodipodi:rx="21"
-       sodipodi:cy="25"
-       sodipodi:cx="-35" />
+       ry="7.9999995"
+       rx="24"
+       cy="10.924006"
+       cx="30.948877"
+       style="fill:#fce94f;stroke:#302b00;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4.5;stroke-dasharray:none;stroke-dashoffset:20.39999962;stroke-opacity:1;opacity:1"
+       id="path2994-367" />
     <ellipse
        ry="3.4815981"
        rx="11.213017"

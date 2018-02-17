@@ -43,7 +43,7 @@ class OSE_CreatePipeClass():
         doc=FreeCAD.activeDocument()
 	table = pipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
         FreeCAD.Console.PrintMessage("Showing pipe UI.")
-	form = pipeGui.MainDialog(table)
+	form = pipeGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):

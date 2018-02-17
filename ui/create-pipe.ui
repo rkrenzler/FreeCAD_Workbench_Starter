@@ -28,9 +28,9 @@
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>160</x>
+        <x>140</x>
         <y>0</y>
-        <width>52</width>
+        <width>111</width>
         <height>25</height>
        </rect>
       </property>
@@ -47,20 +47,20 @@
        </size>
       </property>
       <property name="text">
-       <string>Length:</string>
+       <string>Height (Length):</string>
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEditLength">
       <property name="geometry">
        <rect>
-        <x>220</x>
+        <x>260</x>
         <y>0</y>
         <width>111</width>
         <height>27</height>
        </rect>
       </property>
       <property name="text">
-       <string>1ft</string>
+       <string>1 m</string>
       </property>
      </widget>
      <widget class="QCheckBox" name="checkBoxCreateSolid">
@@ -92,9 +92,9 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="labelExplanation">
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;To construct a part, only these dimensions are used: OD, ID and the pipe length. All other dimensions are used for inromation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;To construct a part, only these dimensions are used: OD, Thk and the pipe height (length). All other dimensions are used for inromation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="textFormat">
       <enum>Qt::AutoText</enum>
@@ -105,12 +105,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="labelImage">
      <property name="text">
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../macros/pipe-dimensions.png</pixmap>
+      <pixmap>../Resources/images/pipe-dimensions.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

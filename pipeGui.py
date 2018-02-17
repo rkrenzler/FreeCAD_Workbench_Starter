@@ -9,9 +9,6 @@ import os.path
 
 from PySide import QtCore, QtGui
 import FreeCAD
-import Spreadsheet
-import Sketcher
-import Part
 
 import OSEBase
 from pipe import *
@@ -63,10 +60,11 @@ class PartTableModel(QtCore.QAbstractTableModel):
 		return None
 
 class MainDialog(QtGui.QDialog):
-	QSETTINGS_APPLICATION = "OSE piping freecad macros"
+	QSETTINGS_APPLICATION = "OSE piping workbench"
 	QSETTINGS_NAME = "pipe user input"
-	def __init__(self, table):
+	def __init__(self, document, table):
 		super(MainDialog, self).__init__()
+		self.document = document
 		self.table = table
 		self.initUi()
 	def initUi(self): 
@@ -87,7 +85,8 @@ class MainDialog(QtGui.QDialog):
 
 # The following lines are from QtDesigner .ui-file processed by pyside-uic
 # pyside-uic --indent=0 create-pipe.ui -o tmp.py
-# You need to adjust image paths.
+# You need to adjust image paths to
+# os.path.join(OSEBase.IMAGE_PATH, "pipe-dimensions.png")
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
 		Dialog.resize(614, 666)
@@ -98,7 +97,7 @@ class MainDialog(QtGui.QDialog):
 		self.horizontalWidget.setLayoutDirection(QtCore.Qt.LeftToRight)
 		self.horizontalWidget.setObjectName("horizontalWidget")
 		self.label_3 = QtGui.QLabel(self.horizontalWidget)
-		self.label_3.setGeometry(QtCore.QRect(160, 0, 52, 25))
+		self.label_3.setGeometry(QtCore.QRect(140, 0, 111, 25))
 		sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
@@ -107,7 +106,7 @@ class MainDialog(QtGui.QDialog):
 		self.label_3.setMaximumSize(QtCore.QSize(200, 16777215))
 		self.label_3.setObjectName("label_3")
 		self.lineEditLength = QtGui.QLineEdit(self.horizontalWidget)
-		self.lineEditLength.setGeometry(QtCore.QRect(220, 0, 111, 27))
+		self.lineEditLength.setGeometry(QtCore.QRect(260, 0, 111, 27))
 		self.lineEditLength.setObjectName("lineEditLength")
 		self.checkBoxCreateSolid = QtGui.QCheckBox(self.horizontalWidget)
 		self.checkBoxCreateSolid.setGeometry(QtCore.QRect(0, 0, 121, 26))
@@ -119,17 +118,17 @@ class MainDialog(QtGui.QDialog):
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 		self.tableViewParts.setObjectName("tableViewParts")
 		self.verticalLayout.addWidget(self.tableViewParts)
-		self.label_2 = QtGui.QLabel(Dialog)
-		self.label_2.setTextFormat(QtCore.Qt.AutoText)
-		self.label_2.setWordWrap(True)
-		self.label_2.setObjectName("label_2")
-		self.verticalLayout.addWidget(self.label_2)
-		self.label = QtGui.QLabel(Dialog)
-		self.label.setText("")
-		self.label.setPixmap(QtGui.QPixmap(os.path.join(OSEBase.IMAGE_PATH, "pipe-dimensions.png")))
-		self.label.setAlignment(QtCore.Qt.AlignCenter)
-		self.label.setObjectName("label")
-		self.verticalLayout.addWidget(self.label)
+		self.labelExplanation = QtGui.QLabel(Dialog)
+		self.labelExplanation.setTextFormat(QtCore.Qt.AutoText)
+		self.labelExplanation.setWordWrap(True)
+		self.labelExplanation.setObjectName("labelExplanation")
+		self.verticalLayout.addWidget(self.labelExplanation)
+		self.labelImage = QtGui.QLabel(Dialog)
+		self.labelImage.setText("")
+		self.labelImage.setPixmap(QtGui.QPixmap(os.path.join(OSEBase.IMAGE_PATH, "pipe-dimensions.png")))
+		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
+		self.labelImage.setObjectName("labelImage")
+		self.verticalLayout.addWidget(self.labelImage)
 		self.buttonBox = QtGui.QDialogButtonBox(Dialog)
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
 		self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -143,17 +142,17 @@ class MainDialog(QtGui.QDialog):
 
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create pipe", None, QtGui.QApplication.UnicodeUTF8))
-		self.label_3.setText(QtGui.QApplication.translate("Dialog", "Length:", None, QtGui.QApplication.UnicodeUTF8))
-		self.lineEditLength.setText(QtGui.QApplication.translate("Dialog", "1ft", None, QtGui.QApplication.UnicodeUTF8))
+		self.label_3.setText(QtGui.QApplication.translate("Dialog", "Height (Length):", None, QtGui.QApplication.UnicodeUTF8))
+		self.lineEditLength.setText(QtGui.QApplication.translate("Dialog", "1 m", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
-		self.label_2.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: OD, ID and the pipe length. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: OD, Thk and the pipe height (length). All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 	def initTable(self):
 		# Read table data from CSV
 		self.model = PartTableModel(self.table.headers, self.table.data)
 		self.tableViewParts.setModel(self.model)
 		
 	def getSelectedPartName(self):
-		sel = form.tableViewParts.selectionModel()
+		sel = self.tableViewParts.selectionModel()
 		if sel.isSelected:
 			if len(sel.selectedRows())> 0:
 				rowIndex = sel.selectedRows()[0].row()
@@ -169,9 +168,8 @@ class MainDialog(QtGui.QDialog):
 
 	def accept(self):
 		"""User clicked OK"""
-		# Update active document.  If there is none, show a warning message and do nothing.
-		document = App.activeDocument()
-		if document is not None:
+		# If there is no active document, show a warning message and do nothing.
+		if self.document is not None:
 		# Get suitable row from the the table.
 			length = tu(self.lineEditLength.text())
 			if length == "":
@@ -183,9 +181,9 @@ class MainDialog(QtGui.QDialog):
 			partName = self.getSelectedPartName()
 			createSolid = self.checkBoxCreateSolid.isChecked()
 			if partName is not None:
-				pipe = PipeFromTable(document, self.table)
+				pipe = PipeFromTable(self.document, self.table)
 				pipe.create(partName, length, createSolid)
-				document.recompute()
+				self.document.recompute()
 				# Save user input for the next dialog call.
 				self.saveInput()
 				# Call parent class.
@@ -200,6 +198,7 @@ class MainDialog(QtGui.QDialog):
 				"then try to create the pipe again."
 			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the pipe failed.", text)
 			msgBox.exec_()
+			super(MainDialog, self).accept()
 
 	def saveInput(self):
 		"""Store user input for the next run."""

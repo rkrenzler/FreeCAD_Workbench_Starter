@@ -9,8 +9,6 @@ import os.path
 
 from PySide import QtCore, QtGui
 import FreeCAD
-import Spreadsheet
-import Sketcher
 import Part
 
 import OSEBase
@@ -21,7 +19,7 @@ tu = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, 'pipe.csv' )
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["ID", "OD"]
+DIMENSIONS_USED = ["OD", "Thk"]
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of a subtracted part
@@ -75,17 +73,17 @@ class UnplausibleDimensions(Error):
 class Pipe:
 	def __init__(self, document):
 		self.document = document
-		self.ID = tu("2 cm")
 		self.OD = tu("3 cm")
-		self.L = tu("1 m")
+		self.Thk = tu("0.5 cm")
+		self.H = tu("1 m")
 
 	def checkDimensions(self):
-		if not (self.ID > tu("0 mm")):
-			raise UnplausibleDimensions("ID (inner diameter) of the pipe must be positive. It is %s instead"%(self.ID))
-		if not (self.OD > self.ID):
-			raise UnplausibleDimensions("OD (outer diameter) %s must be larger than ID (inner dimater) %s "%(self.OD, self.ID))
-		if not (self.L > tu("0 mm")):
-			raise UnplausibleDimensions("Length L=%s must be positive"%self.L)
+		if not (self.OD > tu("0 mm")):
+			raise UnplausibleDimensions("OD (inner diameter) of the pipe must be positive. It is %s instead"%(self.OD))
+		if not (2*self.Thk <= self.OD):
+			raise UnplausibleDimensions("2*Thk (2*Thickness) %s must be less than or equlat to OD (outer diameter)%s "%(2*self.Thk, self.OD))
+		if not (self.H > tu("0 mm")):
+			raise UnplausibleDimensions("Height H=%s must be positive"%self.H)
 
 	def create(self, convertToSolid):
 		""" A pipe which is a differences of two cilinders: outer cylinder - inner cylinder.
@@ -97,15 +95,15 @@ class Pipe:
 		# Create outer cylinder.
 		outer_cylinder = self.document.addObject("Part::Cylinder","OuterCylinder")
 		outer_cylinder.Radius = self.OD/2
-		outer_cylinder.Height = self.L
+		outer_cylinder.Height = self.H
 		
 		# Create inner cylinder. It is a little bit longer than the outer cylider in both ends.
 		# This should prevent numerical problems when calculating difference
 		# between the outer and innter cylinder.
 		inner_cylinder = self.document.addObject("Part::Cylinder","InnerCylinder")
-		inner_cylinder.Radius = self.ID/2
-		inner_cylinder.Height = self.L*(1+2*RELATIVE_EPSILON)
-		inner_cylinder.Placement.Base = App.Vector(0,0,-self.L*RELATIVE_EPSILON)
+		inner_cylinder.Radius = self.OD/2 - self.Thk
+		inner_cylinder.Height = self.H*(1+2*RELATIVE_EPSILON)
+		inner_cylinder.Placement.Base = FreeCAD.Vector(0,0,-self.H*RELATIVE_EPSILON)
 		pipe = self.document.addObject("Part::Cut","Pipe")
 		pipe.Base = outer_cylinder
 		pipe.Tool = inner_cylinder
@@ -200,9 +198,9 @@ class PipeFromTable:
 		if row is None:
 			print("Part not found")
 			return
-		pipe.ID = tu(row["ID"])
 		pipe.OD = tu(row["OD"])
-		pipe.L = length
+		pipe.Thk = tu(row["Thk"])
+		pipe.H = length
 
 		part = pipe.create(convertToSolid)
 		part.Label = partName
@@ -249,13 +247,13 @@ class PartTableModel(QtCore.QAbstractTableModel):
 
 # Test macros.
 def TestPipe():
-	document = App.activeDocument()
+	document = FreeCAD.activeDocument()
 	pipe = Pipe(document)
 	pipe.create(False)
 	document.recompute()
 
 def TestTable():
-	document = App.activeDocument()
+	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	pipe = PipeFromTable(document, table)
