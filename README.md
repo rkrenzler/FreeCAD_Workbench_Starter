@@ -15,3 +15,5 @@ $ cd ~/.FreeCAD/Mod
 $ git clone https://github.com/rkrenzler/ose-piping-workbench.git
 ````
 
+# Screenshots #
+![90°-elbow dialog](doc/workbench-screenshot.png)
