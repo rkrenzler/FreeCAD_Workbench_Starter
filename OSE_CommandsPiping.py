@@ -25,7 +25,7 @@
 
 import FreeCAD, Part, OSEBase
 import pipeGui, couplingGui, bushingGui, teeGui
-import outerCornerGui
+import outerCornerGui, elbowGui
 from FreeCAD import Gui
 
 class OSE_CreatePipeClass():
@@ -102,6 +102,30 @@ class OSE_CreateBushingClass():
         are met or not. This function is optional."""
         return True
 
+class OSE_CreateElbowClass():
+    """Command to add the printer frame"""
+
+    def GetResources(self):
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
+#                'Accel' : "Shift+S", # a default shortcut (optional)
+                'MenuText': "Add an elbow",
+                'ToolTip' : "Adds an elbow."}
+
+    def Activated(self):
+        "Do something here when button is clicked"
+        if Gui.ActiveDocument == None:
+            FreeCAD.newDocument()
+        doc=FreeCAD.activeDocument()
+	table = elbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+#        FreeCAD.Console.PrintMessage("Showing outer elbow UI.")
+	form = elbowGui.MainDialog(doc, table)
+	form.exec_()
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        return True
+
 class OSE_CreateTeeClass():
     """Command to add the printer frame"""
 
@@ -154,5 +178,6 @@ class OSE_CreateOuterCornerClass():
 Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass())
 Gui.addCommand('OSE_CreateCoupling', OSE_CreateCouplingClass())
 Gui.addCommand('OSE_CreateBushing', OSE_CreateBushingClass())
+Gui.addCommand('OSE_CreateElbow', OSE_CreateElbowClass())
 Gui.addCommand('OSE_CreateTee', OSE_CreateTeeClass())
 Gui.addCommand('OSE_CreateOuterCorner', OSE_CreateOuterCornerClass())

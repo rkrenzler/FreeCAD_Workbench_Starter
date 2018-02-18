@@ -1,0 +1,4 @@
+Name,PipeSize,alpha,Schedule,POD,PID,H,J,M,Approx. Wt.
+TestPart1,2,60 deg,,2 in,1 in,4 in,2 in,3 in,0.1 lb
+TestPart2,,45 deg,,2 cm,1 cm,4 cm,2 cm,3 cm,0.1 kg
+TestPart3,,90 deg,,2 cm,1 cm,4 cm,2 cm,3 cm,0.1 kg
