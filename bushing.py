@@ -2,7 +2,6 @@
 # Author: Ruslan Krenzler.
 # Date: 27 January 2018
 # Create a bushing-fitting.
-# Version 0.3
 
 import math
 import csv
