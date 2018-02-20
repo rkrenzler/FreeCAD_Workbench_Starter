@@ -12,6 +12,7 @@ import FreeCAD
 import OSEBase
 from cross import *
 from piping import *
+import pipingGui
 
 class PartTableModel(QtCore.QAbstractTableModel): 
 	def __init__(self, headers, data, parent=None, *args):
@@ -125,7 +126,7 @@ class MainDialog(QtGui.QDialog):
 
 	def initTable(self):
 		# Read table data from CSV
-		self.model = PartTableModel(self.table.headers, self.table.data)
+		self.model = pipingGui.PartTableModel(self.table.headers, self.table.data)
 		self.tableViewParts.setModel(self.model)
 		
 	def getSelectedPartName(self):
