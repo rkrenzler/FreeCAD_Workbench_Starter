@@ -26,24 +26,6 @@ CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "coupling.csv")
 DIMENSIONS_USED = ["POD", "PID", "POD1", "PID1", "L", "M", "M1", "N"]
 
 
-class Error(Exception):
-	"""Base class for exceptions in this module."""
-	def __init__(self, message):
-		super(Error, self).__init__(message)
-
-
-class UnplausibleDimensions(Error):
-	"""Exception raised when dimensions are unplausible. For example if
-	outer diameter is larger than the iner one.
-
-	Attributes:
-	message -- explanation of the error
-	"""
-
-	def __init__(self, message):
-		super(UnplausibleDimensions, self).__init__(message)
-
-
 class Coupling:
 	def __init__(self, document):
 		self.document = document

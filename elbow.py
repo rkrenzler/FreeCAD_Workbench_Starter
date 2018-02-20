@@ -31,23 +31,6 @@ DIMENSIONS_USED = ["alpha", "POD", "PID", "H", "J", "M"]
 # That is why the constant has "relative" in its name.
 RELATIVE_EPSILON = 0.1
 
-class Error(Exception):
-	"""Base class for exceptions in this module."""
-	def __init__(self, message):
-		super(Error, self).__init__(message)
-
-
-class UnplausibleDimensions(Error):
-	"""Exception raised when dimensions are unplausible. For example if
-	outer diameter is larger than the iner one.
-
-	Attributes:
-	message -- explanation of the error
-	"""
-
-	def __init__(self, message):
-		super(UnplausibleDimensions, self).__init__(message)
-
 
 class Elbow:
 	def __init__(self, document):

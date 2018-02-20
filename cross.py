@@ -32,24 +32,6 @@ DIMENSIONS_USED = ["POD", "PID", "POD1", "PID1", "G", "G1", "G2", "G3", "H", "H1
 RELATIVE_EPSILON = 0.1
 
 
-class Error(Exception):
-	"""Base class for exceptions in this module."""
-	def __init__(self, message):
-		super(Error, self).__init__(message)
-
-
-class UnplausibleDimensions(Error):
-	"""Exception raised when dimensions are unplausible. For example if
-	outer diameter is larger than the iner one.
-
-	Attributes:
-	message -- explanation of the error
-	"""
-
-	def __init__(self, message):
-		super(UnplausibleDimensions, self).__init__(message)
-
-
 class Cross:
 	def __init__(self, document):
 		self.document = document

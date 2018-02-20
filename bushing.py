@@ -32,24 +32,6 @@ DIMENSIONS_USED = ["PID", "PID1", "POD1", "L", "N"]
 RELATIVE_EPSILON = 0.1
 
 
-class Error(Exception):
-	"""Base class for exceptions in this module."""
-	def __init__(self, message):
-		super(Error, self).__init__(message)
-
-
-class UnplausibleDimensions(Error):
-	"""Exception raised when dimensions are unplausible. For example if
-	outer diameter is larger than the iner one.
-
-	Attributes:
-	message -- explanation of the error
-	"""
-
-	def __init__(self, message):
-		super(UnplausibleDimensions, self).__init__(message)
-
-
 class Bushing:
 	def __init__(self, document):
 		self.document = document
