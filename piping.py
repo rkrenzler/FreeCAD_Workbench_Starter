@@ -53,6 +53,8 @@ class CsvTable:
 	""" Read pipe dimensions from a csv file.
 	one part of the column must be unique and contains a unique key.
 	It is the column "Name".
+
+	Store the data as a list of rows. Each row is a list of values.
 	"""
 	def __init__(self, mandatoryDims=[]):
 		"""
@@ -63,6 +65,8 @@ class CsvTable:
 		self.data = []
 		self.hasValidData = False
 		self.mandatoryDims=mandatoryDims
+		self.nameIndex = None
+
 	def load(self, filename):
 		"""Load data from a CSV file."""
 		self.hasValidData = False
@@ -72,10 +76,10 @@ class CsvTable:
 			# Fill the talble
 			self.data = []
 			names = []
-			ni = self.headers.index("Name")
+			self.nameIndex = self.headers.index("Name")
 			for row in csv_reader:
 				# Check if the name is unique
-				name = row[ni]
+				name = row[self.nameIndex]
 				if name in names:
 					print('Error: Not unique name "%s" found in %s'%(name, filename))
 					exit(1)
@@ -91,16 +95,14 @@ class CsvTable:
 
 	def findPart(self, name):
 		"""Return first first raw with the particular part name as a dictionary."""
-		# First find out the index of the column "Name".
-		ci = self.headers.index("Name")
 		# Search for the first appereance of the name in this column.
 		for row in self.data:
-			if row[ci] == name:
+			if row[self.nameIndex] == name:
 				# Convert row to dicionary.
 				return dict(zip(self.headers, row))
 		return None
 
 	def getPartName(self, index):
 		"""Return part name of a row with the index *index*."""
-		ci = self.headers.index("Name")
-		return self.data[index][ci]
+		return self.data[index][self.nameIndex]
+
