@@ -18,7 +18,7 @@ tu = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "bushing.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["PID", "PID1", "POD1", "L", "N"]
+DIMENSIONS_USED = ["POD", "PID1", "POD1", "L", "N"]
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of a subtracted part
@@ -35,21 +35,21 @@ RELATIVE_EPSILON = 0.1
 class Bushing:
 	def __init__(self, document):
 		self.document = document
-		self.PID = tu("4 cm")
+		self.POD = tu("4 cm")
 		self.PID1 = tu("1 cm")
 		self.POD1 = tu("2 cm")
 		self.N = tu("2 cm")
 		self.L = tu("3 cm")
 		
 	def checkDimensions(self):
-		if not ( self.PID > tu("0 mm") and self.PID1 > tu("0 mm") ):
-			raise UnplausibleDimensions("Pipe dimensions must be positive. They are PID=%s and PID1=%s instead"%(self.PID, self.PID1))
+		if not ( self.POD > tu("0 mm") and self.PID1 > tu("0 mm") ):
+			raise UnplausibleDimensions("Pipe dimensions must be positive. They are POD=%s and PID1=%s instead"%(self.POD, self.PID1))
 		if not ( self.POD1 > self.PID1):
 			raise UnplausibleDimensions("Outer diameter POD1 %s must be larger than inner diameter PID1 %s"%(self.POD1, self.PID1))
 		if not ( self.N > 0):
 			raise UnplausibleDimensions("Length N=%s must be positive"%self.N)
-		if not ( self.PID > self.POD1):
-			raise UnplausibleDimensions("Inner diameter of the larger pipe PID %s must be larger than outer diameter of the smaller pipe POD1 %s."%(self.PID, self.PID1))
+		if not ( self.POD > self.POD1):
+			raise UnplausibleDimensions("Outer diameter of the larger pipe PID %s must be larger than outer diameter of the smaller pipe POD1 %s."%(self.POD, self.PID1))
 		if not ( self.L > self.N):
 			raise UnplausibleDimensions("The length L %s must be larger than the length N %s"%(self.L, self.N))
 
@@ -60,8 +60,8 @@ class Bushing:
 		# take a half of (L-N)
 		X1 = (self.L-self.N)/2
 		# I also do not know what is the size of the thing.
-		# I take 1.2 of the inner diameter of the larger pipe
-		X2 = self.PID*1.1
+		# I take 1.2 of the outer diameter of the larger pipe
+		X2 = self.POD*1.1
 		box1 = self.document.addObject("Part::Box","Box")
 		box1.Height = X1
 		box1.Length = X2
@@ -97,7 +97,7 @@ class Bushing:
 		X1 = (self.L-self.N)/2
 		# I also do not know what is the size of the thing.
 		# I take 1.2 of the inner diameter of the larger pipe
-		X2 = self.PID*1.1
+		X2 = self.POD*1.1
 		box1 = self.document.addObject("Part::Box","Box")
 		box1.Height = X1
 		box1.Length = X2
@@ -121,7 +121,7 @@ class Bushing:
 
 	def createOuterPart(self):
 		outer_cylinder = self.document.addObject("Part::Cylinder","OuterCynlider")
-		outer_cylinder.Radius = self.PID/2
+		outer_cylinder.Radius = self.POD/2
 		outer_cylinder.Height = self.L
 		thing = self.createOctaThing()
 		# Bind two parts.
@@ -145,7 +145,7 @@ class Bushing:
 		# Make a cone for a larger socket. There are no dimensions for this con. There fore 
 		# use simbolically a Radius such that the wall at the lower end is twice as ting
 		# as in the upper end of socket.
-		W2 = (self.PID-self.PID1)/2
+		W2 = (self.POD-self.PID1)/2
 		socket_cone = self.document.addObject("Part::Cone","Cone")
 		socket_cone.Radius2 = self.PID1/2
 		socket_cone.Radius1 = self.PID1/2 + W2/2
@@ -192,7 +192,7 @@ class BushingFromTable:
 		if row is None:
 			print("Part not found")
 			return
-		bushing.PID = tu(row["PID"])
+		bushing.POD = tu(row["POD"])
 		bushing.PID1 = tu(row["PID1"])
 		bushing.POD1 = tu(row["POD1"])
 		bushing.N = tu(row["N"])
