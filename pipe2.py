@@ -9,8 +9,10 @@ import FreeCAD
 import Part
 from pivy import coin
 import pipe as pipeModule
+from piping import *
 
 RELATIVE_EPSILON = 0.1
+parseQuantity= FreeCAD.Units.parseQuantity
 
 # The code is derived from https://www.freecadweb.org/wiki/Scripted_objects
 class Pipe2:
@@ -26,7 +28,16 @@ class Pipe2:
 		'''Do something when a property has changed'''
 		FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
 
+	def checkDimensions(self, obj):
+		if not (obj.OD > parseQuantity("0 mm")):
+			raise UnplausibleDimensions("OD (inner diameter) of the pipe must be positive. It is %s instead"%(obj.OD))
+		if not (2*obj.Thk <= obj.OD):
+			raise UnplausibleDimensions("2*Thk (2*Thickness) %s must be less than or equlat to OD (outer diameter)%s "%(2*obj.Thk, obj.OD))
+		if not (obj.Height > parseQuantity("0 mm")):
+			raise UnplausibleDimensions("Height=%s must be positive"%obj.Height)
+			
 	def createShape(self, fp):
+		self.checkDimensions(fp)
 		outer_cylinder = Part.makeCylinder(fp.OD/2, fp.Height)
 		# Create inner cylinder. It is a little bit longer than the outer cylider in both ends.
 		# This should prevent numerical problems when calculating difference
@@ -38,9 +49,17 @@ class Pipe2:
 
 	def execute(self, fp):
 		# Add dimensions check here.
-		fp.Shape = self.createShape(fp)
+		try:
+			fp.Shape = self.createShape(fp)
+		except UnplausibleDimensions as er:
+			FreeCAD.Console.PrintMessage(er)
+			# Create a red error-cube 
+			fp.Shape = Part.makeBox(100,100,100)
+			fp.ShapeColor = (1.00,0.00,0.00)
+			return
+
 		'''Do something when doing a recomputation, this method is mandatory'''
-		FreeCAD.Console.PrintMessage("Recompute Python Box feature\n")
+		FreeCAD.Console.PrintMessage("Recompute pipe2 feature.\n")
 
 class ViewProviderPipe2:
 	def __init__(self, obj):
@@ -96,5 +115,5 @@ def makePipe2():
 	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","Pipe2")
 	Pipe2(a)
 	ViewProviderPipe2(a.ViewObject)
-
+	a.recompute()
 makePipe2() 
