@@ -22,15 +22,22 @@ class Pipe2:
 		# Wall thinkness
 		obj.addProperty("App::PropertyLength","OD","Pipe2", "Output diameter of the pipe.").OD=1.0
 		obj.addProperty("App::PropertyLength","Thk","Pipe2", "Thinkness of the walls.").Thk=0.1
+		obj.addProperty("App::PropertyPlacement","Port1","Pipe2", "Position of the port1").Port1 = Pipe2.getPort1(obj)
+		obj.addProperty("App::PropertyPlacement","Port2","Pipe2", "Position of the port2").Port2 = Pipe2.getPort2(obj)
+		# Set port property as read only
+		obj.setEditorMode("Port1", 1) 
+		obj.setEditorMode("Port2", 1) 
 		obj.Proxy = self
 
 	@staticmethod
 	def getPort1(obj):
-		return FreeCAD.Vector(0,0,0)
+		# Base normal must point from (0,0,0) downwards along the z axes.
+		return FreeCAD.Placement(FreeCAD.Vector(0,0,0), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),180), FreeCAD.Vector(0,0,0))
 		
 	@staticmethod
 	def getPort2(obj):
-		return FreeCAD.Vector(0,0,obj.Height)
+		# Base normal must point from (0,0,Height) upwards along the z axes.
+		return FreeCAD.Placement(FreeCAD.Vector(0,0,obj.Height), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),0), FreeCAD.Vector(0,0,0))
 		
 	def onChanged(self, fp, prop):
 		'''Do something when a property has changed'''
@@ -43,7 +50,12 @@ class Pipe2:
 			raise UnplausibleDimensions("2*Thk (2*Thickness) %s must be less than or equlat to OD (outer diameter)%s "%(2*obj.Thk, obj.OD))
 		if not (obj.Height > parseQuantity("0 mm")):
 			raise UnplausibleDimensions("Height=%s must be positive"%obj.Height)
-			
+	@staticmethod	
+	def updatePorts(obj):
+		"""Update ports coordinates."""
+		obj.Port1 = Pipe2.getPort1(obj)
+		obj.Port2 = Pipe2.getPort2(obj)
+		
 	def createShape(self, fp):
 		self.checkDimensions(fp)
 		outer_cylinder = Part.makeCylinder(fp.OD/2, fp.Height)
@@ -59,6 +71,7 @@ class Pipe2:
 		# Add dimensions check here.
 		try:
 			fp.Shape = self.createShape(fp)
+			self.updatePorts(fp)
 		except UnplausibleDimensions as er:
 			FreeCAD.Console.PrintMessage(er)
 			# Create a red error-cube 
@@ -101,6 +114,7 @@ class ViewProviderPipe2:
 		modes=[]
 		modes.append("Shaded")
 		modes.append("Wireframe")
+		modes.append("PipeMovement")
 		return modes
 
 	def getDefaultDisplayMode(self):
