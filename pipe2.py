@@ -88,7 +88,14 @@ class ViewProviderPipe2:
 	        # Show cube at ports.
 	        if prop == "Shape":
 		        FreeCAD.Console.PrintMessage("updateData try to add a cube.\n")
-
+		        od = fp.getPropertyByName("OD")
+		        h = fp.getPropertyByName("Height")
+		        # Now add a litter sphere at the midle of the pipe lower base.
+		        drag_point_r = float(od/4) # Radius of the port drag point
+		        sphere=coin.SoSphere()
+		        sphere.radius.setValue(drag_point_r)
+		        self.ports.addChild(sphere)
+		        
 	def getDisplayModes(self,obj):
 		'''Return a list of display modes.'''
 		modes=[]
