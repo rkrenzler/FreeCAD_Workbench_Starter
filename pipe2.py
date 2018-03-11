@@ -24,6 +24,14 @@ class Pipe2:
 		obj.addProperty("App::PropertyLength","Thk","Pipe2", "Thinkness of the walls.").Thk=0.1
 		obj.Proxy = self
 
+	@staticmethod
+	def getPort1(obj):
+		return FreeCAD.Vector(0,0,0)
+		
+	@staticmethod
+	def getPort2(obj):
+		return FreeCAD.Vector(0,0,obj.Height)
+		
 	def onChanged(self, fp, prop):
 		'''Do something when a property has changed'''
 		FreeCAD.Console.PrintMessage("Change property: " + str(prop) + "\n")
@@ -62,22 +70,24 @@ class Pipe2:
 		FreeCAD.Console.PrintMessage("Recompute pipe2 feature.\n")
 
 class ViewProviderPipe2:
+	""" Provide different views for the pipe2 object."""
 	def __init__(self, obj):
+		FreeCAD.Console.PrintMessage("ViewProviderPipe2.init.\n")
 		'''Set this object to the proxy object of the actual view provider'''
-		obj.addProperty("App::PropertyColor","Color","Box","Color of the box").Color=(1.0,0.0,0.0)
 		obj.Proxy = self
- 
+
+ 		
 	def attach(self, obj):
+		FreeCAD.Console.PrintMessage("ViewProviderPipe2.attach.\n")
 		'''Setup the scene sub-graph of the view provider, this method is mandatory'''
-		"Setup the scene sub-graph of the view provider, this method is mandatory"
-		self.color = coin.SoBaseColor()
-		self.onChanged(obj,"Color")
-
-
+		self.ports = coin.SoSeparator() # Add here virtual shapes elements like dragging points.
+ 		obj.RootNode.addChild(self.ports)
+ 
 	def updateData(self, fp, prop):
 		'''If a property of the handled feature has changed we have the chance to handle this here'''
-		# fp is the handled feature, prop is the name of the property that has changed
-		pass
+	        # Show cube at ports.
+	        if prop == "Shape":
+		        FreeCAD.Console.PrintMessage("updateData try to add a cube.\n")
 
 	def getDisplayModes(self,obj):
 		'''Return a list of display modes.'''
@@ -116,4 +126,6 @@ def makePipe2():
 	Pipe2(a)
 	ViewProviderPipe2(a.ViewObject)
 	a.recompute()
+	
+	
 makePipe2() 
