@@ -26,7 +26,7 @@ class Pipe2:
 		obj.addProperty("App::PropertyPlacement","Port1","Pipe2", "Position of the port1").Port1 = Pipe2.getPort1(obj)
 		obj.addProperty("App::PropertyLength","Port1Radius","Pipe2", "Radius of the port1").Port1Radius = Pipe2.getPortRadius(obj)
 		obj.addProperty("App::PropertyPlacement","Port2","Pipe2", "Position of the port2").Port2 = Pipe2.getPort2(obj)
-		obj.addProperty("App::PropertyLength","Port2Radius","Pipe2", "Radius of the port2").Port1Radius = Pipe2.getPortRadius(obj)
+		obj.addProperty("App::PropertyLength","Port2Radius","Pipe2", "Radius of the port2").Port2Radius = Pipe2.getPortRadius(obj)
 		# Set port property as read only
 		obj.setEditorMode("Port1", 1) 
 		obj.setEditorMode("Port2", 1) 
@@ -43,7 +43,6 @@ class Pipe2:
 		
 	@staticmethod
 	def getPort2(obj):
-		FreeCAD.Console.PrintMessage("getPort2 Height is: " + str(obj.Height) + "\n")
 		# Base normal must point from (0,0,Height) upwards along the z axes.
 		return FreeCAD.Placement(FreeCAD.Vector(0,0,obj.Height), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),0), FreeCAD.Vector(0,0,0))
 		
@@ -100,30 +99,23 @@ class Pipe2:
 		
 
 		
-class PortSoBuilder:
-	""" This class used to buid a 3D coin representation of a port. """
+# I porobably should better use something like adapter pattern than a builder.
+# Such that the new port attributes will automatically update the corresponding segment object.
+		
+class PortToCoinAdaptor:
+	"""This class maps placement and radius into a coin separator."""
 	def __init__(self):
 		self.placement = FreeCAD.Placement(FreeCAD.Vector(0,0,0), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),180), FreeCAD.Vector(0,0,0))
-		self.r = 10.0
-	def getHeight(self):
-		""" Calculatate height from the port cylinder. It is the 1/64 of the cylinder radius.
-		The value 1/64 is arbitrary choice by me, to make the port cylinder very thin.
-		"""
-		return 0.015625*self.r
+		self.r = 7.0
 		
-	def toCoin(self):
-		sep = coin.SoSeparator()
-		cyl = sphere=coin.SoCylinder()
-		cyl.radius = float(self.r)
-		cyl.height = float(self.getHeight())
+		self.sep = coin.SoSeparator()
+
 		# Add translation.
-		trans = coin.SoTranslation()
-		trans.translation = self.placement.Base
-		sep.addChild(trans)
+		self._trans = coin.SoTranslation()
+		self.sep.addChild(self._trans)
 		# Add freecad Rotation
-		fcad_rot = coin.SoRotation()
-		fcad_rot.rotation = self.placement.Rotation.Q # Use quaternions.
-		sep.addChild(fcad_rot)
+		self._fcad_rot = coin.SoRotation()
+		self.sep.addChild(self._fcad_rot)
 		# Create axis correction rotation. It makes coin cylinder
 		# more like a FreeCAD cylinder.
 		# The standard coin (open inventor) cylinder is along the
@@ -134,14 +126,25 @@ class PortSoBuilder:
 		# cylinder coordinates).
 		corr_rot = coin.SoRotation()
 		corr_rot.rotation = coin.SbRotation(coin.SbVec3f(1,0,0), math.pi/2)
-		sep.addChild(corr_rot)
-		sep.addChild(cyl)
-		return sep
+		self.sep.addChild(corr_rot)
+		self._cyl = sphere=coin.SoCylinder()
+		self.sep.addChild(self._cyl)
+		self.update()
 		
-# I porobably should better use something like adapter pattern than a builder.
-# Such that the new port attributes will automatically update the corresponding segment object.
-		
-
+				
+	def getHeight(self):
+		""" Calculatate height from the port cylinder. It is the 1/64 of the cylinder radius.
+		The value 1/64 is arbitrary choice by me, to make the port cylinder very thin.
+		"""
+		return 0.015625*self.r
+	
+	def update(self):
+		self._cyl.radius = float(self.r)
+		FreeCAD.Console.PrintMessage("Port radius is %s\n"%self.r)
+		self._cyl.height = float(self.getHeight())
+		self._trans.translation = self.placement.Base
+		self._fcad_rot.rotation = self.placement.Rotation.Q # Use quaternions.
+	
 class ViewProviderPipe2:
 	""" Provide different views for the pipe2 object."""
 	def __init__(self, obj):
@@ -156,33 +159,25 @@ class ViewProviderPipe2:
 		self.ports = coin.SoSeparator() # Add here virtual shapes elements like dragging points.
  		obj.RootNode.addChild(self.ports)
  		# Add ports
-	        self.port1 = None
-	        self.port2 = None
+	        self.port1 = PortToCoinAdaptor()
+	        self.port2 = PortToCoinAdaptor()
+	        self.ports.addChild(self.port1.sep)
+	        self.ports.addChild(self.port2.sep)
+	        
 	def updateData(self, fp, prop):
 		'''If a property of the handled feature has changed we have the chance to handle this here'''
 	        # Ports are not updated in 3D view unless I try to change the placement. Why?
 	        
 	        # Show cube at ports.
 	        if prop == "Shape":
-		        FreeCAD.Console.PrintMessage("updateData, display ports.\n")
-		        # Add ports.
-		        pb = PortSoBuilder()
-		        pb.placement = fp.Port1 # fp.getPropertyByName("Port1")
-		        pb.r = fp.Port1Radius # fp.getPropertyByName("Port1Radius")
-		        # Remove old ports.
-		        if self.port1 is not None:
-		        	self.ports.removeChild(self.port1)
-		       	if self.port2 is not None:
-		       		self.ports.removeChild(self.port2)
-		       		
-		        # Add new ports.
-			self.port1 = pb.toCoin()
-		        self.ports.addChild(self.port1)
-       		        pb.placement = fp.Port2 # fp.getPropertyByName("Port2")
-		        pb.r = fp.Port2Radius # fp.getPropertyByName("Port2Radius")
-		        self.port2 = pb.toCoin()
-       		        self.ports.addChild(self.port2)
-
+		        FreeCAD.Console.PrintMessage("updateData, shape was changed.\n")
+		        # Update port information.	
+	       		self.port1.placement = fp.Port1
+		        self.port1.r = fp.Port1Radius
+	        	self.port1.update()
+		        self.port2.placement = fp.Port2
+		        self.port2.r = fp.Port2Radius
+		        self.port2.update()
        		        
 	def getDisplayModes(self,obj):
 		'''Return a list of display modes.'''
