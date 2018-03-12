@@ -127,7 +127,7 @@ class PortToCoinAdaptor:
 		corr_rot = coin.SoRotation()
 		corr_rot.rotation = coin.SbRotation(coin.SbVec3f(1,0,0), math.pi/2)
 		self.sep.addChild(corr_rot)
-		self._cyl = sphere=coin.SoCylinder()
+		self._cyl = coin.SoCylinder()
 		self.sep.addChild(self._cyl)
 		self.update()
 		
@@ -161,8 +161,22 @@ class ViewProviderPipe2:
  		# Add ports
 	        self.port1 = PortToCoinAdaptor()
 	        self.port2 = PortToCoinAdaptor()
-	        self.ports.addChild(self.port1.sep)
-	        self.ports.addChild(self.port2.sep)
+	        # The following lines should make the ports selectable.
+	        # See https://www.freecadweb.org/wiki/Scripted_objects
+	        # They change color under a mouse pointer but are not really selectable. Why?
+
+	        selectionNode1 = coin.SoType.fromName("SoFCSelection").createInstance()
+	        selectionNode1.documentName.setValue(FreeCAD.ActiveDocument.Name)
+	        selectionNode1.objectName.setValue(obj.Object.Name) # here obj is the ViewObject, we need its associated App Object
+	        selectionNode1.subElementName.setValue("Port1")
+	        selectionNode1.addChild(self.port1.sep)
+       	        selectionNode2 = coin.SoType.fromName("SoFCSelection").createInstance()
+	        selectionNode2.documentName.setValue(FreeCAD.ActiveDocument.Name)
+	        selectionNode2.objectName.setValue(obj.Object.Name) # here obj is the ViewObject, we need its associated App Object
+	        selectionNode2.subElementName.setValue("Port2")
+	        selectionNode2.addChild(self.port2.sep)
+ 	        self.ports.addChild(selectionNode1)
+       	        self.ports.addChild(selectionNode2)
 	        
 	def updateData(self, fp, prop):
 		'''If a property of the handled feature has changed we have the chance to handle this here'''
