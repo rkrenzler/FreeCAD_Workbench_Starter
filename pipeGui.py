@@ -19,11 +19,15 @@ import pipingGui
 class MainDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 	QSETTINGS_NAME = "pipe user input"
+
 	def __init__(self, document, table):
 		super(MainDialog, self).__init__()
 		self.document = document
 		self.table = table
 		self.initUi()
+		self.selectionMode = False
+		self.selectedPart = None
+
 	def initUi(self): 
 		Dialog = self # Added 
 		self.result = -1 
@@ -124,6 +128,12 @@ class MainDialog(QtGui.QDialog):
 				self.tableViewParts.selectRow(row_i)
 
 	def accept(self):
+		if self.selectionMode:
+			return self.acceptSelectionMode()
+		else:
+			self.acceptCreationMode()
+			
+	def acceptCreationMode(self):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and exit dialog.
 		if self.document is None:
@@ -158,7 +168,16 @@ class MainDialog(QtGui.QDialog):
 			msgBox.setText("Select part")
 			msgBox.exec_()
 
+	def acceptSelectionMode(self):
+		self.selectedPart = self.getSelectedPartName()
 
+		if self.selectedPart is None:
+			msgBox = QtGui.QMessageBox()
+			msgBox.setText("Select part")
+			msgBox.exec_()
+		else:
+			super(MainDialog, self).accept()
+			
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
@@ -176,6 +195,26 @@ class MainDialog(QtGui.QDialog):
 		text = settings.value("lineEditLength")
 		if text is not None:
 			self.lineEditLength.setText(text)
+
+	def showForSelection(self, partName=None):
+		""" Show pipe dialog, to select pipe and not to create it.
+		:param partName: name of the part to be selected. Use None if you do not want to select
+		anything.
+		"""
+		# If required select
+		self.selectionMode = True
+		self.setWindowTitle(QtGui.QApplication.translate("Dialog", "Select pipe", None, QtGui.QApplication.UnicodeUTF8))
+		self.selectedPart = None
+		if partName is not None:
+			self.selectPartByName(partName)
+		self.exec_()
+		return self.selectedPart
+		
+	def showForCreation(self):
+		self.selectionMode = False
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create pipe", None, QtGui.QApplication.UnicodeUTF8))
+		self.exec_()
+		
 
 def GuiCheckTable():
 	# Check if the CSV file exists.
