@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Create Outer Corner</string>
+   <string>Create outer corner</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -35,7 +35,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label_2">
+    <widget class="QLabel" name="labelExplanation">
      <property name="text">
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;To construct a part, only these dimensions are used: G, H, M, PID, and POD. All other dimensions are used for inromation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
@@ -48,12 +48,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="label">
+    <widget class="QLabel" name="labelImage">
      <property name="text">
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../macros/outer-corner-dimensions.png</pixmap>
+      <pixmap>../Resources/images/outer-corner-dimensions.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

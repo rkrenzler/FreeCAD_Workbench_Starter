@@ -60,7 +60,10 @@ class MainDialog(QtGui.QDialog):
 		super(MainDialog, self).__init__()
 		self.document = document
 		self.table = table
+		self.selectionMode = False
+		self.selectedPart = None
 		self.initUi()
+				
 	def initUi(self): 
 		Dialog = self # Added 
 		self.result = -1 
@@ -95,17 +98,17 @@ class MainDialog(QtGui.QDialog):
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 		self.tableViewParts.setObjectName("tableViewParts")
 		self.verticalLayout.addWidget(self.tableViewParts)
-		self.label_2 = QtGui.QLabel(Dialog)
-		self.label_2.setTextFormat(QtCore.Qt.AutoText)
-		self.label_2.setWordWrap(True)
-		self.label_2.setObjectName("label_2")
-		self.verticalLayout.addWidget(self.label_2)
-		self.label = QtGui.QLabel(Dialog)
-		self.label.setText("")
-		self.label.setPixmap(QtGui.QPixmap(os.path.join(OSEBase.IMAGE_PATH, "outer-corner-dimensions.png")))
-		self.label.setAlignment(QtCore.Qt.AlignCenter)
-		self.label.setObjectName("label")
-		self.verticalLayout.addWidget(self.label)
+		self.labelExplanation = QtGui.QLabel(Dialog)
+		self.labelExplanation.setTextFormat(QtCore.Qt.AutoText)
+		self.labelExplanation.setWordWrap(True)
+		self.labelExplanation.setObjectName("labelExplanation")
+		self.verticalLayout.addWidget(self.labelExplanation)
+		self.labelImage = QtGui.QLabel(Dialog)
+		self.labelImage.setText("")
+		self.labelImage.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "outer-corner-dimensions.png"))
+		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
+		self.labelImage.setObjectName("labelImage")
+		self.verticalLayout.addWidget(self.labelImage)
 		self.buttonBox = QtGui.QDialogButtonBox(Dialog)
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
 		self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -118,9 +121,9 @@ class MainDialog(QtGui.QDialog):
 		QtCore.QMetaObject.connectSlotsByName(Dialog)
 
 	def retranslateUi(self, Dialog):
-		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create Outer Corner", None, QtGui.QApplication.UnicodeUTF8))
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create outer corner", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
-		self.label_2.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, PID, and POD. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, PID, and POD. All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
 
 	def initTable(self):
@@ -144,6 +147,12 @@ class MainDialog(QtGui.QDialog):
 				self.tableViewParts.selectRow(row_i)
 
 	def accept(self):
+		if self.selectionMode:
+			return self.acceptSelectionMode()
+		else:
+			self.acceptCreationMode()
+
+	def acceptCreationMode(self):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and do nothing.
 		if self.document is None:
@@ -171,6 +180,16 @@ class MainDialog(QtGui.QDialog):
 			msgBox.setText("Select part")
 			msgBox.exec_()
 
+	def acceptSelectionMode(self):
+		self.selectedPart = self.getSelectedPartName()
+
+		if self.selectedPart is None:
+			msgBox = QtGui.QMessageBox()
+			msgBox.setText("Select part")
+			msgBox.exec_()
+		else:
+			super(MainDialog, self).accept()
+
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
@@ -186,6 +205,25 @@ class MainDialog(QtGui.QDialog):
 		self.selectPartByName(settings.value("LastSelectedPartName"))
 
 
+	def showForSelection(self, partName=None):
+		""" Show pipe dialog, to select pipe and not to create it.
+		:param partName: name of the part to be selected. Use None if you do not want to select
+		anything.
+		"""
+		# If required select
+		self.selectionMode = True
+		self.setWindowTitle(QtGui.QApplication.translate("Dialog", "Select outer corner", None, QtGui.QApplication.UnicodeUTF8))
+		self.selectedPart = None
+		if partName is not None:
+			self.selectPartByName(partName)
+		self.exec_()
+		return self.selectedPart
+		
+	def showForCreation(self):
+		self.selectionMode = False
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create outer corner", None, QtGui.QApplication.UnicodeUTF8))
+		self.exec_()
+		
 # Before working with macros, try to load the dimension table.
 
 def GuiCheckTable():

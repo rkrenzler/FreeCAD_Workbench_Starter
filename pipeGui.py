@@ -24,9 +24,9 @@ class MainDialog(QtGui.QDialog):
 		super(MainDialog, self).__init__()
 		self.document = document
 		self.table = table
-		self.initUi()
 		self.selectionMode = False
 		self.selectedPart = None
+		self.initUi()
 
 	def initUi(self): 
 		Dialog = self # Added 
