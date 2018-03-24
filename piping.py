@@ -105,4 +105,8 @@ class CsvTable:
 	def getPartName(self, index):
 		"""Return part name of a row with the index *index*."""
 		return self.data[index][self.nameIndex]
+		
+OUTPUT_PARTS = 1
+OUTPUT_SOLID = 2
+OUTPUT_FLAMINGO = 3
 

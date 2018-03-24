@@ -54,26 +54,46 @@ class MainDialog(QtGui.QDialog):
 		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
 		self.verticalLayout.setObjectName("verticalLayout")
 		self.horizontalWidget = QtGui.QWidget(Dialog)
-		self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 27))
+		self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 55))
 		self.horizontalWidget.setLayoutDirection(QtCore.Qt.LeftToRight)
 		self.horizontalWidget.setObjectName("horizontalWidget")
-		self.label_3 = QtGui.QLabel(self.horizontalWidget)
-		self.label_3.setGeometry(QtCore.QRect(140, 0, 111, 25))
+		self.groupBox = QtGui.QGroupBox(self.horizontalWidget)
+		self.groupBox.setGeometry(QtCore.QRect(10, 0, 263, 58))
+		self.groupBox.setObjectName("groupBox")
+		self.horizontalLayout = QtGui.QHBoxLayout(self.groupBox)
+		self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+		self.horizontalLayout.setObjectName("horizontalLayout")
+		self.radioButtonSolid = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonSolid.setEnabled(True)
+		self.radioButtonSolid.setChecked(True)
+		self.radioButtonSolid.setObjectName("radioButtonSolid")
+		self.horizontalLayout.addWidget(self.radioButtonSolid)
+		self.radioButtonFlamingo = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonFlamingo.setEnabled(False)
+		self.radioButtonFlamingo.setChecked(False)
+		self.radioButtonFlamingo.setObjectName("radioButtonFlamingo")
+		self.horizontalLayout.addWidget(self.radioButtonFlamingo)
+		self.radioButtonParts = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonParts.setObjectName("radioButtonParts")
+		self.horizontalLayout.addWidget(self.radioButtonParts)
+		self.verticalLayout.addWidget(self.horizontalWidget)
+		self.widget = QtGui.QWidget(Dialog)
+		self.widget.setMinimumSize(QtCore.QSize(0, 27))
+		self.widget.setObjectName("widget")
+		self.label_3 = QtGui.QLabel(self.widget)
+		self.label_3.setGeometry(QtCore.QRect(0, 0, 121, 27))
 		sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
 		sizePolicy.setHorizontalStretch(0)
 		sizePolicy.setVerticalStretch(0)
 		sizePolicy.setHeightForWidth(self.label_3.sizePolicy().hasHeightForWidth())
 		self.label_3.setSizePolicy(sizePolicy)
+		self.label_3.setMinimumSize(QtCore.QSize(0, 27))
 		self.label_3.setMaximumSize(QtCore.QSize(200, 16777215))
 		self.label_3.setObjectName("label_3")
-		self.lineEditLength = QtGui.QLineEdit(self.horizontalWidget)
-		self.lineEditLength.setGeometry(QtCore.QRect(260, 0, 111, 27))
+		self.lineEditLength = QtGui.QLineEdit(self.widget)
+		self.lineEditLength.setGeometry(QtCore.QRect(120, 0, 91, 27))
 		self.lineEditLength.setObjectName("lineEditLength")
-		self.checkBoxCreateSolid = QtGui.QCheckBox(self.horizontalWidget)
-		self.checkBoxCreateSolid.setGeometry(QtCore.QRect(0, 0, 121, 26))
-		self.checkBoxCreateSolid.setChecked(True)
-		self.checkBoxCreateSolid.setObjectName("checkBoxCreateSolid")
-		self.verticalLayout.addWidget(self.horizontalWidget)
+		self.verticalLayout.addWidget(self.widget)
 		self.tableViewParts = QtGui.QTableView(Dialog)
 		self.tableViewParts.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
@@ -86,7 +106,7 @@ class MainDialog(QtGui.QDialog):
 		self.verticalLayout.addWidget(self.labelExplanation)
 		self.labelImage = QtGui.QLabel(Dialog)
 		self.labelImage.setText("")
-		self.labelImage.setPixmap(QtGui.QPixmap(os.path.join(OSEBase.IMAGE_PATH, "pipe-dimensions.png")))
+		self.labelImage.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "pipe-dimensions.png"))
 		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
 		self.labelImage.setObjectName("labelImage")
 		self.verticalLayout.addWidget(self.labelImage)
@@ -100,12 +120,20 @@ class MainDialog(QtGui.QDialog):
 		QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), Dialog.accept)
 		QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), Dialog.reject)
 		QtCore.QMetaObject.connectSlotsByName(Dialog)
+		Dialog.setTabOrder(self.radioButtonSolid, self.radioButtonFlamingo)
+		Dialog.setTabOrder(self.radioButtonFlamingo, self.radioButtonParts)
+		Dialog.setTabOrder(self.radioButtonParts, self.lineEditLength)
+		Dialog.setTabOrder(self.lineEditLength, self.tableViewParts)
+		Dialog.setTabOrder(self.tableViewParts, self.buttonBox)
 
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create pipe", None, QtGui.QApplication.UnicodeUTF8))
+		self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Output:", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonSolid.setText(QtGui.QApplication.translate("Dialog", "Solid", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonFlamingo.setText(QtGui.QApplication.translate("Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonParts.setText(QtGui.QApplication.translate("Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
 		self.label_3.setText(QtGui.QApplication.translate("Dialog", "Height (Length):", None, QtGui.QApplication.UnicodeUTF8))
 		self.lineEditLength.setText(QtGui.QApplication.translate("Dialog", "1 m", None, QtGui.QApplication.UnicodeUTF8))
-		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
 		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a part, only these dimensions are used: OD, Thk and the pipe height (length). All other dimensions are used for inromation.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 	def initTable(self):
 		# Read table data from CSV
@@ -154,15 +182,29 @@ class MainDialog(QtGui.QDialog):
 			return
 
 		partName = self.getSelectedPartName()
-		createSolid = self.checkBoxCreateSolid.isChecked()
+
 		if partName is not None:
-			pipe = PipeFromTable(self.document, self.table)
-			pipe.create(partName, length, createSolid)
-			self.document.recompute()
-			# Save user input for the next dialog call.
-			self.saveInput()
-			# Call parent class.
-			super(MainDialog, self).accept()
+			outputType = self.getOutputType()
+			if outputType == OUTPUT_FLAMINGO:
+				pass
+			elif outputType == OUTPUT_SOLID:
+				pipe = PipeFromTable(self.document, self.table)
+
+				pipe.create(partName, length, True)
+				self.document.recompute()
+				# Save user input for the next dialog call.
+				self.saveInput()
+				# Call parent class.
+				super(MainDialog, self).accept()
+			elif outputType == OUTPUT_PARTS:
+				pipe = PipeFromTable(self.document, self.table)
+				pipe.create(partName, length, False)
+				self.document.recompute()
+				# Save user input for the next dialog call.
+				self.saveInput()
+				# Call parent class.
+				super(MainDialog, self).accept()
+
 		else:
 			msgBox = QtGui.QMessageBox()
 			msgBox.setText("Select part")
@@ -181,16 +223,30 @@ class MainDialog(QtGui.QDialog):
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
-		check = self.checkBoxCreateSolid.checkState()
-		settings.setValue("checkBoxCreateSolid", int(check))
+
+		if self.radioButtonFlamingo.isChecked():
+			settings.setValue("radioButtonsOutput", OUTPUT_FLAMINGO)
+		elif self.radioButtonParts.isChecked():
+			settings.setValue("radioButtonsOutput", OUTPUT_PARTS)
+		else : # Default is solid.
+			settings.setValue("radioButtonsOutput", OUTPUT_SOLID)
+		
 		settings.setValue("LastSelectedPartName", self.getSelectedPartName())
 		settings.setValue("lineEditLength", self.lineEditLength.text())
+		
 		settings.sync()
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
-		checkState = QtCore.Qt.CheckState(int(settings.value("checkBoxCreateSolid")))
-		self.checkBoxCreateSolid.setCheckState(checkState)
+		output = int(settings.value("radioButtonsOutput", OUTPUT_SOLID))
+		if output == OUTPUT_FLAMINGO:
+			self.radioButtonFlamingo.setChecked(True)			
+		elif  output == OUTPUT_PARTS:
+			self.radioButtonParts.setChecked(True)
+		else: # Default is solid. output == OUTPUT_SOLID
+			self.radioButtonSolid.setChecked(True)
+			
+			
 		self.selectPartByName(settings.value("LastSelectedPartName"))
 		text = settings.value("lineEditLength")
 		if text is not None:
@@ -215,6 +271,13 @@ class MainDialog(QtGui.QDialog):
 		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create pipe", None, QtGui.QApplication.UnicodeUTF8))
 		self.exec_()
 		
+	def getOutputType(self):
+		if self.radioButtonFlamingo.isChecked():
+			return OUTPUT_FLAMINGO
+		elif self.radioButtonParts.isChecked():
+			return OUTPUT_PARTS
+		else: # Default is solid.
+			return OUTPUT_SOLID
 
 def GuiCheckTable():
 	# Check if the CSV file exists.

@@ -19,19 +19,77 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>27</height>
+       <height>55</height>
       </size>
      </property>
      <property name="layoutDirection">
       <enum>Qt::LeftToRight</enum>
      </property>
+     <widget class="QGroupBox" name="groupBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>0</y>
+        <width>263</width>
+        <height>58</height>
+       </rect>
+      </property>
+      <property name="title">
+       <string>Output:</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QRadioButton" name="radioButtonSolid">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="text">
+          <string>Solid</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonFlamingo">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="text">
+          <string>Flamingo</string>
+         </property>
+         <property name="checked">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QRadioButton" name="radioButtonParts">
+         <property name="text">
+          <string>Parts</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item>
+    <widget class="QWidget" name="widget" native="true">
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>27</height>
+      </size>
+     </property>
      <widget class="QLabel" name="label_3">
       <property name="geometry">
        <rect>
-        <x>140</x>
+        <x>0</x>
         <y>0</y>
-        <width>111</width>
-        <height>25</height>
+        <width>121</width>
+        <height>27</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -39,6 +97,12 @@
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>27</height>
+       </size>
       </property>
       <property name="maximumSize">
        <size>
@@ -53,30 +117,14 @@
      <widget class="QLineEdit" name="lineEditLength">
       <property name="geometry">
        <rect>
-        <x>260</x>
+        <x>120</x>
         <y>0</y>
-        <width>111</width>
+        <width>91</width>
         <height>27</height>
        </rect>
       </property>
       <property name="text">
        <string>1 m</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBoxCreateSolid">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>121</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Create Solid</string>
-      </property>
-      <property name="checked">
-       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -129,6 +177,14 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>radioButtonSolid</tabstop>
+  <tabstop>radioButtonFlamingo</tabstop>
+  <tabstop>radioButtonParts</tabstop>
+  <tabstop>lineEditLength</tabstop>
+  <tabstop>tableViewParts</tabstop>
+  <tabstop>buttonBox</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
