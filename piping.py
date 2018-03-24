@@ -106,7 +106,7 @@ class CsvTable:
 		"""Return part name of a row with the index *index*."""
 		return self.data[index][self.nameIndex]
 		
-OUTPUT_PARTS = 1
-OUTPUT_SOLID = 2
-OUTPUT_FLAMINGO = 3
+OUTPUT_TYPE_PARTS = 1
+OUTPUT_TYPE_SOLID = 2
+OUTPUT_TYPE_FLAMINGO = 3
 

@@ -139,7 +139,7 @@ class MainDialog(QtGui.QDialog):
 
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create pipe", None, QtGui.QApplication.UnicodeUTF8))
-		self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Output:", None, QtGui.QApplication.UnicodeUTF8))
+		self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Output type:", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonSolid.setText(QtGui.QApplication.translate("Dialog", "Solid", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonFlamingo.setText(QtGui.QApplication.translate("Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonParts.setText(QtGui.QApplication.translate("Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
@@ -196,26 +196,14 @@ class MainDialog(QtGui.QDialog):
 
 		if partName is not None:
 			outputType = self.getOutputType()
-			if outputType == OUTPUT_FLAMINGO:
-				pass
-			elif outputType == OUTPUT_SOLID:
-				pipe = PipeFromTable(self.document, self.table)
-
-				pipe.create(partName, length, True)
+			pipe = PipeFromTable(self.document, self.table)
+			part = pipe.create(partName, length, outputType)
+			if part is not None:
 				self.document.recompute()
 				# Save user input for the next dialog call.
 				self.saveInput()
 				# Call parent class.
 				super(MainDialog, self).accept()
-			elif outputType == OUTPUT_PARTS:
-				pipe = PipeFromTable(self.document, self.table)
-				pipe.create(partName, length, False)
-				self.document.recompute()
-				# Save user input for the next dialog call.
-				self.saveInput()
-				# Call parent class.
-				super(MainDialog, self).accept()
-
 		else:
 			msgBox = QtGui.QMessageBox()
 			msgBox.setText("Select part")
@@ -236,11 +224,11 @@ class MainDialog(QtGui.QDialog):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
 
 		if self.radioButtonFlamingo.isChecked():
-			settings.setValue("radioButtonsOutput", OUTPUT_FLAMINGO)
+			settings.setValue("radioButtonsOutputType", OUTPUT_TYPE_FLAMINGO)
 		elif self.radioButtonParts.isChecked():
-			settings.setValue("radioButtonsOutput", OUTPUT_PARTS)
+			settings.setValue("radioButtonsOutputType", OUTPUT_TYPE_PARTS)
 		else : # Default is solid.
-			settings.setValue("radioButtonsOutput", OUTPUT_SOLID)
+			settings.setValue("radioButtonsOutputType", OUTPUT_TYPE_SOLID)
 		
 		settings.setValue("LastSelectedPartName", self.getSelectedPartName())
 		settings.setValue("lineEditLength", self.lineEditLength.text())
@@ -249,12 +237,12 @@ class MainDialog(QtGui.QDialog):
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
-		output = int(settings.value("radioButtonsOutput", OUTPUT_SOLID))
-		if output == OUTPUT_FLAMINGO and HasFlamingoSupport():
+		output = int(settings.value("radioButtonsOutputType", OUTPUT_TYPE_SOLID))
+		if output == OUTPUT_TYPE_FLAMINGO and HasFlamingoSupport():
 			self.radioButtonFlamingo.setChecked(True)			
-		elif  output == OUTPUT_PARTS:
+		elif  output == OUTPUT_TYPE_PARTS:
 			self.radioButtonParts.setChecked(True)
-		else: # Default is solid. output == OUTPUT_SOLID
+		else: # Default is solid. output == OUTPUT_TYPE_SOLID
 			self.radioButtonSolid.setChecked(True)
 		
 			
@@ -284,11 +272,11 @@ class MainDialog(QtGui.QDialog):
 		
 	def getOutputType(self):
 		if self.radioButtonFlamingo.isChecked():
-			return OUTPUT_FLAMINGO
+			return OUTPUT_TYPE_FLAMINGO
 		elif self.radioButtonParts.isChecked():
-			return OUTPUT_PARTS
+			return OUTPUT_TYPE_PARTS
 		else: # Default is solid.
-			return OUTPUT_SOLID
+			return OUTPUT_TYPE_SOLID
 
 def GuiCheckTable():
 	# Check if the CSV file exists.
