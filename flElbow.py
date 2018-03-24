@@ -22,15 +22,21 @@ class Elbow(pypeType):
 		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle").alpha=alpha
 		obj.addProperty("App::PropertyLength","H","Elbow","[..]").H=H
 		obj.addProperty("App::PropertyLength","J","Elbow","[..]").J=J
-		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position").Ports = self.getPorts(obj)
+		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position")
+		obj.Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
-
+#		FreeCAD.Console.PrintMessage("\n Init finished\n") 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
-		pass
+
+		if prop == "J" or prop == "alpha":
+			# This function is called within __init__ too. Thus we need to wait untill 
+			# we have all the required attributes.
+			if "Ports" in obj.PropertiesList:
+				obj.Ports = self.getPorts(obj)
 
 	def execute(self,obj):
 		# define some convenient vector
@@ -80,8 +86,19 @@ class Elbow(pypeType):
 		obj.Ports=[n1*(J+delta),n2*(J+delta)]
 		
 	def getPorts(self, obj):
-		ports = [FreeCAD.Vector(0,0,1),FreeCAD.Vector(0,1,0)] # Test values
-		return ports
+		""" Calculate coordinates of the elbow's ports. """
+		# Oddtopus' implimentation use symmetric to the x-y axis in x-y plane.
+		rotAxis = FreeCAD.Vector(0,0,1) # Z axis
+		bisect=FreeCAD.Vector(1,1,0).normalize() # line to which the elbow is symmetric.
+		alpha=float(obj.alpha)
+		J=float(obj.J)
+		rot = FreeCAD.Rotation(FreeCAD.Vector(0,0,1), 90 - alpha/2.0)
+		port1 = rot.multVec(bisect)
+		port1.Length = J
+		rot = FreeCAD.Rotation(FreeCAD.Vector(0,0,1), -90 + alpha/2.0)
+		port2 = rot.multVec(bisect)
+		port2.Length = J
+		return [port1, port2]
 
 class ElbowBuilder:
 	""" Create elbow using flamingo. """
