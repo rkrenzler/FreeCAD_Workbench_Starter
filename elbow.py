@@ -217,7 +217,6 @@ class ElbowFromTable:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Elbow")
 			import flElbow
 			builder = flElbow.ElbowBuilder(self.document)
-			builder.name = "partName"
 			self.alpha = tu(row["alpha"])
 			self.H = tu(row["H"])
 			self.J = tu(row["J"])
@@ -228,6 +227,7 @@ class ElbowFromTable:
 			feature.PRating = GetPressureRatingString(row)
 			feature.PSize = ""
 			feature.ViewObject.Proxy = 0
+			feature.Label = partName
     			return part
 
 

@@ -9,12 +9,12 @@ from pipeFeatures import pypeType #the parent class
 
 
 class Elbow(pypeType):
-	def __init__(self, obj, name="90degBend20x10", alpha=90, M=30, POD=20, PID=10, H=30, J=20):
+	def __init__(self, obj, PSize="90degBend20x10", alpha=90, M=30, POD=20, PID=10, H=30, J=20):
 		# run parent __init__ and define common attributes
 		super(Elbow,self).__init__(obj)
 		obj.PType="OSE_Elbow"
 		obj.PRating="ElbowFittingFromAnyCatalog"
-		obj.PSize=name
+		obj.PSize=PSize # What is it for?
 		# define specific attributes
 		obj.addProperty("App::PropertyLength","M","Elbow","Outside diameter").M=M
 		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter").POD=POD
@@ -86,8 +86,6 @@ class Elbow(pypeType):
 class ElbowBuilder:
 	""" Create elbow using flamingo. """
 	def __init__(self, document):
-		self.document = document
-		self.name = "90degBend20x10"
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
 		self.alpha = 90
 		self.Z = FreeCAD.Vector(0,0,1) # Rotation of the Z axis. Default -- no rotation.
@@ -100,7 +98,7 @@ class ElbowBuilder:
 	def create(self, obj):
 		"""Create an elbow. """
 #			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
-		elbow = Elbow(obj, name=self.name, alpha=self.alpha, M=self.M, POD=self.POD,
+		elbow = Elbow(obj, PSize="", alpha=self.alpha, M=self.M, POD=self.POD,
 				PID=self.PID, H=self.H, J=self.J)
 		obj.ViewObject.Proxy = 0
 		obj.Placement.Base = self.pos

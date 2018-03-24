@@ -171,16 +171,16 @@ class PipeFromTable:
 			return part
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
-			feature = self.document.addObject("Part::FeaturePython", partName)
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Pipe")
 			import pipeFeatures
 			DN = GetDnString(row)
 			OD = tu(row["OD"])
 			Thk = tu(row["Thk"])
-			
 			part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
 			feature.PRating = GetPressureRatingString(row)
 			feature.Profile = "" # Currently I do not know how to interprite table data as a profile.
 			feature.ViewObject.Proxy = 0
+			feature.Label = partName
     			return part
 
 # Test macros.

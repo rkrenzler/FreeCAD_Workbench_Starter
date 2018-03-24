@@ -270,6 +270,7 @@ class MainDialog(QtGui.QDialog):
 		
 	def getOutputType(self):
 		if self.radioButtonFlamingo.isChecked():
+		        FreeCAD.Console.PrintMessage("\n Output flamingo\n") 
 			return OUTPUT_TYPE_FLAMINGO
 		elif self.radioButtonParts.isChecked():
 			return OUTPUT_TYPE_PARTS
