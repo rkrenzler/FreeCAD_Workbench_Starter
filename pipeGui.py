@@ -16,6 +16,11 @@ from piping import *
 import pipingGui
 
 
+def HasFlamingoSupport():
+	import pkgutil
+	mod = pkgutil.find_loader("pipeFeatures")
+	return mod is not None
+	
 class MainDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 	QSETTINGS_NAME = "pipe user input"
@@ -42,6 +47,12 @@ class MainDialog(QtGui.QDialog):
 		except Exception as e:
 			print ("Could not restore old user input!")
 			print(e)
+
+		if HasFlamingoSupport():
+			self.radioButtonFlamingo.setEnabled(True)			
+		else:
+			self.radioButtonFlamingo.setEnabled(False)
+			
 		self.show()
 
 # The following lines are from QtDesigner .ui-file processed by pyside-uic
@@ -239,13 +250,13 @@ class MainDialog(QtGui.QDialog):
 	def restoreInput(self):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
 		output = int(settings.value("radioButtonsOutput", OUTPUT_SOLID))
-		if output == OUTPUT_FLAMINGO:
+		if output == OUTPUT_FLAMINGO and HasFlamingoSupport():
 			self.radioButtonFlamingo.setChecked(True)			
 		elif  output == OUTPUT_PARTS:
 			self.radioButtonParts.setChecked(True)
 		else: # Default is solid. output == OUTPUT_SOLID
 			self.radioButtonSolid.setChecked(True)
-			
+		
 			
 		self.selectPartByName(settings.value("LastSelectedPartName"))
 		text = settings.value("lineEditLength")
@@ -302,5 +313,6 @@ def GuiCheckTable():
 #doc=FreeCAD.activeDocument()
 #table = GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #form = MainDialog(doc, table)
+
 
 
