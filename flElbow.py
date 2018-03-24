@@ -3,12 +3,10 @@
 # Date: 24 March 2018
 # Create a elbow-fitting using Flamingo workbench.
 
-
-tu = FreeCAD.Units.parseQuantity
-
 import FreeCAD, Part
 from math import *
 from pipeFeatures import pypeType #the parent class
+
 
 class Elbow(pypeType):
 	def __init__(self, obj, name="90degBend20x10", alpha=90, M=30, POD=20, PID=10, H=30, J=20):
@@ -72,24 +70,31 @@ class Elbow(pypeType):
 		obj.Shape=sol
 		# define Ports, i.e. where the tube have to be placed
 		obj.Ports=[n1*(J+delta),n2*(J+delta)]
-		
-def makeElbow(propList=["90degBend20x10", 90, 30, 20, 10, 30, 20], pos=None, Z=None):
-	'''
-	proplist = [name, alpha, M, POD, PID, H, J]
-	pos = the Base point
-	Z = defines the plane of the curve
-	'''
-	if pos==None:
-		pos=FreeCAD.Vector(0,0,0)
-	if Z==None:
-		Z=FreeCAD.Vector(0,0,1)
-	a=FreeCAD.ActiveDocument.addObject("Part::FeaturePython","OSE-elbow")
-	Elbow(a,*propList)
-	a.ViewObject.Proxy=0
-	a.Placement.Base=pos
-	rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1),Z)
-	a.Placement.Rotation=rot.multiply(a.Placement.Rotation)
-	a.ViewObject.Transparency=70
-	FreeCAD.ActiveDocument.recompute()
-	return a
+
+
+class ElbowBuilder:
+	""" Create elbow using flamingo. """
+	def __init__(self, document):
+		self.document = document
+		self.name = "90degBend20x10"
+		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
+		self.alpha = 90
+		self.Z = FreeCAD.Vector(0,0,1) # Rotation of the Z axis. Default -- no rotation.
+		self.H = 30
+		self.J = 20
+		self.M = 30
+		self.POD = 20
+		self.PID = 10
+	
+	def create(self):
+		"""Create an elbow. """
+		feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
+		elbow = Elbow(feature, name=self.name, alpha=self.alpha, M=self.M, POD=self.POD,
+				PID=self.PID, H=self.H, J=self.J)
+		feature.ViewObject.Proxy = 0
+		feature.Placement.Base = self.pos
+		rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
+		feature.Placement.Rotation=rot.multiply(feature.Placement.Rotation)
+		#feature.ViewObject.Transparency=70
+		return feature
 
