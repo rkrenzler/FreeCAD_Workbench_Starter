@@ -235,6 +235,7 @@ class MainDialog(QtGui.QDialog):
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
+
 		output = int(settings.value("radioButtonsOutputType", OUTPUT_TYPE_SOLID))
 		if output == OUTPUT_TYPE_FLAMINGO and HasFlamingoSupport():
 			self.radioButtonFlamingo.setChecked(True)			
@@ -242,8 +243,7 @@ class MainDialog(QtGui.QDialog):
 			self.radioButtonParts.setChecked(True)
 		else: # Default is solid. output == OUTPUT_TYPE_SOLID
 			self.radioButtonSolid.setChecked(True)
-		
-			
+
 		self.selectPartByName(settings.value("LastSelectedPartName"))
 		text = settings.value("lineEditLength")
 		if text is not None:
