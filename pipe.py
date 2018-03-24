@@ -155,21 +155,6 @@ class PipeFromTable:
 		self.document = document
 		self.table = table
 
-	@staticmethod
-	def getPressureRating(row):
-		if row.get("Schedule") is not None:
-			return "SCH-%s"%row["Schedule"]
-		if row.get("SCH") is not None:
-			return "SCH-%s"%row["SCH"]
-		else:
-			return "" # Nothing found
-
-	@staticmethod
-	def getDnSize(row):
-		if row.get("DN") is not None:
-			return "DN%s"%row["DN"]
-		else:
-			return "" # Nothing found	
 
 	def create(self, partName, length, outputType):
 		row = self.table.findPart(partName)
@@ -188,12 +173,12 @@ class PipeFromTable:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", partName)
 			import pipeFeatures
-			DN = self.getDnSize(row)
+			DN = GetDnString(row)
 			OD = tu(row["OD"])
 			Thk = tu(row["Thk"])
 			
 			part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
-			feature.PRating = self.getPressureRating(row)
+			feature.PRating = GetPressureRatingString(row)
 			feature.Profile = "" # Currently I do not know how to interprite table data as a profile.
 			feature.ViewObject.Proxy = 0
     			return part

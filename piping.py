@@ -110,3 +110,35 @@ OUTPUT_TYPE_PARTS = 1
 OUTPUT_TYPE_SOLID = 2
 OUTPUT_TYPE_FLAMINGO = 3
 
+
+def GetPressureRatingString(row):
+	"""Extract presssure rating string from a row of a fitting table.
+	
+	The Pressure rating has a form "SCH-[Schedule]". For example "SCH-40".
+	
+	:param	row: a dictionary wich contains non empty elements "Schedule" or "SCH".
+	:return: String like "SCH-40" or "SCH-80".
+	:return "": if there is no schedule data in the row.
+	"""
+	if row.get("Schedule") is not None and len(row["Schedule"]) > 0:
+		return "SCH-%s"%row["Schedule"]
+	if row.get("SCH") is not None and len(row["SCH"]) > 0:
+		return "SCH-%s"%row["SCH"]
+	else:
+		return "" # Nothing found
+
+def GetDnString(row):
+	"""Extract DN (diamètre nominal, nominal pipe size) string from a row of a fitting table.
+	
+	The Pressure rating has a form "DN[DN-Value]". For example "DN25".
+	
+	:param	row: a dictionary wich contains non empty elements "ND".
+	:return: String like "DN10" or "DN25".
+	:return "": if there is no DN data in the row.
+	"""
+	if row.get("DN") is not None and len(row["DN"]) > 0:
+		return "DN%s"%row["DN"]
+	else:
+		return "" # Nothing found	
+
+
