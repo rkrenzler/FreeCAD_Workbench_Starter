@@ -22,11 +22,16 @@ class Elbow(pypeType):
 		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle").alpha=alpha
 		obj.addProperty("App::PropertyLength","H","Elbow","[..]").H=H
 		obj.addProperty("App::PropertyLength","J","Elbow","[..]").J=J
+		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position").Ports = self.getPorts(obj)
+		# Make Ports read only.
+		obj.setEditorMode("Ports", 1)
+
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 		pass
+
 	def execute(self,obj):
 		# define some convenient vector
 		Z=FreeCAD.Vector(0,0,1)
@@ -67,10 +72,16 @@ class Elbow(pypeType):
 			b=Part.Face(Part.Wire(Part.makeCircle(POD/2,P,n)))
 			sol=sol.cut(b.extrude(n*(J-H)))
 		# assign the shape to obj
+		# Rotate sol along the x axis, to put it into x-z plane.
+		# The code below does not work.
+		#sol.rotate(FreeCAD.Vector(0,0,0),FreeCAD.Vector(1,0,0),90)
 		obj.Shape=sol
 		# define Ports, i.e. where the tube have to be placed
 		obj.Ports=[n1*(J+delta),n2*(J+delta)]
-
+		
+	def getPorts(self, obj):
+		ports = [FreeCAD.Vector(0,0,1),FreeCAD.Vector(0,1,0)] # Test values
+		return ports
 
 class ElbowBuilder:
 	""" Create elbow using flamingo. """
@@ -85,16 +96,16 @@ class ElbowBuilder:
 		self.M = 30
 		self.POD = 20
 		self.PID = 10
-	
-	def create(self):
+
+	def create(self, obj):
 		"""Create an elbow. """
-		feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
-		elbow = Elbow(feature, name=self.name, alpha=self.alpha, M=self.M, POD=self.POD,
+#			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
+		elbow = Elbow(obj, name=self.name, alpha=self.alpha, M=self.M, POD=self.POD,
 				PID=self.PID, H=self.H, J=self.J)
-		feature.ViewObject.Proxy = 0
-		feature.Placement.Base = self.pos
-		rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
-		feature.Placement.Rotation=rot.multiply(feature.Placement.Rotation)
+		obj.ViewObject.Proxy = 0
+		obj.Placement.Base = self.pos
+		#rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
+		#obj.Placement.Rotation=rot.multiply(obj.Placement.Rotation)
 		#feature.ViewObject.Transparency=70
-		return feature
+		return elbow
 

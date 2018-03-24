@@ -194,22 +194,41 @@ class ElbowFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, convertToSolid = True):
-		elbow = Elbow(self.document)
+	def create(self, partName, outputType):
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
 			return
-		elbow.alpha = tu(row["alpha"])
-		elbow.H = tu(row["H"])
-		elbow.J = tu(row["J"])
-		elbow.M = tu(row["M"])
+			
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			elbow = Elbow(self.document)
+			elbow.alpha = tu(row["alpha"])
+			elbow.H = tu(row["H"])
+			elbow.J = tu(row["J"])
+			elbow.M = tu(row["M"])
 
-		elbow.POD = tu(row["POD"])
-		elbow.PID = tu(row["PID"])
-		part = elbow.create(convertToSolid)
-		part.Label = partName
-		return part
+			elbow.POD = tu(row["POD"])
+			elbow.PID = tu(row["PID"])
+			part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			# See Code in pipeCmd.makePipe in the Flamingo workbench.
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Elbow")
+			import flElbow
+			builder = flElbow.ElbowBuilder(self.document)
+			builder.name = "partName"
+			self.alpha = tu(row["alpha"])
+			self.H = tu(row["H"])
+			self.J = tu(row["J"])
+			self.M = tu(row["M"])
+			self.POD = tu(row["POD"])
+			self.PID = tu(row["PID"])
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+    			return part
 
 
 # Test macros.
@@ -222,14 +241,17 @@ def TestElbow():
 
 def TestElbowTable():
 	document = FreeCAD.activeDocument()
+	table = CsvTable(DIMENSIONS_USED)
+	table.load(CSV_TABLE_PATH)
 	elbow = ElbowFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
 		print("Creating part %s"%partName)
-		elbow.create(partName, True)
+		elbow.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
+		break
 		
 
 #TestElbow()
-#TestTable()
+#TestElbowTable()
