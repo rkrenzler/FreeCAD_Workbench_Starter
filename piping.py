@@ -127,6 +127,7 @@ def GetPressureRatingString(row):
 	else:
 		return "" # Nothing found
 
+
 def GetDnString(row):
 	"""Extract DN (diamètre nominal, nominal pipe size) string from a row of a fitting table.
 	
@@ -139,6 +140,12 @@ def GetDnString(row):
 	if row.get("DN") is not None and len(row["DN"]) > 0:
 		return "DN%s"%row["DN"]
 	else:
-		return "" # Nothing found	
+		return "" # Nothing found
+
+
+def HasFlamingoSupport():
+	import pkgutil
+	mod = pkgutil.find_loader("pipeFeatures")
+	return mod is not None	
 
 

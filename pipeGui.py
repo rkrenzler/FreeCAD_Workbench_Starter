@@ -16,11 +16,6 @@ from piping import *
 import pipingGui
 
 
-def HasFlamingoSupport():
-	import pkgutil
-	mod = pkgutil.find_loader("pipeFeatures")
-	return mod is not None
-	
 class MainDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 	QSETTINGS_NAME = "pipe user input"
