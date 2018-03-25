@@ -171,16 +171,16 @@ class TeeFromTable:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Tee")
 			import flTee
 			builder = flTee.TeeBuilder(self.document)
-			tee.G = tu(row["G"])
-			tee.G1 = tu(row["G1"])
-			tee.H = tu(row["H"]) 
-			tee.H1 = tu(row["H1"])
-			tee.PID = tu(row["PID"])
-			tee.PID1 = tu(row["PID1"])
-			tee.POD = tu(row["POD"])
-			tee.POD1 = tu(row["POD1"])
-			tee.M = tu(row["M"])
-			tee.M1 = tu(row["M1"])
+			builder.G = tu(row["G"])
+			builder.G1 = tu(row["G1"])
+			builder.H = tu(row["H"]) 
+			builder.H1 = tu(row["H1"])
+			builder.PID = tu(row["PID"])
+			builder.PID1 = tu(row["PID1"])
+			builder.POD = tu(row["POD"])
+			builder.POD1 = tu(row["POD1"])
+			builder.M = tu(row["M"])
+			builder.M1 = tu(row["M1"])
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
 			feature.PSize = ""
@@ -210,5 +210,5 @@ def TestTable():
 		break
 
 #TestTee()
-TestTable()
+#TestTable()
 
