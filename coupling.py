@@ -130,7 +130,7 @@ class Coupling:
 		return inner
 
 	def createInnerPartReduced(self):
-		""" Create a outer part which is cylinder+cone+cylinder."""
+		""" Create an innter part which is cylinder+cone+cylinder."""
 		cylinder1i = self.document.addObject("Part::Cylinder","Cylinder1i")
 		cylinder1i.Radius = self.POD/2
 		cylinder1i.Height = self.X1

@@ -4,7 +4,7 @@
 # Create a coupling using Flamingo workbench.
 
 import FreeCAD, Part
-from math import *
+import math
 from pipeFeatures import pypeType #the parent class
 
 
@@ -50,10 +50,28 @@ class Coupling(pypeType):
 			if "Ports" in obj.PropertiesList:
 				obj.Ports = self.getPorts(obj)
 	@staticmethod
+	def calculateShiftA2(obj):
+		"""Determine an additional length a2 of the socket 1, such that the wall size of the intermediate
+		section on it thin part is not smaller than the walls of the sockets.
+		The size a2 does not come from some document or standard. It is only chosen to avoid thin walls
+		in the intermediate section of the coupling. Probably a2 must be even larger.
+		"""
+		N = obj.N
+		M = obj.M
+		M1 = obj.M1
+		POD = obj.POD
+		POD1 = obj.POD1
+		a2 = max(M-POD, M1-POD1) / 2
+		x = (POD-POD1)
+		factor = float(x)/math.sqrt(4*N**2+x**2) # Prevent python 2 to use integer "/" operator.
+		a1 = factor*a2
+		return a1
+		
+	@staticmethod
 	def createOuterPart(obj):
 		M = obj.M
 		M1 = obj.M1
-		if M == M1 or True:
+		if M == M1:
 			return Coupling.createOuterPartEqual(obj)
 		else:
 			return Coupling.createOuterPartReduced(obj)
@@ -68,21 +86,43 @@ class Coupling(pypeType):
 		return outer
 		
 	@staticmethod
+	def createOuterPartReduced(obj):
+		""" Create a outer part which is cylinder+cone+cylinder."""
+		# Create socket 1.
+		
+		M = obj.M
+		M1 = obj.M1
+		N = obj.N
+		r1 = M/2
+		a1 = Coupling.calculateShiftA2(obj)
+		SL = (obj.L-obj.N)/2
+		h1 = SL+a1
+		cylinder1 = Part.makeCylinder(r1, h1)
+		# Create a cone and put it on the cylinder 1.
+		r2 = M1/2
+		hc = N
+		cone = Part.makeCone(r1, r2, hc, FreeCAD.Vector(0,0,h1))
+		# Create a socket 2 and put it on the cone.
+		h2 = SL-a1 # Take in account the higher socket 1.
+		cylinder2 = Part.makeCylinder(r2, h2, FreeCAD.Vector(0,0,h1+hc))
+		outer = cylinder1.fuse([cone, cylinder2])
+		return outer
+		
+	@staticmethod
 	def createInnerPart(obj):
 		PID = obj.PID
 		PID1 = obj.PID1
 		# Create parts which must be removed from the coupling.
-		if PID == PID1 or True:
+		if PID == PID1:
 			return Coupling.createInnerPartEqual(obj)
 		else:
 			return Coupling.createInnerPartReduced(obj)
 	
 	@staticmethod
-	def createInnerPartEqual( obj):
+	def createInnerPartEqual(obj):
 		""" Create the inner part from cylinders. This is when PID and PID1 are the equal."""
 		SL = (obj.L-obj.N)/2 # The length of the inner part of the socket.
 		POD = obj.POD
-		POD1 = obj.POD1
 		N = obj.N
 		
 		# Create lower inner cylinder.
@@ -90,10 +130,32 @@ class Coupling(pypeType):
 		cylinder1i = Part.makeCylinder(POD/2, height1)
 		# Create intermediatiate inner cylinder
 		height2 = N
-		cylinder2i = Part.makeCylinder(POD1/2, N, FreeCAD.Vector(0,0,height1))
-		# Create upper inner cylinder.
+		cylinder2i = Part.makeCylinder(PID/2, N, FreeCAD.Vector(0,0,height1))
+		# Create an upper inner cylinder.
 		cylinder3i = Part.makeCylinder(POD/2, height1+height2, FreeCAD.Vector(0,0,height1+height2))
 		inner = cylinder1i.fuse([cylinder2i, cylinder3i])
+		return inner
+		
+	@staticmethod
+	def createInnerPartReduced(obj):
+		""" Create a outer part which is cylinder+cone+cylinder."""
+		SL = (obj.L-obj.N)/2 # The length of the inner part of the socket.
+		POD = obj.POD
+		POD1 = obj.POD1
+		N = obj.N
+
+		r1 = POD/2
+		h1 = SL
+		# Create a lower cylinder.
+		cylinder1i = Part.makeCylinder(r1, h1)
+		# Create a cone and put it on the cylinder 1.
+		r2 = POD1/2
+		hc = N
+		cone = Part.makeCone(r1, r2, N, FreeCAD.Vector(0,0,h1))
+		# Create an upper cylinder.
+		h2 = h1
+		cylinder2i = Part.makeCylinder(r2, h2, FreeCAD.Vector(0,0,h1+hc))
+		inner = cylinder1i.fuse([cone, cylinder2i])
 		return inner
 		
 	def execute(self, obj):
@@ -130,7 +192,7 @@ class CouplingBuilder:
 		"""Create a couzpling.
 		 
 		Before call it, call
-		feature = self.document.addObject("Part::FeaturePython","OSE-coupling")
+		feature = self.document.addObject("Part::FeaturePython","OSE-Coupling")
 		"""			
 		coupling = Coupling(obj, PSize="", L=self.L, M=self.M, M1=self.M1, N=self.N,
 				POD=self.POD, POD1=self.POD1, PID=self.PID, PID1=self.PID1)
@@ -142,8 +204,8 @@ class CouplingBuilder:
 def Test():
 	document = FreeCAD.activeDocument()
 	builder = CouplingBuilder(document)
-	feature = document.addObject("Part::FeaturePython","OSE-coupling")
+	feature = document.addObject("Part::FeaturePython","OSE-Coupling")
 	builder.create(feature)
 	document.recompute()
 	
-#Test()
+Test()
