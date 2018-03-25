@@ -125,20 +125,41 @@ class CornerFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, convertToSolid = True):
+	def create(self, partName, outputType):
 		corner = Corner(self.document)
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
 			return
-		corner.G = tu(row["G"])
-		corner.H = tu(row["H"])
-		corner.M = tu(row["M"])
-		corner.POD = tu(row["POD"])
-		corner.PID = tu(row["PID"])
-		part = corner.create(convertToSolid)
-		part.Label = partName
-		return part
+
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			corner.G = tu(row["G"])
+			corner.H = tu(row["H"])
+			corner.M = tu(row["M"])
+			corner.POD = tu(row["POD"])
+			corner.PID = tu(row["PID"])
+
+			part = corner.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Corner")
+			import flCorner
+			builder = flCorner.CornerBuilder(self.document)
+			builder.G = tu(row["G"])
+			builder.H = tu(row["H"]) 
+			builder.M = tu(row["M"])
+			builder.POD = tu(row["POD"])
+			builder.PID = tu(row["PID"])
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+			feature.Label = partName
+    			return part
+
+
 # Test macros.
 def TestCorner():
 	document = FreeCAD.activeDocument()
@@ -150,13 +171,14 @@ def TestTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	corner = CornerFromTable(document, table)
+	builder = CornerFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
 		print("Creating part %s"%partName)
-		corner.create(partName, True)
+		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
+		break
 
 #TestCorner()
 #TestTable()
