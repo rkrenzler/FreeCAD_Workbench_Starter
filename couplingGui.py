@@ -53,7 +53,7 @@ class MainDialog(QtGui.QDialog):
 # access datata in some special FreeCAD directory.
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
-		Dialog.resize(803, 592)
+		Dialog.resize(803, 733)
 		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
 		self.verticalLayout.setObjectName("verticalLayout")
 		self.horizontalWidget = QtGui.QWidget(Dialog)
@@ -144,10 +144,10 @@ class MainDialog(QtGui.QDialog):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and do nothing.
 		if self.document is None:
-			text = "I have not found any active document were I can create a corner fitting.\n"\
+			text = "I have not found any active document were I can create an elbow.\n"\
 				"Use menu File->New to create a new document first, "\
-				"then try to create the corner fitting again."
-			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the corner fitting failed.", text)
+				"then try to create the elbow again."
+			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the elbow failed.", text)
 			msgBox.exec_()
 			super(MainDialog, self).accept()
 			return
@@ -157,19 +157,19 @@ class MainDialog(QtGui.QDialog):
 
 		if partName is not None:
 			outputType = self.getOutputType()
-			coupling = CouplingFromTable(self.document, self.table)
-			part = coupling.create(partName, outputType)
+			builder = CouplingFromTable(self.document, self.table)
+			part = builder.create(partName, outputType)
 			if part is not None:
 				self.document.recompute()
 				# Save user input for the next dialog call.
 				self.saveInput()
 				# Call parent class.
 				super(MainDialog, self).accept()
+				
 		else:
 			msgBox = QtGui.QMessageBox()
 			msgBox.setText("Select part")
 			msgBox.exec_()
-
 
 	def saveInput(self):
 		"""Store user input for the next run."""

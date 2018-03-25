@@ -146,7 +146,8 @@ class Coupling(pypeType):
 		POD = obj.POD
 		POD1 = obj.POD1
 		N = obj.N
-
+		PID = obj.PID
+		PID1 = obj.PID1
 		r1 = POD/2
 		h1 = SL
 		# Create a lower cylinder.
@@ -154,7 +155,7 @@ class Coupling(pypeType):
 		# Create a cone and put it on the cylinder 1.
 		r2 = POD1/2
 		hc = N
-		cone = Part.makeCone(r1, r2, N, FreeCAD.Vector(0,0,h1))
+		cone = Part.makeCone(PID/2, PID1/2, N, FreeCAD.Vector(0,0,h1))
 		# Create an upper cylinder.
 		h2 = h1
 		cylinder2i = Part.makeCylinder(r2, h2, FreeCAD.Vector(0,0,h1+hc))
