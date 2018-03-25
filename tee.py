@@ -207,7 +207,7 @@ def TestTable():
 		print("Creating part %s"%partName)
 		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
-		break
+
 
 #TestTee()
 #TestTable()

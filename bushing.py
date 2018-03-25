@@ -186,7 +186,7 @@ class BushingFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, convertToSolid = True):
+	def create(self, partName, outputType):
 		bushing = Bushing(self.document)
 		row = self.table.findPart(partName)
 		if row is None:
@@ -198,9 +198,32 @@ class BushingFromTable:
 		bushing.N = tu(row["N"])
 		bushing.L = tu(row["L"])
 
-		part = bushing.create(convertToSolid)
-		part.Label = partName
-		return part
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			bushing.POD = tu(row["POD"])
+			bushing.PID1 = tu(row["PID1"])
+			bushing.POD1 = tu(row["POD1"])
+			bushing.N = tu(row["N"])
+			bushing.L = tu(row["L"])
+
+			part = bushing.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Bushing")
+			import flBushing
+			builder = flBushing.BushingBuilder(self.document)
+			builder.POD = tu(row["POD"])
+			builder.PID1 = tu(row["PID1"])
+			builder.POD1 = tu(row["POD1"])
+			builder.N = tu(row["N"])
+			builder.L = tu(row["L"])
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+			feature.Label = partName
+    			return part
 
 
 # Test macros.
@@ -214,13 +237,14 @@ def TestTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	bushing = BushingFromTable(document, table)
+	builder = BushingFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
 		print("Creating part %s"%partName)
-		bushing.create(partName, True)
+		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
+		break
 
 #TestBushing()
 #TestTable()
