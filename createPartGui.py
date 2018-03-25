@@ -90,10 +90,6 @@ class BaseDialog(QtGui.QDialog):
 		self.radioButtonParts.setObjectName("radioButtonParts")
 		self.horizontalLayout.addWidget(self.radioButtonParts)
 		self.verticalLayout.addWidget(self.horizontalWidget)
-		self.checkBoxCreateSolid = QtGui.QCheckBox(Dialog)
-		self.checkBoxCreateSolid.setChecked(True)
-		self.checkBoxCreateSolid.setObjectName("checkBoxCreateSolid")
-		self.verticalLayout.addWidget(self.checkBoxCreateSolid)
 		self.tableViewParts = QtGui.QTableView(Dialog)
 		self.tableViewParts.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
@@ -127,7 +123,6 @@ class BaseDialog(QtGui.QDialog):
 		self.radioButtonSolid.setText(QtGui.QApplication.translate("Dialog", "Solid", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonFlamingo.setText(QtGui.QApplication.translate("Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonParts.setText(QtGui.QApplication.translate("Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
-		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
 		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", self.params.explanationText, None, QtGui.QApplication.UnicodeUTF8))
 
 	def initTable(self):
