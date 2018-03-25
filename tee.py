@@ -55,7 +55,7 @@ class Tee:
 			raise UnplausibleDimensions("It must hold outer diameter %s > Outer pipe diameter %s > Inner pipe diameter %s"%(self.M, self.POD, self.PID))
 		if not ( self.M1 > self.POD1 and self.POD1 > self.PID1 ):
 			raise UnplausibleDimensions("It must hold outer diameter %s > Outer pipe diameter %s > Inner pipe diameter %s"%(self.M1, self.POD1, self.PID1))
-		if not ( self.G > tu("0 mm") and self.G1 > tu("0 mm"):
+		if not ( self.G > tu("0 mm") and self.G1 > tu("0 mm") ):
 			raise UnplausibleDimensions("Lengths G=%s, G1=%s, G=%s, must be positive"%(self.G, self.G1))
 		if not ( self.H > self.G):
 			raise UnplausibleDimensions("H=%s must be larger than G=%s."%(self.H, self.G))
@@ -144,26 +144,49 @@ class TeeFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, convertToSolid = True):
+	def create(self, partName, outputType):
 		tee = Tee(self.document)
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
 			return
-		tee.G = tu(row["G"])
-		tee.G1 = tu(row["G1"])
-		tee.H = tu(row["H"]) # It is L/2 for symetrical Tee. Why extra dimension?
-		tee.H1 = tu(row["H1"])
-		tee.PID = tu(row["PID"])
-		tee.PID1 = tu(row["PID1"])
-		tee.POD = tu(row["POD"])
-		tee.POD1 = tu(row["POD1"])
-		tee.M = tu(row["M"])
-		tee.M1 = tu(row["M1"])
 
-		part = tee.create(convertToSolid)
-		part.Label = partName
-		return part
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			tee.G = tu(row["G"])
+			tee.G1 = tu(row["G1"])
+			tee.H = tu(row["H"]) 
+			tee.H1 = tu(row["H1"])
+			tee.PID = tu(row["PID"])
+			tee.PID1 = tu(row["PID1"])
+			tee.POD = tu(row["POD"])
+			tee.POD1 = tu(row["POD1"])
+			tee.M = tu(row["M"])
+			tee.M1 = tu(row["M1"])
+
+			part = tee.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Tee")
+			import flTee
+			builder = flTee.TeeBuilder(self.document)
+			tee.G = tu(row["G"])
+			tee.G1 = tu(row["G1"])
+			tee.H = tu(row["H"]) 
+			tee.H1 = tu(row["H1"])
+			tee.PID = tu(row["PID"])
+			tee.PID1 = tu(row["PID1"])
+			tee.POD = tu(row["POD"])
+			tee.POD1 = tu(row["POD1"])
+			tee.M = tu(row["M"])
+			tee.M1 = tu(row["M1"])
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+			feature.Label = partName
+    			return part
 
 
 # Test macros.
@@ -177,14 +200,15 @@ def TestTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	tee = TeeFromTable(document, table)
+	builder = TeeFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
 		print("Creating part %s"%partName)
-		part = tee.create(partName, True)
+		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
+		break
 
 #TestTee()
-#TestTable()
+TestTable()
 
