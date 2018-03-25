@@ -204,7 +204,7 @@ class CouplingBuilder:
 		obj.Placement.Base = self.pos
 		return coupling
 
-# Test a coupling.
+# Create a test coupling.
 def Test():
 	document = FreeCAD.activeDocument()
 	builder = CouplingBuilder(document)
