@@ -143,7 +143,7 @@ class Bushing:
 		inner_socket.Placement.Base = FreeCAD.Vector(0,0,self.N)
 
 		# Make a cone for a larger socket. There are no dimensions for this con. There fore 
-		# use simbolically a Radius such that the wall at the lower end is twice as ting
+		# use simbolically a Radius such that the wall at the lower end is twice as thick
 		# as in the upper end of socket.
 		W2 = (self.POD-self.PID1)/2
 		socket_cone = self.document.addObject("Part::Cone","Cone")
