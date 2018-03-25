@@ -6,6 +6,7 @@
 import tee
 import createPartGui
 
+
 class MainDialog(createPartGui.BaseDialog):
 	def __init__(self, document, table):
 		params = createPartGui.DialogParams()
