@@ -26,8 +26,4 @@ class MainDialog(createPartGui.BaseDialog):
 def GuiCheckTable():
 	return createPartGui.GuiCheckTable(coupling.CSV_TABLE_PATH, coupling.DIMENSIONS_USED)
 
-#doc=FreeCAD.activeDocument()
-#table = GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#form = MainDialog(doc, table)
-
 

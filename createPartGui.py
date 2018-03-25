@@ -200,7 +200,7 @@ class BaseDialog(QtGui.QDialog):
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
 		
 		output = int(settings.value("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID))
-		if output == piping.OUTPUT_TYPE_FLAMINGO and HasFlamingoSupport():
+		if output == piping.OUTPUT_TYPE_FLAMINGO and piping.HasFlamingoSupport():
 			self.radioButtonFlamingo.setChecked(True)			
 		elif  output == piping.OUTPUT_TYPE_PARTS:
 			self.radioButtonParts.setChecked(True)
