@@ -24,7 +24,7 @@ class Coupling(pypeType):
 		# Run parent __init__ and define common attributes
 		super(Coupling, self).__init__(obj)
 		obj.PType="OSE_Coupling"
-		obj.PRating="ElbowFittingFromAnyCatalog"
+		obj.PRating=""
 		obj.PSize=PSize # What is it for?
 		# Define specific attributes and set their values.
 		obj.addProperty("App::PropertyLength","L","Coupling","Length of the coupling").L=L
