@@ -250,7 +250,7 @@ class BaseDialog(QtGui.QDialog):
 		
 	def showForCreation(self):
 		self.params.selectionMode = False
-		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
+		self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
 					None, QtGui.QApplication.UnicodeUTF8))
 		self.exec_()
 		
@@ -260,7 +260,7 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 	if os.path.isfile(tablePath) == False:
 		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
 		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, 
-			"Creating of the %s failed."%self.params.fittingName, text)
+			"Creating of the part failed.", text)
 		msgBox.exec_()
 		exit(1) # Error
 

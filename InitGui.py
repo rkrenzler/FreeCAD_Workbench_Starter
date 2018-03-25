@@ -39,7 +39,7 @@ class OSE_PipingWorkbench (Workbench):
 
         import OSEBase, OSE_CommandsPiping # import here all the needed files that create your FreeCAD commands
         self.list = ["OSE_CreatePipe", "OSE_CreateCoupling", "OSE_CreateBushing", "OSE_CreateElbow",
-			 "OSE_CreateTee", "OSE_CreateOuterCorner", "OSE_CreateCross"] # A list of command names created in the line above
+			 "OSE_CreateTee", "OSE_CreateCorner", "OSE_CreateCross"] # A list of command names created in the line above
         self.appendToolbar("Piping", self.list) # creates a new toolbar with your commands
         self.appendMenu("Command Menu", self.list) # creates a new menu
 	#OSE_PipingWorkbench.Icon = os.path.join(OSEBase.ICON_PATH,"Workbench.svg")

@@ -26,7 +26,7 @@
 import FreeCAD, Part, OSEBase
 import couplingGui
 import pipeGui, bushingGui, teeGui
-import outerCornerGui, elbowGui, crossGui
+import cornerGui, elbowGui, crossGui
 import createPartGui
 
 from FreeCAD import Gui
@@ -149,10 +149,10 @@ class OSE_CreateTeeClass():
         return True
 
 
-class OSE_CreateOuterCornerClass():
+class OSE_CreateCornerClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateOuterCorner.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateCorner.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a outer corner",
                 'ToolTip' : "Adds a outer corner."}
@@ -162,10 +162,10 @@ class OSE_CreateOuterCornerClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = outerCornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = cornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
-	form = outerCornerGui.MainDialog(doc, table)
-	form.exec_()
+	form = cornerGui.MainDialog(doc, table)
+	form.showForCreation()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -199,5 +199,5 @@ Gui.addCommand('OSE_CreateCoupling', OSE_CreateCouplingClass())
 Gui.addCommand('OSE_CreateBushing', OSE_CreateBushingClass())
 Gui.addCommand('OSE_CreateElbow', OSE_CreateElbowClass())
 Gui.addCommand('OSE_CreateTee', OSE_CreateTeeClass())
-Gui.addCommand('OSE_CreateOuterCorner', OSE_CreateOuterCornerClass())
+Gui.addCommand('OSE_CreateCorner', OSE_CreateCornerClass())
 Gui.addCommand('OSE_CreateCross', OSE_CreateCrossClass())

@@ -16,12 +16,12 @@ from piping import *
 tu = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "outer-corner.csv")
+CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "corner.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["G", "H", "M", "POD", "PID"]
 
 
-class OuterCorner:
+class Corner:
 	def __init__(self, document):
 		self.document = document
 		self.G = tu("2 cm")
@@ -120,13 +120,13 @@ class OuterCorner:
 		return corner
 
 
-class OuterCornerFromTable:
+class CornerFromTable:
 	"""Create a part with dimensions from a CSV table."""
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
 	def create(self, partName, convertToSolid = True):
-		corner = OuterCorner(self.document)
+		corner = Corner(self.document)
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
@@ -142,7 +142,7 @@ class OuterCornerFromTable:
 # Test macros.
 def TestCorner():
 	document = FreeCAD.activeDocument()
-	corner = OuterCorner(document)
+	corner = Corner(document)
 	corner.create(True)
 	document.recompute()
 
@@ -150,7 +150,7 @@ def TestTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	corner = OuterCornerFromTable(document, table)
+	corner = CornerFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
