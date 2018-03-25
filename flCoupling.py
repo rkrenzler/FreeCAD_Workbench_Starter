@@ -174,9 +174,9 @@ class Coupling(pypeType):
 	def getPorts(self, obj):
 		""" Calculate coordinates of the ports. """
 		SL = (obj.L-obj.N)/2 # Inner socket length.
-		N = obj.N
+		L = obj.L
 		port1 = FreeCAD.Vector(0,0,SL) # Z axis
-		port2 = FreeCAD.Vector(0,0,N-SL) # Z axis
+		port2 = FreeCAD.Vector(0,0,L-SL) # Z axis
 		return [port1, port2]
 
 class CouplingBuilder:
