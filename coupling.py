@@ -59,6 +59,8 @@ class Coupling:
 		section on it thin part is not smaller than the walls of the sockets.
 		The size a2 does not come from some document or standard. It is only chosen to avoid thin walls
 		in the intermediate section of thecoupling. Probably a2 must be even larger.
+		
+		a2 is positive if POD > POD1, it is negative if POD < POD2.
 		"""
 		a2 = max(self.M-self.POD, self.M1-self.POD1) / 2
 		x = (self.POD-self.POD1)
@@ -181,27 +183,46 @@ class CouplingFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, convertToSolid = True):
+	def create(self, partName, outputType):
 		coupling = Coupling(self.document)
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
 			return
-			
-		coupling.M = tu(row["M"]) # Outer diameter of socket 1.
-		coupling.POD = tu(row["POD"]) # Pipe outer diameter at the socket 1.
-		coupling.PID = tu(row["PID"]) # Pipe inner diameter at the socket 1.
-		coupling.X1 = (tu(row["L"])-tu(row["N"]))/2# Length of the socket1.
-		coupling.M1 = tu(row["M1"]) # Outer diameter of socket 2.
-		coupling.POD1 = tu(row["POD1"])  # Pipe outer diameter at the socket 2.
-		coupling.PID1 = tu(row["PID1"]) # Pipe inner diameter at the socket 2.
-		coupling.X2 = coupling.X1 # Length of the socket2.
-		coupling.N = tu(row["N"]) # Lenght of the intemidate section of the coupling.
 
-		part = coupling.create(convertToSolid)
-		part.Label = partName
-		return part
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			coupling.L = tu(row["L"])# Length of the coupling.
+			coupling.M = tu(row["M"]) # Outer diameter of socket 1.
+			coupling.M1 = tu(row["M1"]) # Outer diameter of socket 2.
+			coupling.N = tu(row["N"]) # Lenght of the intemidate section of the coupling.
+			coupling.POD = tu(row["POD"]) # Pipe outer diameter at the socket 1.
+			coupling.PID = tu(row["PID"]) # Pipe inner diameter at the socket 1.
+			coupling.POD1 = tu(row["POD1"])  # Pipe outer diameter at the socket 2.
+			coupling.PID1 = tu(row["PID1"]) # Pipe inner diameter at the socket 2.
 
+			part = coupling.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			# See Code in pipeCmd.makePipe in the Flamingo workbench.
+			feature = self.document.addObject("Part::FeaturePython", "OSE-Coupling")
+			import flCoupling
+			builder = flCoupling.CouplingBuilder(self.document)
+			builder.L = tu(row["L"])# Length of the coupling.
+			builder.M = tu(row["M"]) # Outer diameter of socket 1.
+			builder.M1 = tu(row["M1"]) # Outer diameter of socket 2.
+			builder.N = tu(row["N"]) # Lenght of the intemidate section of the coupling.
+			builder.POD = tu(row["POD"]) # Pipe outer diameter at the socket 1.
+			builder.PID = tu(row["PID"]) # Pipe inner diameter at the socket 1.
+			builder.POD1 = tu(row["POD1"])  # Pipe outer diameter at the socket 2.
+			builder.PID1 = tu(row["PID1"]) # Pipe inner diameter at the socket 2.
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+			feature.Label = partName
+    			return part
 
 # Test macros.
 def TestCoupling():
@@ -214,13 +235,14 @@ def TestTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	corner = OuterCornerFromTable(document, table)
+	builder = CouplingFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartName(i)
 		print("Creating part %s"%partName)
-		coupling.create(partName, True)
+		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
+
 
 #TestCoupling()
 #TestTable()

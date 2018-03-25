@@ -55,6 +55,8 @@ class Coupling(pypeType):
 		section on it thin part is not smaller than the walls of the sockets.
 		The size a2 does not come from some document or standard. It is only chosen to avoid thin walls
 		in the intermediate section of the coupling. Probably a2 must be even larger.
+		
+		a2 is positive if POD > POD1, it is negative if POD < POD2.
 		"""
 		N = obj.N
 		M = obj.M
@@ -120,9 +122,10 @@ class Coupling(pypeType):
 	
 	@staticmethod
 	def createInnerPartEqual(obj):
-		""" Create the inner part from cylinders. This is when PID and PID1 are the equal."""
+		""" Create the inner part from cylinders. This is when POD and P=D1 are the equal."""
 		SL = (obj.L-obj.N)/2 # The length of the inner part of the socket.
 		POD = obj.POD
+		PID = obj.PID
 		N = obj.N
 		
 		# Create lower inner cylinder.
@@ -208,4 +211,4 @@ def Test():
 	builder.create(feature)
 	document.recompute()
 	
-Test()
+#Test()

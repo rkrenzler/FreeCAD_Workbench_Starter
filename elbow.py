@@ -250,7 +250,7 @@ def TestElbowTable():
 		print("Creating part %s"%partName)
 		elbow.create(partName, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
-		break
+
 		
 
 #TestElbow()
