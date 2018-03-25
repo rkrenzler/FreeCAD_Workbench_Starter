@@ -138,10 +138,10 @@ class MainDialog(QtGui.QDialog):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and do nothing.
 		if self.document is None:
-			text = "I have not found any active document were I can create a corner fitting.\n"\
+			text = "I have not found any active document were I can create an elbow.\n"\
 				"Use menu File->New to create a new document first, "\
-				"then try to create the corner fitting again."
-			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the corner fitting failed.", text)
+				"then try to create the elbow again."
+			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the elbow failed.", text)
 			msgBox.exec_()
 			super(MainDialog, self).accept()
 			return
@@ -151,8 +151,8 @@ class MainDialog(QtGui.QDialog):
 
 		if partName is not None:
 			outputType = self.getOutputType()
-			elbow = ElbowFromTable(self.document, self.table)
-			part = elbow.create(partName, outputType)
+			builder = ElbowFromTable(self.document, self.table)
+			part = builder.create(partName, outputType)
 			if part is not None:
 				self.document.recompute()
 				# Save user input for the next dialog call.
