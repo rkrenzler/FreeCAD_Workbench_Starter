@@ -76,16 +76,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="checkBoxCreateSolid">
-     <property name="text">
-      <string>Create Solid</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item>
     <widget class="QTableView" name="tableViewParts">
      <property name="selectionMode">
       <enum>QAbstractItemView::SingleSelection</enum>
