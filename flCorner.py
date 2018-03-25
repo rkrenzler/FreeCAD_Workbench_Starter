@@ -108,4 +108,4 @@ def Test():
 	builder.create(feature)
 	document.recompute()
 	
-Test()
+#Test()

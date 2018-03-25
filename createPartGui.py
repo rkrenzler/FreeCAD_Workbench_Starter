@@ -20,11 +20,12 @@ class DialogParams:
 		self.document = None
 		self.table = None
 		self.dialogTitle = None
+		self.selectionDialogTitle = None
 		self.fittingType = None # Elbow, Tee, Coupling etc..
 		self.dimensionsPixmap = None
 		self.explanationText = None
 		self.settingsName = None
-
+		self.selectionMode = False
 
 class BaseDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
@@ -151,7 +152,7 @@ class BaseDialog(QtGui.QDialog):
 		It must return a part if succees and None if fail."""
 		pass
 
-	def accept(self):
+	def acceptCreationMode(self):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and do nothing.
 		if self.params.document is None:
@@ -182,6 +183,21 @@ class BaseDialog(QtGui.QDialog):
 			msgBox.setText("Select part")
 			msgBox.exec_()
 
+	def acceptSelectionMode(self):
+		self.selectedPart = self.getSelectedPartName()
+
+		if self.selectedPart is None:
+			msgBox = QtGui.QMessageBox()
+			msgBox.setText("Select part")
+			msgBox.exec_()
+		else:
+			super(BaseDialog, self).accept()
+	
+	def accept(self):
+		if self.params.selectionMode:
+			return self.acceptSelectionMode()
+		else:
+			self.acceptCreationMode()
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
@@ -217,6 +233,27 @@ class BaseDialog(QtGui.QDialog):
 		else: # Default is solid.
 			return piping.OUTPUT_TYPE_SOLID
 
+	def showForSelection(self, partName=None):
+		""" Show pipe dialog, to select pipe and not to create it.
+		:param partName: name of the part to be selected. Use None if you do not want to select
+		anything.
+		"""
+		# If required select
+		self.params.selectionMode = True
+		self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.selectionDialogTitle,
+					None, QtGui.QApplication.UnicodeUTF8))
+		self.selectedPart = None
+		if partName is not None:
+			self.selectPartByName(partName)
+		self.exec_()
+		return self.selectedPart
+		
+	def showForCreation(self):
+		self.params.selectionMode = False
+		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
+					None, QtGui.QApplication.UnicodeUTF8))
+		self.exec_()
+		
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):
 	# Check if the CSV file exists.
