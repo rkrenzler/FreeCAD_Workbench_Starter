@@ -19,7 +19,7 @@ tu = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "tee.csv")
 
-DIMENSIONS_USED = ["G", "G1", "G2", "H", "H1", "H2", "PID", "PID1", "POD", "POD1", "M", "M1"]
+DIMENSIONS_USED = ["G", "G1", "H", "H1", "PID", "PID1", "POD", "POD1", "M", "M1"]
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of a subtracted part
@@ -39,10 +39,8 @@ class Tee:
 		# Fill data with test values
 		self.G = tu("3 cm")
 		self.G1 = tu("3 cm")
-		self.G2 = tu("3 cm")
 		self.H = tu("4 cm") # It is L/2 for symetrical Tee. Why extra dimension?
 		self.H1 = tu("5 cm")
-		self.H2 = tu("6 cm")
 		self.PID = tu("2 cm")
 		self.PID1 = tu("1 in")
 		self.POD = tu("3 cm")
@@ -57,18 +55,17 @@ class Tee:
 			raise UnplausibleDimensions("It must hold outer diameter %s > Outer pipe diameter %s > Inner pipe diameter %s"%(self.M, self.POD, self.PID))
 		if not ( self.M1 > self.POD1 and self.POD1 > self.PID1 ):
 			raise UnplausibleDimensions("It must hold outer diameter %s > Outer pipe diameter %s > Inner pipe diameter %s"%(self.M1, self.POD1, self.PID1))
-		if not ( self.G > tu("0 mm") and self.G1 > tu("0 mm") and self.G2 > tu("0 mm")):
-			raise UnplausibleDimensions("Lengths G=%s, G1=%s, G=%s, must be positive"%(self.G, self.G1, self.G2))
+		if not ( self.G > tu("0 mm") and self.G1 > tu("0 mm"):
+			raise UnplausibleDimensions("Lengths G=%s, G1=%s, G=%s, must be positive"%(self.G, self.G1))
 		if not ( self.H > self.G):
 			raise UnplausibleDimensions("H=%s must be larger than G=%s."%(self.H, self.G))
 		if not ( self.H1 > self.G1):
 			raise UnplausibleDimensions("H1=%s must be larger than G1=%s."%(self.H1, self.G1))
-		if not ( self.H2 > self.G2):
-			raise UnplausibleDimensions("H2=%s must be larger than G2=%s."%(self.H2, self.G2))
+
 
 	def create(self, convertToSolid):
 		self.checkDimensions()
-		L = self.H+self.H2
+		L = 2*self.H
 		vertical_outer_cylinder = self.document.addObject("Part::Cylinder","VerticalOuterCynlider")
 		vertical_outer_cylinder.Radius = self.M1/2
 		vertical_outer_cylinder.Height = self.H1
@@ -105,8 +102,8 @@ class Tee:
 		
 		socket_right = self.document.addObject("Part::Cylinder","SocketRight")
 		socket_right.Radius = self.POD /2
-		socket_right.Height = (self.H2-self.G2)*(1+RELATIVE_EPSILON)
-		socket_right.Placement = FreeCAD.Placement(FreeCAD.Vector(self.G2,0,0), FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
+		socket_right.Height = (self.H-self.G)*(1+RELATIVE_EPSILON)
+		socket_right.Placement = FreeCAD.Placement(FreeCAD.Vector(self.G,0,0), FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		
 		socket_top = self.document.addObject("Part::Cylinder","SocketTop")
 		socket_top.Radius = self.POD1 /2
@@ -155,10 +152,8 @@ class TeeFromTable:
 			return
 		tee.G = tu(row["G"])
 		tee.G1 = tu(row["G1"])
-		tee.G2 = tu(row["G2"])
 		tee.H = tu(row["H"]) # It is L/2 for symetrical Tee. Why extra dimension?
 		tee.H1 = tu(row["H1"])
-		tee.H2 = tu(row["H2"])
 		tee.PID = tu(row["PID"])
 		tee.PID1 = tu(row["PID1"])
 		tee.POD = tu(row["POD"])
