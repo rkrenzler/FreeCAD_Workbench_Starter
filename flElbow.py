@@ -16,14 +16,13 @@ class Elbow(pypeType):
 		obj.PRating="ElbowFittingFromAnyCatalog"
 		obj.PSize=PSize # What is it for?
 		# define specific attributes
-		obj.addProperty("App::PropertyLength","M","Elbow","Outside diameter").M=M
-		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter").POD=POD
-		obj.addProperty("App::PropertyLength","PID","Elbow","Pipe Inside Diameter").PID=PID
-		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle").alpha=alpha
+		obj.addProperty("App::PropertyLength","M","Elbow","Outside diameter.").M=M
+		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter.").POD=POD
+		obj.addProperty("App::PropertyLength","PID","Elbow","Pipe Inside Diameter.").PID=PID
+		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle.").alpha=alpha
 		obj.addProperty("App::PropertyLength","H","Elbow","[..]").H=H
 		obj.addProperty("App::PropertyLength","J","Elbow","[..]").J=J
-		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position")
-		obj.Ports = self.getPorts(obj)
+		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
 #		FreeCAD.Console.PrintMessage("\n Init finished\n") 
