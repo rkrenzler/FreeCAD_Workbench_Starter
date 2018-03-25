@@ -11,7 +11,7 @@ import FreeCAD
 
 import OSEBase
 from coupling import *
-from piping import *
+import piping
 import pipingGui
 
 
@@ -23,6 +23,11 @@ class MainDialog(QtGui.QDialog):
 		self.document = document
 		self.table = table
 		self.initUi()
+		if piping.HasFlamingoSupport():
+			self.radioButtonFlamingo.setEnabled(True)			
+		else:
+			self.radioButtonFlamingo.setEnabled(False)
+			
 	def initUi(self): 
 		Dialog = self # Added 
 		self.result = -1 
@@ -51,6 +56,30 @@ class MainDialog(QtGui.QDialog):
 		Dialog.resize(803, 592)
 		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
 		self.verticalLayout.setObjectName("verticalLayout")
+		self.horizontalWidget = QtGui.QWidget(Dialog)
+		self.horizontalWidget.setMinimumSize(QtCore.QSize(0, 55))
+		self.horizontalWidget.setLayoutDirection(QtCore.Qt.LeftToRight)
+		self.horizontalWidget.setObjectName("horizontalWidget")
+		self.groupBox = QtGui.QGroupBox(self.horizontalWidget)
+		self.groupBox.setGeometry(QtCore.QRect(10, 0, 263, 58))
+		self.groupBox.setObjectName("groupBox")
+		self.horizontalLayout = QtGui.QHBoxLayout(self.groupBox)
+		self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
+		self.horizontalLayout.setObjectName("horizontalLayout")
+		self.radioButtonSolid = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonSolid.setEnabled(True)
+		self.radioButtonSolid.setChecked(True)
+		self.radioButtonSolid.setObjectName("radioButtonSolid")
+		self.horizontalLayout.addWidget(self.radioButtonSolid)
+		self.radioButtonFlamingo = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonFlamingo.setEnabled(False)
+		self.radioButtonFlamingo.setChecked(False)
+		self.radioButtonFlamingo.setObjectName("radioButtonFlamingo")
+		self.horizontalLayout.addWidget(self.radioButtonFlamingo)
+		self.radioButtonParts = QtGui.QRadioButton(self.groupBox)
+		self.radioButtonParts.setObjectName("radioButtonParts")
+		self.horizontalLayout.addWidget(self.radioButtonParts)
+		self.verticalLayout.addWidget(self.horizontalWidget)
 		self.checkBoxCreateSolid = QtGui.QCheckBox(Dialog)
 		self.checkBoxCreateSolid.setChecked(True)
 		self.checkBoxCreateSolid.setObjectName("checkBoxCreateSolid")
@@ -60,12 +89,17 @@ class MainDialog(QtGui.QDialog):
 		self.tableViewParts.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
 		self.tableViewParts.setObjectName("tableViewParts")
 		self.verticalLayout.addWidget(self.tableViewParts)
-		self.label = QtGui.QLabel(Dialog)
-		self.label.setText("")
-		self.label.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "coupling-dimensions.png"))
-		self.label.setAlignment(QtCore.Qt.AlignCenter)
-		self.label.setObjectName("label")
-		self.verticalLayout.addWidget(self.label)
+		self.labelExplanation = QtGui.QLabel(Dialog)
+		self.labelExplanation.setTextFormat(QtCore.Qt.AutoText)
+		self.labelExplanation.setWordWrap(True)
+		self.labelExplanation.setObjectName("labelExplanation")
+		self.verticalLayout.addWidget(self.labelExplanation)
+		self.labelImage = QtGui.QLabel(Dialog)
+		self.labelImage.setText("")
+		self.labelImage.setPixmap(os.path.join(OSEBase.IMAGE_PATH, "coupling-dimensions.png"))
+		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
+		self.labelImage.setObjectName("labelImage")
+		self.verticalLayout.addWidget(self.labelImage)
 		self.buttonBox = QtGui.QDialogButtonBox(Dialog)
 		self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
 		self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
@@ -79,7 +113,12 @@ class MainDialog(QtGui.QDialog):
 
 	def retranslateUi(self, Dialog):
 		Dialog.setWindowTitle(QtGui.QApplication.translate("Dialog", "Create coupling", None, QtGui.QApplication.UnicodeUTF8))
+		self.groupBox.setTitle(QtGui.QApplication.translate("Dialog", "Output type:", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonSolid.setText(QtGui.QApplication.translate("Dialog", "Solid", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonFlamingo.setText(QtGui.QApplication.translate("Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
+		self.radioButtonParts.setText(QtGui.QApplication.translate("Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
+		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", "<html><head/><body><p>To construct a coupling we use these dimensions, elbow only these dimensions are used: alpha, L, N,  M, M1, POD, POD1, PID, PID1. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
 	def initTable(self):
 		# Read table data from CSV
@@ -115,33 +154,57 @@ class MainDialog(QtGui.QDialog):
 
 		# Get suitable row from the the table.
 		partName = self.getSelectedPartName()
-		createSolid = self.checkBoxCreateSolid.isChecked()
+
 		if partName is not None:
+			outputType = self.getOutputType()
 			coupling = CouplingFromTable(self.document, self.table)
-			coupling.create(partName, createSolid)
-			self.document.recompute()
-			# Save user input for the next dialog call.
-			self.saveInput()
-			# Call parent class.
-			super(MainDialog, self).accept()
+			part = coupling.create(partName, outputType)
+			if part is not None:
+				self.document.recompute()
+				# Save user input for the next dialog call.
+				self.saveInput()
+				# Call parent class.
+				super(MainDialog, self).accept()
 		else:
 			msgBox = QtGui.QMessageBox()
 			msgBox.setText("Select part")
 			msgBox.exec_()
 
+
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
-		check = self.checkBoxCreateSolid.checkState()
-		settings.setValue("checkBoxCreateSolid", int(check))
+
+		if self.radioButtonFlamingo.isChecked():
+			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_FLAMINGO)
+		elif self.radioButtonParts.isChecked():
+			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_PARTS)
+		else : # Default is solid.
+			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID)
+
 		settings.setValue("LastSelectedPartName", self.getSelectedPartName())
 		settings.sync()
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(MainDialog.QSETTINGS_APPLICATION, MainDialog.QSETTINGS_NAME)
-		checkState = QtCore.Qt.CheckState(int(settings.value("checkBoxCreateSolid")))
-		self.checkBoxCreateSolid.setCheckState(checkState)
+		
+		output = int(settings.value("radioButtonsOutputType", OUTPUT_TYPE_SOLID))
+		if output == piping.OUTPUT_TYPE_FLAMINGO and HasFlamingoSupport():
+			self.radioButtonFlamingo.setChecked(True)			
+		elif  output == piping.OUTPUT_TYPE_PARTS:
+			self.radioButtonParts.setChecked(True)
+		else: # Default is solid. output == piping.OUTPUT_TYPE_SOLID
+			self.radioButtonSolid.setChecked(True)
+
 		self.selectPartByName(settings.value("LastSelectedPartName"))
+
+	def getOutputType(self):
+		if self.radioButtonFlamingo.isChecked():
+			return piping.OUTPUT_TYPE_FLAMINGO
+		elif self.radioButtonParts.isChecked():
+			return piping.OUTPUT_TYPE_PARTS
+		else: # Default is solid.
+			return piping.OUTPUT_TYPE_SOLID
 
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable():
