@@ -15,8 +15,8 @@ import OSEBase
 import piping
 import pipingGui
 
-class BaseDialogParameters:
-	def __init__():
+class DialogParams:
+	def __init__(self):
 		self.document = None
 		self.table = None
 		self.dialogTitle = None
@@ -24,13 +24,13 @@ class BaseDialogParameters:
 		self.dimensionsPixmap = None
 		self.explanationText = None
 		self.settingsName = None
-		self.cvsTablePath = None
+
 
 class BaseDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 
 	def __init__(self, params):
-		super(MainDialog, self).__init__()
+		super(BaseDialog, self).__init__()
 		self.params = params
 		self.initUi()
 		if piping.HasFlamingoSupport():
@@ -63,7 +63,7 @@ class BaseDialog(QtGui.QDialog):
 # access datata in some special FreeCAD directory.
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
-		Dialog.resize(803, 592)
+		Dialog.resize(800, 733)
 		self.verticalLayout = QtGui.QVBoxLayout(Dialog)
 		self.verticalLayout.setObjectName("verticalLayout")
 		self.horizontalWidget = QtGui.QWidget(Dialog)
@@ -128,11 +128,11 @@ class BaseDialog(QtGui.QDialog):
 		self.radioButtonFlamingo.setText(QtGui.QApplication.translate("Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
 		self.radioButtonParts.setText(QtGui.QApplication.translate("Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
 		self.checkBoxCreateSolid.setText(QtGui.QApplication.translate("Dialog", "Create Solid", None, QtGui.QApplication.UnicodeUTF8))
-		self.labelExplanation.setText(QtGui.QApplication.translate(self.params.explanationText, None, QtGui.QApplication.UnicodeUTF8))
+		self.labelExplanation.setText(QtGui.QApplication.translate("Dialog", self.params.explanationText, None, QtGui.QApplication.UnicodeUTF8))
 
 	def initTable(self):
 		# Read table data from CSV
-		self.model = pipingGui.PartTableModel(self.table.headers, self.table.data)
+		self.model = pipingGui.PartTableModel(self.params.table.headers, self.params.table.data)
 		self.tableViewParts.setModel(self.model)
 		
 	def getSelectedPartName(self):
@@ -150,7 +150,7 @@ class BaseDialog(QtGui.QDialog):
 			if row_i >= 0:
 				self.tableViewParts.selectRow(row_i)
 
-	def onCreateNewPart(self, document, table, partName, outputType):
+	def createNewPart(self, document, table, partName, outputType):
 		""" This function must be implement by the parent class.
 		
 		It must return a part if succees and None if fail."""
@@ -159,14 +159,14 @@ class BaseDialog(QtGui.QDialog):
 	def accept(self):
 		"""User clicked OK"""
 		# If there is no active document, show a warning message and do nothing.
-		if self.document is None:
+		if self.params.document is None:
 			text = "I have not found any active document were I can create an {0}.\n"\
 				"Use menu File->New to create a new document first, "\
 				"then try to create the {0} again.".format(self.params.fittingType)
 			msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the %s failed.".format(
 									self.params.fittingType), text)
 			msgBox.exec_()
-			super(MainDialog, self).accept()
+			super(BaseDialog, self).accept()
 			return
 
 		# Get suitable row from the the table.
@@ -174,13 +174,13 @@ class BaseDialog(QtGui.QDialog):
 
 		if partName is not None:
 			outputType = self.getOutputType()
-			part = self.onCreateNewPart(self.params.document, self.params.table, partName, outputType)
+			part = self.createNewPart(self.params.document, self.params.table, partName, outputType)
 			if part is not None:
-				self.document.recompute()
+				self.params.document.recompute()
 				# Save user input for the next dialog call.
 				self.saveInput()
 				# Call parent class.
-				super(MainDialog, self).accept()
+				super(BaseDialog, self).accept()
 				
 		else:
 			msgBox = QtGui.QMessageBox()
@@ -204,7 +204,7 @@ class BaseDialog(QtGui.QDialog):
 	def restoreInput(self):
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
 		
-		output = int(settings.value("radioButtonsOutputType", OUTPUT_TYPE_SOLID))
+		output = int(settings.value("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID))
 		if output == piping.OUTPUT_TYPE_FLAMINGO and HasFlamingoSupport():
 			self.radioButtonFlamingo.setChecked(True)			
 		elif  output == piping.OUTPUT_TYPE_PARTS:
@@ -225,15 +225,15 @@ class BaseDialog(QtGui.QDialog):
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):
 	# Check if the CSV file exists.
-	if os.path.isfile(CSV_TABLE_PATH) == False:
-		text = "This tablePath requires %s  but this file does not exist."%(self.params.cvsTablePath)
+	if os.path.isfile(tablePath) == False:
+		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
 		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, 
 			"Creating of the %s failed."%self.params.fittingName, text)
 		msgBox.exec_()
 		exit(1) # Error
 
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%self.params.cvsTablePath) 
-	table = CsvTable(dimensionsUsed)
+        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath) 
+	table = piping.CsvTable(dimensionsUsed)
 	table.load(tablePath)
 
 	if table.hasValidData == False:
@@ -246,7 +246,7 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 	return table
 
 #doc=FreeCAD.activeDocument()
-#table = GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#form = MainDialog(doc, table)
+#table = GuiCheckTable() # Open a CSV file, check its content, and return it as a piping.CsvTable object.
+#form = BaseDialog(doc, table)
 
 

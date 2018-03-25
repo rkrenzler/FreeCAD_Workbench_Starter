@@ -24,8 +24,10 @@
 #***************************************************************************
 
 import FreeCAD, Part, OSEBase
-import pipeGui, couplingGui, bushingGui, teeGui
+import couplingGui
+import pipeGui, bushingGui, teeGui
 import outerCornerGui, elbowGui, crossGui
+import createPartGui
 
 from FreeCAD import Gui
 
