@@ -27,6 +27,7 @@ import FreeCAD, Part, OSEBase
 import couplingGui
 import pipeGui, bushingGui, teeGui
 import cornerGui, elbowGui, crossGui
+import sweepElbowGui
 import createPartGui
 
 from FreeCAD import Gui
@@ -124,6 +125,28 @@ class OSE_CreateElbowClass():
         """Here you can define if the command must be active or not (greyed) if certain conditions
         are met or not. This function is optional."""
         return True
+        
+class OSE_CreateSweepElbowClass():
+
+    def GetResources(self):
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
+#                'Accel' : "Shift+S", # a default shortcut (optional)
+                'MenuText': "Add a sweep elbow",
+                'ToolTip' : "Adds a sweep elbow."}
+
+    def Activated(self):
+        "Do something here when button is clicked"
+        if Gui.ActiveDocument == None:
+            FreeCAD.newDocument()
+        doc=FreeCAD.activeDocument()
+	table = sweepElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	form = sweepElbowGui.MainDialog(doc, table)
+	form.exec_()
+
+    def IsActive(self):
+        """Here you can define if the command must be active or not (greyed) if certain conditions
+        are met or not. This function is optional."""
+        return True
 
 class OSE_CreateTeeClass():
 
@@ -198,6 +221,7 @@ Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass())
 Gui.addCommand('OSE_CreateCoupling', OSE_CreateCouplingClass())
 Gui.addCommand('OSE_CreateBushing', OSE_CreateBushingClass())
 Gui.addCommand('OSE_CreateElbow', OSE_CreateElbowClass())
+Gui.addCommand('OSE_CreateSweepElbow', OSE_CreateSweepElbowClass())
 Gui.addCommand('OSE_CreateTee', OSE_CreateTeeClass())
 Gui.addCommand('OSE_CreateCorner', OSE_CreateCornerClass())
 Gui.addCommand('OSE_CreateCross', OSE_CreateCrossClass())
