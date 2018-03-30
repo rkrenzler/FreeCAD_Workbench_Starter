@@ -187,6 +187,56 @@ class SweepElbow:
 				self.document.removeObject(name)
 			return solid
 		return group
+
+
+class SweepElbowFromTable:
+	"""Create a part with dimensions from CSV table."""
+	def __init__ (self, document, table):
+		self.document = document
+		self.table = table
+
+	@staticmethod
+	def getPThk(row):
+		""" For compatibility results, if there is no "Thk" dimension, calculate it
+		from "PID" and "POD" """
+		if not "PThk" in row.keys():
+			return parseQuantity((row["POD"]-row["PID"])/2.0)
+		else:
+			return parseQuantity(row["PThk"])
+
+	def create(self, partName, outputType):
+		row = self.table.findPart(partName)
+		if row is None:
+			print("Part not found")
+			
+		dims = Dimensions()
+		dims.G = parseQuantity(row["G"])
+		dims.H = parseQuantity(row["H"])
+		dims.M = parseQuantity(row["M"])
+		dims.POD = parseQuantity(row["POD"])
+		dims.Thk = SweepElbowFromTable.getPThk(row)
+
+
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			elbow = SweepElbow(self.document)
+			elbow.dims = dims
+			part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
+			part.Label = partName
+			return part
+		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			# See Code in pipeCmd.makePipe in the Flamingo workbench.
+			feature = self.document.addObject("Part::FeaturePython", "OSE-SweepElbow")
+			import flSweepElbow
+			builder = flSweepElbow.SweepElbowBuilder(self.document)
+			builder.dims = dims
+			part = builder.create(feature)	
+			feature.PRating = GetPressureRatingString(row)
+			feature.PSize = ""
+			feature.ViewObject.Proxy = 0
+			feature.Label = partName
+    			return part
+
+
 # Testing function.
 def TestSweepElbow():
 	document = FreeCAD.activeDocument()
@@ -194,5 +244,17 @@ def TestSweepElbow():
 	elbow.create(False)
 	document.recompute()
 
+def TestSweepElbowTable():
+	document = FreeCAD.activeDocument()
+	table = CsvTable(DIMENSIONS_USED)
+	table.load(CSV_TABLE_PATH)
+	elbow = SweepElbowFromTable(document, table)
+	for i in range(0, len(table.data)):
+		print("Selecting row %d"%i)
+		partName = table.getPartName(i)
+		print("Creating part %s"%partName)
+		elbow.create(partName, OUTPUT_TYPE_FLAMINGO)
+		document.recompute()
 
 #TestSweepElbow()
+TestSweepElbowTable()
