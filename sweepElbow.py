@@ -257,4 +257,4 @@ def TestSweepElbowTable():
 		document.recompute()
 
 #TestSweepElbow()
-TestSweepElbowTable()
+#TestSweepElbowTable()
