@@ -143,13 +143,13 @@ class SweepElbow:
 		# Calculate socket position.
 		p2 = FreeCAD.Vector(0,0,-self.dims.H)
 		socket1.Placement.Base = p2
-		# Calculate second socket (on the right).
+		# Calculate horizonal socket (on the right).
 		socket2 = self.document.addObject("Part::Cylinder","Socket2")
 		socket2.Radius = socketR
 		socket2.Height = a1
-		p3 = FreeCAD.Vector(self.dims.H-a1,0,0)
+		p4 = FreeCAD.Vector(self.dims.H-a1,0,0)
 		# Rotate the socket and bring it to the right end of the fitting.
-		socket2.Placement = FreeCAD.Placement(p3, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
+		socket2.Placement = FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		inner = self.document.addObject("Part::MultiFuse","Inner")
 		inner.Shapes = [bentPart, socket1, socket2]
 		group.addObject(inner)
@@ -187,7 +187,7 @@ class SweepElbow:
 				self.document.removeObject(name)
 			return solid
 		return group
-# Test macros.
+# Testing function.
 def TestSweepElbow():
 	document = FreeCAD.activeDocument()
 	elbow = SweepElbow(document)
@@ -195,4 +195,4 @@ def TestSweepElbow():
 	document.recompute()
 
 
-TestSweepElbow()
+#TestSweepElbow()

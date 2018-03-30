@@ -16,7 +16,7 @@ class Elbow(pypeType):
 		obj.PRating="ElbowFittingFromAnyCatalog"
 		obj.PSize=PSize # What is it for?
 		# define specific attributes
-		obj.addProperty("App::PropertyLength","M","Elbow","Outside diameter.").M=M
+		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
 		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter.").POD=POD
 		obj.addProperty("App::PropertyLength","PID","Elbow","Pipe Inside Diameter.").PID=PID
 		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle.").alpha=alpha
