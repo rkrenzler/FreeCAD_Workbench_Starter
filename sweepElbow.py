@@ -22,9 +22,8 @@ CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "sweep-elbow.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["H", "G", "M", "POD", "PThk"]
 
-class SweepElbow:
-	def __init__(self, document):
-		self.document = document
+class Dimensions:
+	def __init__(self):
 		# Init class with test values
 		self.G = parseQuantity("5 cm")
 		self.H = parseQuantity("6 cm")
@@ -32,19 +31,32 @@ class SweepElbow:
 		self.POD = parseQuantity("2 cm")
 		self.PThk = parseQuantity("0.5 cm")
 
-	def checkDimensions(self):
-		if not (self.POD > 0):
-			raise UnplausibleDimensions("Pipe outer diameter %s must be positive"%self.PID)
-		if not (self.PThk <= self.POD/2.0):
-			raise UnplausibleDimensions("Pipe thickness %s is too larger: larger than POD/2 %s."%(self.PThk, self.POD/2.0))
-		if not (self.M > self.POD):
-			raise UnplausibleDimensions("Socket outer diameter %s must be greater than pipe outer diameter =%s."%(self.M, self.POD))
+	def isValid(self):
 		fitThk = (self.M-self.POD)/2.0
-		if not (self.G > 0):
-			raise UnplausibleDimensions("Length G=%s must be larger than M/2 + fitting thickness (M-POD)/2 =%s."%(self.G,
-				self.M/2+fitTh))
-		if not (self.H > self.G):
-			raise UnplausibleDimensions("Length H=%s must be larger than G=%s"%(self.H, self.G))
+		errorMsg = ""
+		if not (self.POD > 0):
+			errorMsg = "Pipe outer diameter %s must be positive"%self.PID
+		elif not (self.PThk <= self.POD/2.0):
+			errorMsg = "Pipe thickness %s is too larger: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
+		elif not (self.M > self.POD):
+			errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s."%(self.M, self.POD)
+		elif not (self.G > 0):
+			errorMsg = "Length G=%s must be larger than M/2 + fitting thickness (M-POD)/2 =%s."%(self.G,
+				self.M/2+fitTh)
+		elif not (self.H > self.G):
+			errorMsg = "Length H=%s must be larger than G=%s"%(self.H, self.G)
+		return (len(errorMsg)==0, errorMsg)
+
+class SweepElbow:
+	def __init__(self, document):
+		self.document = document
+		self.dims = Dimensions()
+		# Init class with test values
+
+	def checkDimensions(self):
+		valid, msg = self.dims.isValid()
+		if not valid:
+			raise UnplausibleDimensions(msg)
 	
 	@staticmethod
 	def createBentCylinder(doc, group, r, l):
@@ -82,23 +94,23 @@ class SweepElbow:
 		See documentation picture sweep-elbow-cacluations.png.
 		"""
 		# Create a bent part.
-		bentPart = SweepElbow.createBentCylinder(self.document, group, self.POD/2.0, self.G)
+		bentPart = SweepElbow.createBentCylinder(self.document, group, self.dims.POD/2.0, self.dims.G)
 		# Create vertical socket (on the bottom).
 		socket1 = self.document.addObject("Part::Cylinder","Socket1")
 		# Calculate wall thickness of the fitting.
-		fitThk = (self.M - self.POD)/2.0
-		socket1.Radius = self.M/2.0
+		fitThk = (self.dims.M - self.dims.POD)/2.0
+		socket1.Radius = self.dims.M/2.0
 		# Calculate socket Height.
-		a2 = self.H - self.G + fitThk
+		a2 = self.dims.H - self.dims.G + fitThk
 		socket1.Height = a2
 		# Calculate socket position.
-		p2 = FreeCAD.Vector(0,0,-self.H)
+		p2 = FreeCAD.Vector(0,0,-self.dims.H)
 		socket1.Placement.Base = p2
 		# Calculate second socket (on the right).
 		socket2 = self.document.addObject("Part::Cylinder","Socket2")
-		socket2.Radius = self.M/2.0
+		socket2.Radius = self.dims.M/2.0
 		socket2.Height = a2
-		p3 = FreeCAD.Vector(self.H-a2,0,0)
+		p3 = FreeCAD.Vector(self.dims.H-a2,0,0)
 		# Rotate the socket and bring it to the right end of the fitting.
 		socket2.Placement = FreeCAD.Placement(p3, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		outer = self.document.addObject("Part::MultiFuse","Outer")
@@ -118,24 +130,24 @@ class SweepElbow:
 		"""
 
 		# Create a bent part.
-		socketR = self.POD/2.0
-		innerR = self.POD/2.0-self.PThk
-		bentPart = SweepElbow.createBentCylinder(self.document, group, innerR, self.G)
+		socketR = self.dims.POD/2.0
+		innerR = self.dims.POD/2.0-self.dims.PThk
+		bentPart = SweepElbow.createBentCylinder(self.document, group, innerR, self.dims.G)
 		# Create vertical socket (on the bottom).
 		socket1 = self.document.addObject("Part::Cylinder","Socket1")
 		# Calculate wall thickness of the fitting.
 		socket1.Radius = socketR
 		# Calculate socket Height.
-		a1 = self.H - self.G
+		a1 = self.dims.H - self.dims.G
 		socket1.Height = a1
 		# Calculate socket position.
-		p2 = FreeCAD.Vector(0,0,-self.H)
+		p2 = FreeCAD.Vector(0,0,-self.dims.H)
 		socket1.Placement.Base = p2
 		# Calculate second socket (on the right).
 		socket2 = self.document.addObject("Part::Cylinder","Socket2")
 		socket2.Radius = socketR
 		socket2.Height = a1
-		p3 = FreeCAD.Vector(self.H-a1,0,0)
+		p3 = FreeCAD.Vector(self.dims.H-a1,0,0)
 		# Rotate the socket and bring it to the right end of the fitting.
 		socket2.Placement = FreeCAD.Placement(p3, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		inner = self.document.addObject("Part::MultiFuse","Inner")
