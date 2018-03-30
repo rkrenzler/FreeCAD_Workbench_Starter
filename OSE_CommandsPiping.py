@@ -129,7 +129,7 @@ class OSE_CreateElbowClass():
 class OSE_CreateSweepElbowClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateSweepElbow.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a sweep elbow",
                 'ToolTip' : "Adds a sweep elbow."}
