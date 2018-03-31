@@ -42,7 +42,7 @@ class SweepElbow(pypeType):
 		# Vertical port on the bottom.
 		portV = FreeCAD.Vector(0,0,-obj.G)
 		# Horizonatl port on the right.
-		portH = FreeCAD.Vector(0,obj.G,0)
+		portH = FreeCAD.Vector(obj.G,0,0)
 
 		return [portV, portH]
 	
