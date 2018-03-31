@@ -49,7 +49,7 @@ class Tee(pypeType):
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
-		if prop in ["G", "G1"]:
+		if prop in ["G", "G1", "M"]:
 			# This function is called within __init__ too. Thus we need to wait untill 
 			# we have all the required attributes.
 			if "Ports" in obj.PropertiesList:
