@@ -17,14 +17,17 @@ class Elbow(pypeType):
 		obj.PSize=PSize # Pipe size
 		# define specific attributes
 		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
+		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
 		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter.").POD=POD
-		obj.addProperty("App::PropertyLength","PThk","SweepElbow","Pipe wall thickness").PThk=PThk
+		obj.addProperty("App::PropertyLength","PThk","Elbow","Pipe wall thickness").PThk=PThk
 		obj.addProperty("App::PropertyAngle","BendAngle","Elbow","Bend Angle.").BendAngle=BendAngle
-		obj.addProperty("App::PropertyLength","H","SweepElbow","Distance between the center and a elbow end").H=H
-		obj.addProperty("App::PropertyLength","J","SweepElbow","Distnace from the center to begin of innerpart of the socket").J=J
+		obj.addProperty("App::PropertyLength","H","Elbow","Distance between the center and a elbow end").H=H
+		obj.addProperty("App::PropertyLength","J","Elbow","Distnace from the center to begin of innerpart of the socket").J=J
 		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
+		obj.addProperty("App::PropertyString","PartNumber","Elbow","Part number").PartNumber=""
+		
 
 	def onChanged(self, obj, prop):
 		return
@@ -163,7 +166,7 @@ class ElbowBuilder:
 		self.dims = elbowMod.Dimensions()
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
 		self.document = document
-
+		
 	def create(self, obj):
 		"""Create an elbow. """
 #			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")

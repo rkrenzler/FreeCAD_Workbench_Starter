@@ -250,7 +250,7 @@ class ElbowFromTable:
 			elbow = Elbow(self.document)
 			elbow.dims = dims
 			part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
-			part.Label = partName
+			#part.Label = partName
 			return part
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
@@ -262,7 +262,8 @@ class ElbowFromTable:
 			feature.PRating = GetPressureRatingString(row)
 			feature.PSize = row["PSize"]
 			feature.ViewObject.Proxy = 0
-			feature.Label = partName
+			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
+			feature.PartNumber = partName
     			return part
 
 # Test macros.
