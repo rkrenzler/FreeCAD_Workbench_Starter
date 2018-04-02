@@ -41,6 +41,7 @@ class Elbow(pypeType):
 	@staticmethod
 	def extractDimensions(obj):
 		dims = elbowMod.Dimensions()
+		dims.BendAngle = obj.BendAngle
 		dims.H = obj.H
 		dims.J = obj.J
 		dims.M = obj.M
@@ -180,6 +181,7 @@ def TestElbow():
 	document = FreeCAD.activeDocument()
 	builder = ElbowBuilder(document)
 	feature = document.addObject("Part::FeaturePython","OSE-Elbow")
+	#builder.dims.BendAngle = FreeCAD.Units.parseQuantity("90 deg")
 	builder.create(feature)
 	document.recompute()
 	
