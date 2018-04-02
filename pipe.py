@@ -167,7 +167,7 @@ class PipeFromTable:
 			pipe.Thk = tu(row["Thk"])
 			pipe.H = length
 			part = pipe.create(outputType == OUTPUT_TYPE_SOLID)
-			part.Label = partName
+			#part.Label = partName
 			return part
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
@@ -180,7 +180,7 @@ class PipeFromTable:
 			feature.PRating = GetPressureRatingString(row)
 			feature.Profile = "" # Currently I do not know how to interprite table data as a profile.
 			feature.ViewObject.Proxy = 0
-			feature.Label = partName
+			#feature.Label = partName
     			return part
 
 # Test macros.
