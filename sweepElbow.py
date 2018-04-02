@@ -40,7 +40,7 @@ class Dimensions:
 			errorMsg = "Pipe thickness %s is too larger: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
 		elif not (self.M > self.POD):
 			errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s."%(self.M, self.POD)
-		elif not (self.G > 0):
+		elif not (self.G > self.M/2+fitTh):
 			errorMsg = "Length G=%s must be larger than M/2 + fitting thickness (M-POD)/2 =%s."%(self.G,
 				self.M/2+fitTh)
 		elif not (self.H > self.G):
@@ -51,7 +51,6 @@ class SweepElbow:
 	def __init__(self, document):
 		self.document = document
 		self.dims = Dimensions()
-		# Init class with test values
 
 	def checkDimensions(self):
 		valid, msg = self.dims.isValid()
@@ -200,7 +199,7 @@ class SweepElbowFromTable:
 		""" For compatibility results, if there is no "Thk" dimension, calculate it
 		from "PID" and "POD" """
 		if not "PThk" in row.keys():
-			return parseQuantity((row["POD"]-row["PID"])/2.0)
+			return (parseQuantity(row["POD"])-parseQuantity(row["PID"]))/2.0
 		else:
 			return parseQuantity(row["PThk"])
 
