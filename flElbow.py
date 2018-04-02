@@ -6,116 +6,168 @@
 import FreeCAD, Part
 from math import *
 from pipeFeatures import pypeType #the parent class
-
+import elbow as elbowMod
 
 class Elbow(pypeType):
-	def __init__(self, obj, PSize="90degBend20x10", alpha=90, M=30, POD=20, PID=10, H=30, J=20):
+	def __init__(self, obj, PSize="90degBend20x10", BendAngle=90, M=30, POD=20, PThk=10, H=30, J=20):
 		# run parent __init__ and define common attributes
 		super(Elbow,self).__init__(obj)
 		obj.PType="OSE_Elbow"
 		obj.PRating="ElbowFittingFromAnyCatalog"
-		obj.PSize=PSize # What is it for?
+		obj.PSize=PSize # Pipe size
 		# define specific attributes
 		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
 		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter.").POD=POD
-		obj.addProperty("App::PropertyLength","PID","Elbow","Pipe Inside Diameter.").PID=PID
-		obj.addProperty("App::PropertyAngle","alpha","Elbow","Bend Angle.").alpha=alpha
-		obj.addProperty("App::PropertyLength","H","Elbow","[..]").H=H
-		obj.addProperty("App::PropertyLength","J","Elbow","[..]").J=J
+		obj.addProperty("App::PropertyLength","PThk","SweepElbow","Pipe wall thickness").PThk=PThk
+		obj.addProperty("App::PropertyAngle","BendAngle","Elbow","Bend Angle.").BendAngle=BendAngle
+		obj.addProperty("App::PropertyLength","H","SweepElbow","Distance between the center and a elbow end").H=H
+		obj.addProperty("App::PropertyLength","J","SweepElbow","Distnace from the center to begin of innerpart of the socket").J=J
 		obj.addProperty("App::PropertyVectorList","Ports","Elbow","Ports relative position.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
-#		FreeCAD.Console.PrintMessage("\n Init finished\n") 
+
 	def onChanged(self, obj, prop):
+		return
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
-		if prop == "J" or prop == "alpha":
+		if prop == "J" or prop == "BendAngle":
 			# This function is called within __init__ too. Thus we need to wait untill 
 			# we have all the required attributes.
 			if "Ports" in obj.PropertiesList:
 				obj.Ports = self.getPorts(obj)
 
+	@staticmethod
+	def extractDimensions(obj):
+		dims = elbowMod.Dimensions()
+		dims.H = obj.H
+		dims.J = obj.J
+		dims.M = obj.M
+		dims.POD = obj.POD
+		dims.PThk = dims.PThk
+		return dims
+
+	@staticmethod
+	def createBentCylinder(obj, rCirc):
+		""" Create alpha° bent cylinder in x-z plane with radius r. 
+		
+		:param group: Group where to add created objects.
+		:param rCirc: Radius of the cylinder.
+		:param rBend: Distance from the bend center to the origin (0,0,0).
+		
+		See documentation picture elbow-cacluations.png
+		"""
+		# Convert alpha to degree value
+		dims = Elbow.extractDimensions(obj)
+		aux = dims.calculateAuxiliararyPoints()
+		p2 = aux["p2"]
+		p3 = aux["p3"]
+		p4 = aux["p4"]
+
+		alpha = float(dims.BendAngle.getValueAs("deg"))
+		rBend = dims.M/2.0
+		
+		# Calculate coordinates of the base circle.
+		base = Part.makeCircle(rCirc, p2)
+		
+		# Add trajectory
+		trajectory = Part.makeCircle(rBend, p3, FreeCAD.Vector(0,-1,0), 180-alpha,180)
+
+		# Add a cap (circle, at the other end of the bent cylinder).
+
+		cap = Part.makeCircle(rCirc, p4, p4)
+		# Sweep the circle along the trajectory.
+		sweep = Part.makeSweepSurface(trajectory, base)
+		# The sweep is only a 2D service consisting of walls only.
+		# Add circles on both ends of this wall.
+		end1=Part.Face(Part.Wire(base))
+		# Create other end.
+		end2=Part.Face(Part.Wire(cap))
+		solid = Part.Solid(Part.Shell([end1, sweep, end2]))
+		return solid
+		
+
+	@staticmethod
+	def createOuterPart(obj):
+		dims = Elbow.extractDimensions(obj)
+		aux = dims.calculateAuxiliararyPoints()
+		p1 = aux["p1"]
+		p2 = aux["p2"]
+		p4 = aux["p4"]
+		
+		r = dims.M/2
+		# For unknow reasons, witoutm the factor r*0.999999 the middle part disappears.
+		bentPart = Elbow.createBentCylinder(obj, r*0.99999)
+		# Create socket along the z axis.
+		h = float(dims.H)+p2.z
+		socket1 = Part.makeCylinder(r, h, p1)
+		# Create socket along the bent part.
+		socket2 = Part.makeCylinder(r, h, p4, p4)
+
+		outer = bentPart.fuse([socket1, socket2])
+		return outer
+		
+	@staticmethod
+	def createInnerPart(obj):
+		dims = Elbow.extractDimensions(obj)
+		aux = dims.calculateAuxiliararyPoints()
+		p1 = aux["p1"]
+		p2 = aux["p2"]
+		p4 = aux["p4"]
+		p6 = aux["p6"]
+
+		r = dims.POD/2-dims.PThk
+		
+		bentPart = Elbow.createBentCylinder(obj, r)
+		# Create a channel along the z axis.
+		h = float(dims.H)+p2.z
+		chan1 = Part.makeCylinder(r, h, p1)
+		# Create a channel along the bent part.
+		chan2 = Part.makeCylinder(r, h, p4, p4)
+		# Create corresponding socktes.
+		
+		rSocket = dims.POD/2
+		hSocket = dims.H-dims.J
+		socket1 = Part.makeCylinder(rSocket, hSocket, p1)
+		socket2 = Part.makeCylinder(rSocket, hSocket, p6, p6)
+		
+		inner = bentPart.fuse([chan1, chan2, socket1, socket2])
+		return inner
+		
+	@staticmethod	
+	def createShape(obj):
+		outer = Elbow.createOuterPart(obj)
+		inner = Elbow.createInnerPart(obj)
+		return outer.cut(inner)
+		return outer
+		
 	def execute(self,obj):
-		# define some convenient vector
-		Z=FreeCAD.Vector(0,0,1)
-		bisect=FreeCAD.Vector(1,1,0).normalize()
-		O=FreeCAD.Vector()
-		# building the elbow shape
-		M=float(obj.M)
-		alpha=float(obj.alpha)
-		H=float(obj.H)
-		J=float(obj.J)
-		PID=float(obj.PID)
-		POD=float(obj.POD)
-		c1=Part.makeCircle(M/2.0,O,Z.cross(bisect))
-		c2=c1.copy()
-		R=Part.makeCircle(M/2,bisect*(M/2.0),Z,225-alpha/2.0,225+alpha/2.0)
-		s1=Part.makeSweepSurface(R,c1)
-		c1.rotate(bisect*(M/2.0),Z,alpha/2.0)
-		b1=Part.Face(Part.Wire(c1))
-		n1=b1.normalAt(0,0).negative()*(H-M/2.0*sin(radians(alpha/2.0)))
-		s2=c1.extrude(n1)
-		b1.translate(n1)
-		c2.rotate(bisect*(M/2.0),Z,-alpha/2.0)
-		b2=Part.Face(Part.Wire(c2))
-		n2=b2.normalAt(0,0)*(H-M/2.0*sin(radians(alpha/2.0)))
-		s3=c2.extrude(n2)
-		b2.translate(n2)
-		sol=Part.Solid(Part.Shell([s1,s2,s3,b1,b2]))
-		n1.normalize(); n2.normalize()
-		# moving the shape so that (0,0,0) is the intersection of ports' axis
-		delta=M/2*(cos(radians(alpha/2))**-1-1)
-		sol.translate(bisect*delta)
-		b1.translate(bisect*delta)
-		b2.translate(bisect*delta)
-		####
-		for P,n in [(b1.CenterOfMass,n1),(b2.CenterOfMass,n2)]:
-			b=Part.Face(Part.Wire(Part.makeCircle(PID/2,P,n)))
-			sol=sol.cut(b.extrude(n*(M/2.0*sin(radians(alpha/2.0))-H)))
-			b=Part.Face(Part.Wire(Part.makeCircle(POD/2,P,n)))
-			sol=sol.cut(b.extrude(n*(J-H)))
-		# assign the shape to obj
-		# Rotate sol along the x axis, to put it into x-z plane.
-		# The code below does not work.
-		#sol.rotate(FreeCAD.Vector(0,0,0),FreeCAD.Vector(1,0,0),90)
-		obj.Shape=sol
-		# define Ports, i.e. where the tube have to be placed
-		obj.Ports=[n1*(J+delta),n2*(J+delta)]
+		# Create the shape of the tee.
+		shape = Elbow.createShape(obj)
+		obj.Shape = shape
+		# Recalculate ports.
+		obj.Ports = self.getPorts(obj)
 		
 	def getPorts(self, obj):
-		""" Calculate coordinates of the elbow's ports. """
-		# Oddtopus' implimentation use symmetric to the x-y axis in x-y plane.
-		rotAxis = FreeCAD.Vector(0,0,1) # Z axis
-		bisect=FreeCAD.Vector(1,1,0).normalize() # line to which the elbow is symmetric.
-		alpha=float(obj.alpha)
-		J=float(obj.J)
-		rot = FreeCAD.Rotation(FreeCAD.Vector(0,0,1), 90 - alpha/2.0)
-		port1 = rot.multVec(bisect)
-		port1.Length = J
-		rot = FreeCAD.Rotation(FreeCAD.Vector(0,0,1), -90 + alpha/2.0)
-		port2 = rot.multVec(bisect)
-		port2.Length = J
-		return [port1, port2]
+		dims = Elbow.extractDimensions(obj)
+		aux = dims.calculateAuxiliararyPoints()
+#	 	FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
+		return [aux["p5"], aux["p6"]]
+
 
 class ElbowBuilder:
 	""" Create elbow using flamingo. """
 	def __init__(self, document):
+		self.dims = elbowMod.Dimensions()
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
-		self.alpha = 90
-		self.Z = FreeCAD.Vector(0,0,1) # Rotation of the Z axis. Default -- no rotation.
-		self.H = 30
-		self.J = 20
-		self.M = 30
-		self.POD = 20
-		self.PID = 10
+		self.document = document
 
 	def create(self, obj):
 		"""Create an elbow. """
 #			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
-		elbow = Elbow(obj, PSize="", alpha=self.alpha, M=self.M, POD=self.POD,
-				PID=self.PID, H=self.H, J=self.J)
+		elbow = Elbow(obj, PSize="", BendAngle=self.dims.BendAngle, M=self.dims.M, POD=self.dims.POD,
+				PThk=self.dims.PThk, H=self.dims.H, J=self.dims.J)
 		obj.ViewObject.Proxy = 0
 		obj.Placement.Base = self.pos
 		#rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
@@ -123,3 +175,12 @@ class ElbowBuilder:
 		#feature.ViewObject.Transparency=70
 		return elbow
 
+# Test builder.
+def TestElbow():
+	document = FreeCAD.activeDocument()
+	builder = ElbowBuilder(document)
+	feature = document.addObject("Part::FeaturePython","OSE-Elbow")
+	builder.create(feature)
+	document.recompute()
+	
+#TestElbow()

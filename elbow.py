@@ -27,7 +27,7 @@ class Dimensions:
 	def __init__(self):
 		# Init class with test values
 		self.BendAngle = parseQuantity("45 deg")
-		self.H = parseQuantity("5 cm")
+		self.H = parseQuantity("3 cm")
 		self.J = parseQuantity("2 cm")
 		self.M = parseQuantity("3 cm")
 		self.POD = parseQuantity("2 cm")
@@ -56,8 +56,10 @@ class Dimensions:
 		"""
 		rBend = self.M/2.0
 		alpha = float(self.BendAngle.getValueAs("deg"))
-		distP5=self.J
-
+		J=self.J
+		H = self.H
+		
+		p1 = FreeCAD.Vector(0,0,-H)
 		p2 = FreeCAD.Vector(0,0,-math.tan(math.radians(alpha)/2)*rBend)
 		p3 = FreeCAD.Vector(rBend,0,p2.z)
 		# Calculate coordinates of the base cirle at the end of sweep.
@@ -69,11 +71,12 @@ class Dimensions:
 		aux = rot.multVec(aux)
 		p4 = aux + p3
 		
-		aux = FreeCAD.Vector(0,0,distP5)
+		p5 = FreeCAD.Vector(0,0,-J)
+		aux = FreeCAD.Vector(0,0,J)
 		rot = FreeCAD.Rotation(FreeCAD.Vector(0,1,0),alpha)
-		p5 = rot.multVec(aux)
+		p6 = rot.multVec(aux)
 	
-		return {"p2":p2, "p3":p3, "p4":p4, "p5":p5}
+		return {"p1":p1, "p2":p2, "p3":p3, "p4":p4, "p5":p5, "p6":p6}
 		
 		
 class Elbow:
@@ -85,8 +88,6 @@ class Elbow:
 		valid, msg = self.dims.isValid()
 		if not valid:
 			raise UnplausibleDimensions(msg)
-
-
 		
 	def createBentCylinder(self, group, rCirc):
 		""" Create alpha° bent cylinder in x-z plane with radius r. 
@@ -118,19 +119,6 @@ class Elbow:
 		trajectory.Angle1 = 180
 		trajectory.Placement = FreeCAD.Placement(p3, FreeCAD.Rotation(FreeCAD.Vector(1,0,0),90), FreeCAD.Vector(0,0,0))
 
-#		p4 = FreeCAD.Vector(0,0,math.cos(math.radians(alpha))*rBend)		
-#		# Calculate coordinates of the base cirle at the end of sweep.
-#		# It will be necessary to create a solid body base+walls+cap
-#		# Create an auxiliary vector, rotate around (0,0,0)
-#		# and translated it to the center of the bent trajectory.
-#		aux = FreeCAD.Vector(-p3.x,0,0)
-#		rot = FreeCAD.Rotation(FreeCAD.Vector(0,1,0),alpha)
-#		aux = rot.multVec(aux)
-#		p4 = aux + p3
-#		cap = doc.addObject("Part::Circle","Base")
-#		cap.Radius = rCirc
-#		cap.Placement =  FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),alpha), FreeCAD.Vector(0,0,0))
-
 		# Sweep the circle along the trajectory.
 		sweep = self.document.addObject('Part::Sweep','Sweep')
 		sweep.Sections = [base]
@@ -141,14 +129,15 @@ class Elbow:
 		
 	def createOuterPart(self, group):
 		aux = self.dims.calculateAuxiliararyPoints()
-		p4 = aux["p4"]
+		p1 = aux["p1"]
 		p2 = aux["p2"]
+		p4 = aux["p4"]
 		bentPart = self.createBentCylinder(group, self.dims.M/2)
 		# Create socket along the z axis.
 		socket1 = self.document.addObject("Part::Cylinder","OuterSocket1")
 		socket1.Radius = self.dims.M/2
 		socket1.Height = float(self.dims.H)+p2.z
-		socket1.Placement.Base = FreeCAD.Vector(0,0,-self.dims.H)
+		socket1.Placement.Base = p1
 		# Create socket along the bent part.
 		socket2 = self.document.addObject("Part::Cylinder","OuterSocket2")
 		socket2.Radius = socket1.Radius
@@ -164,7 +153,7 @@ class Elbow:
 		aux = self.dims.calculateAuxiliararyPoints()
 		p2 = aux["p2"]
 		p4 = aux["p4"]
-		p5 = aux["p5"]
+		p6 = aux["p6"]
 		pid = self.dims.POD-self.dims.PThk*2
 		bentPart = self.createBentCylinder(group, pid/2)
 		chan1 = self.document.addObject("Part::Cylinder","InnerChannel1")
@@ -185,7 +174,7 @@ class Elbow:
 		socket2 = self.document.addObject("Part::Cylinder", "Socket2")
 		socket2.Radius = socket1.Radius
 		socket2.Height = socket1.Height
-		socket2.Placement = FreeCAD.Placement(p5, FreeCAD.Rotation(FreeCAD.Vector(0,1,0), self.dims.BendAngle), FreeCAD.Vector(0,0,0))
+		socket2.Placement = FreeCAD.Placement(p6, FreeCAD.Rotation(FreeCAD.Vector(0,1,0), self.dims.BendAngle), FreeCAD.Vector(0,0,0))
 		
 		inner = self.document.addObject("Part::MultiFuse","Inner")
 		inner.Shapes = [bentPart, chan1, chan2, socket1, socket2]
@@ -297,4 +286,4 @@ def TestElbowTable():
 		document.recompute()
 		
 #TestElbow()
-TestElbowTable()
+#TestElbowTable()
