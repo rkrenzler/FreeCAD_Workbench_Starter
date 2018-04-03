@@ -40,9 +40,9 @@ class Dimensions:
 			errorMsg = "Pipe thickness %s is too larger: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
 		elif not (self.M > self.POD):
 			errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s."%(self.M, self.POD)
-		elif not (self.G > self.M/2+fitTh):
+		elif not (self.G > self.M/2+fitThk):
 			errorMsg = "Length G=%s must be larger than M/2 + fitting thickness (M-POD)/2 =%s."%(self.G,
-				self.M/2+fitTh)
+				self.M/2+fitThk)
 		elif not (self.H > self.G):
 			errorMsg = "Length H=%s must be larger than G=%s"%(self.H, self.G)
 		return (len(errorMsg)==0, errorMsg)
