@@ -8,6 +8,14 @@ from math import *
 from pipeFeatures import pypeType #the parent class
 import elbow as elbowMod
 
+
+# The value RELATIVE_EPSILON is used to slightly change the size of parts
+# to prevent problems with boolean operations.
+# Keep this value very small.
+# For example, the outer bent part of the elbow dissaperas when it has
+# the same radius as the cylinder at the ends.
+RELATIVE_EPSILON = 0.000001
+
 class Elbow(pypeType):
 	def __init__(self, obj, PSize="90degBend20x10", BendAngle=90, M=30, POD=20, PThk=10, H=30, J=20):
 		# run parent __init__ and define common attributes
@@ -101,7 +109,7 @@ class Elbow(pypeType):
 		
 		r = dims.M/2
 		# For unknow reasons, witoutm the factor r*0.999999 the middle part disappears.
-		bentPart = Elbow.createBentCylinder(obj, r*0.99999)
+		bentPart = Elbow.createBentCylinder(obj, r*(1+RELATIVE_EPSILON))
 		# Create socket along the z axis.
 		h = float(dims.H)+p2.z
 		socket1 = Part.makeCylinder(r, h, p1)
@@ -122,7 +130,7 @@ class Elbow(pypeType):
 
 		r = dims.POD/2-dims.PThk
 		
-		bentPart = Elbow.createBentCylinder(obj, r)
+		bentPart = Elbow.createBentCylinder(obj, r*(1+RELATIVE_EPSILON))
 		# Create a channel along the z axis.
 		h = float(dims.H)+p2.z
 		chan1 = Part.makeCylinder(r, h, p1)
