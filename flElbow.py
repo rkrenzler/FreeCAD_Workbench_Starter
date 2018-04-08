@@ -17,7 +17,6 @@ class Elbow(pypeType):
 		obj.PSize=PSize # Pipe size
 		# define specific attributes
 		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
-		obj.addProperty("App::PropertyLength","M","Elbow","Outer diameter of the elbow.").M=M
 		obj.addProperty("App::PropertyLength","POD","Elbow","Pipe Outer Diameter.").POD=POD
 		obj.addProperty("App::PropertyLength","PThk","Elbow","Pipe wall thickness").PThk=PThk
 		obj.addProperty("App::PropertyAngle","BendAngle","Elbow","Bend Angle.").BendAngle=BendAngle
@@ -30,7 +29,6 @@ class Elbow(pypeType):
 		
 
 	def onChanged(self, obj, prop):
-		return
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
@@ -144,7 +142,7 @@ class Elbow(pypeType):
 		outer = Elbow.createOuterPart(obj)
 		inner = Elbow.createInnerPart(obj)
 		return outer.cut(inner)
-		return outer
+		#return outer
 		
 	def execute(self,obj):
 		# Create the shape of the tee.
