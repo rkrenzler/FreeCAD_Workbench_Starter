@@ -271,7 +271,7 @@ def TestTable():
 		document.recompute()
 
 #TestCross()
-TestTable()
+#TestTable()
 
 
 
