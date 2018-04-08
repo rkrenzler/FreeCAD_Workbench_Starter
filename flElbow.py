@@ -33,10 +33,11 @@ class Elbow(pypeType):
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
+		dim_properties = ["BendAngle", "H", "J", "POD", "PThk"]
 		if prop == "J" or prop == "BendAngle":
 			# This function is called within __init__ too. Thus we need to wait untill 
 			# we have all the required attributes.
-			if "Ports" in obj.PropertiesList:
+			if set(dim_properties).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@staticmethod
