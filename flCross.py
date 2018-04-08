@@ -63,8 +63,8 @@ class Cross(pypeType):
 		dims.M1 = obj.M1
 		dims.POD = obj.POD
 		dims.POD1 = obj.POD1
-		dims.PThk = dims.PThk
-		dims.PThk1 = dims.PThk1
+		dims.PThk = obj.PThk
+		dims.PThk1 = obj.PThk1
 		return dims
 
 
