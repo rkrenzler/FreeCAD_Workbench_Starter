@@ -155,4 +155,4 @@ def TestPart():
 	builder.create(feature)
 	document.recompute()
 	
-TestPart()
+#TestPart()
