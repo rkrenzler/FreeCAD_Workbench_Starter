@@ -133,7 +133,7 @@ class CsvTable2:
 
 	Store the data as a list of rows. Each row is a list of values.
 	"""
-	def __init__(self, mandatoryDims=None, keyColumnName="PartName"):
+	def __init__(self, mandatoryDims=None, keyColumnName="PartNumber"):
 		"""
 		@param mandatoryDims: list of column names which must be presented in the CSV files apart
 		the "keyColumnName" column
@@ -174,7 +174,7 @@ class CsvTable2:
 
 	def hasNecessaryColumns(self):
 		""" Check if the data contains all the columns required to create a part."""
-		return all(h in self.headers for h in (self.mandatoryDims + self._keyColumnName))
+		return all(h in self.headers for h in (self.mandatoryDims + [self._keyColumnName]))
 
 	def findPart(self, key):
 		"""Return first row with with key (part name) as a dictionary."""
