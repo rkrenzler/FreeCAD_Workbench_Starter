@@ -48,7 +48,7 @@ class Elbow(pypeType):
 		dims.J = obj.J
 		dims.M = obj.M
 		dims.POD = obj.POD
-		dims.PThk = dims.PThk
+		dims.PThk = obj.PThk
 		return dims
 
 	@staticmethod
@@ -144,6 +144,7 @@ class Elbow(pypeType):
 		inner = Elbow.createInnerPart(obj)
 		return outer.cut(inner)
 		#return outer
+		#return inner
 		
 	def execute(self,obj):
 		# Create the shape of the tee.
