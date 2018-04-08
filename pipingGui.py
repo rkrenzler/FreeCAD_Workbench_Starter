@@ -9,6 +9,7 @@ class PartTableModel(QtCore.QAbstractTableModel):
 	def __init__(self, headers, data, parent=None, *args):
 		self.headers = headers
 		self.table_data = data
+		self.keyColumnName = None
 		QtCore.QAbstractTableModel.__init__(self, parent, *args) 
 	
 	def rowCount(self, parent): 
@@ -24,21 +25,24 @@ class PartTableModel(QtCore.QAbstractTableModel):
 			return None
 		return self.table_data[index.row()][index.column()] 
 
-	def getPartName(self, rowIndex):
-		name_index = self.headers.index("Name")
-		return self.table_data[rowIndex][name_index]
-
-	def getPartRowIndex(self, partName):
-		""" Return row index of the part with name partName.
-		:param :partName name of the part
-		:return: index of the first row whose part name is equal to partName
+	def getPartKey(self, rowIndex):
+		key_index = self.headers.index(self.keyColumnName)
+		return self.table_data[rowIndex][key_index]
+	
+	def getPartRowIndex(self, key):
+		""" Return row index of the part with key *key*.
+		
+		The *key* is usually refers to the part number.
+		:param key: Key of the part.
+		:return: Index of the first row whose key is equal to key
 				return -1 if no row find.
 		"""
-		name_index = self.headers.index("Name")
-		for row_i in range(name_index, len(self.table_data)):
-			if self.table_data[row_i][name_index] == partName:
+		key_index = self.headers.index(self.keyColumnName)
+		for row_i in range(key_index, len(self.table_data)):
+			if self.table_data[row_i][key_index] == key:
 				return row_i
 		return -1
+	
 	def headerData(self, col, orientation, role):
 		if orientation ==QtCore. Qt.Horizontal and role == QtCore.Qt.DisplayRole:
 			return self.headers[col]

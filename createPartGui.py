@@ -26,7 +26,8 @@ class DialogParams:
 		self.explanationText = None
 		self.settingsName = None
 		self.selectionMode = False
-
+		self.keyColumnName = "Name" # Old style column name for the unique ID of the part.
+		
 class BaseDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 
@@ -129,6 +130,7 @@ class BaseDialog(QtGui.QDialog):
 	def initTable(self):
 		# Read table data from CSV
 		self.model = pipingGui.PartTableModel(self.params.table.headers, self.params.table.data)
+		self.model.keyColumnName = self.params.keyColumnName
 		self.tableViewParts.setModel(self.model)
 		
 	def getSelectedPartName(self):
@@ -136,7 +138,7 @@ class BaseDialog(QtGui.QDialog):
 		if sel.isSelected:
 			if len(sel.selectedRows())> 0:
 				rowIndex = sel.selectedRows()[0].row()
-				return self.model.getPartName(rowIndex)
+				return self.model.getPartKey(rowIndex)
 		return None
 
 	def selectPartByName(self, partName):
@@ -276,6 +278,30 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 		exit(1) # Error
 
 	return table
+	
+# Before working with macros, try to load the dimension table.
+def GuiCheckTable2(tablePath, dimensionsUsed):
+	# Check if the CSV file exists.
+	if os.path.isfile(tablePath) == False:
+		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
+		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, 
+			"Creating of the part failed.", text)
+		msgBox.exec_()
+		exit(1) # Error
+
+        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath) 
+	table = piping.CsvTable2(dimensionsUsed)
+	table.load(tablePath)
+
+	if table.hasValidData == False:
+		text = 'Invalid %s.\n'\
+			'It must contain columns %s.'%(tablePath, ", ".join(dimensionsUsed))
+		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the part failed.", text)
+		msgBox.exec_()
+		exit(1) # Error
+
+	return table
+
 
 #doc=FreeCAD.activeDocument()
 #table = GuiCheckTable() # Open a CSV file, check its content, and return it as a piping.CsvTable object.
