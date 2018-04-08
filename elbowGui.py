@@ -16,7 +16,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dialogTitle = "Create Elbow"
 		params.fittingType = "Elbow"
 		params.dimensionsPixmap = "elbow-dimensions.png"
-		params.explanationText = "<html><head/><body><p>To construct an elbow only these dimensions are used: alpha, H, J, M, PID and POD. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
+		params.explanationText = "<html><head/><body><p>To construct an elbow only these dimensions are used: BendingAngle, H, J, M, POD, and PThk. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
 		params.settingsName = "elbow user input"
 		super(MainDialog, self).__init__(params)
 
