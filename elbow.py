@@ -34,12 +34,11 @@ class Dimensions:
 		self.PThk = parseQuantity("0.5 cm")
 
 	def isValid(self):
-		fitThk = (self.M-self.POD)/2.0
 		errorMsg = ""
 		if not (self.POD > 0):
-			errorMsg = "Pipe outer diameter %s must be positive"%self.PID
+			errorMsg = "Pipe outer diameter %s must be positive"%self.POD
 		elif not (self.PThk <= self.POD/2.0):
-			errorMsg = "Pipe thickness %s is too larger: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
+			errorMsg = "Pipe thickness %s is too larg: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
 		elif not (self.M > self.POD):
 			errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s."%(self.M, self.POD)
 		elif not (self.J > 0):
@@ -244,7 +243,7 @@ class ElbowFromTable:
 		dims.J = parseQuantity(row["J"])
 		dims.M = parseQuantity(row["M"])
 		dims.POD = parseQuantity(row["POD"])
-		dims.Thk = ElbowFromTable.getPThk(row)
+		dims.PThk = ElbowFromTable.getPThk(row)
 			
 		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
 			elbow = Elbow(self.document)
