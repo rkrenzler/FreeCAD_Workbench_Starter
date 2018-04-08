@@ -37,10 +37,24 @@ def nestedObjects(parent):
 			res += nestedObjects(o)
 		res.append(parent)
 	return res
-
+	
+def removePartWithChildren(document, part):
+	parts = nestedObjects(part)
+	# Document.removeObjects can remove multple objects, when we use
+	# parts directly. To prevent exceptions with deleted objects,
+	# use the name list instead.
+	names_to_remove = []
+	for part in parts:
+		if part.Name not in names_to_remove:
+			names_to_remove.append(part.Name)
+	for name in names_to_remove:
+		print("Deleting temporary objects %s."%name)
+		self.document.removeObject(name)
+				
 def toSolid(document, part, name):
 	"""Convert object to a solid.
-		Basically those are commands, which FreeCAD runs when a user converts a part to a solid.
+	
+	These are commands, which FreeCAD runs when a user converts a part to a solid.
 	"""
 	s = part.Shape.Faces
 	s = Part.Solid(Part.Shell(s))
