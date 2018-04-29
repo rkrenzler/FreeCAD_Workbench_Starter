@@ -36,10 +36,12 @@ class Coupling(pypeType):
 		# e.g. -> change PSize according the new alpha, PID and POD
 
 		dim_properties = [ "L", "M", "M1", "N"]
+		all_dims = ["L", "M", "M1", "N", "POD", "POD1", "PThk0", "PThk1"]
+		
 		if prop in dim_properties:
-			# This function is called within __init__ too. Thus we need to wait untill 
-			# we have all dimensions attributes.
-			if set(dim_properties).issubset(obj.PropertiesList):
+			# This function is called within __init__ too.
+			# We wait for all dimension.
+			if set(all_dims).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@classmethod
