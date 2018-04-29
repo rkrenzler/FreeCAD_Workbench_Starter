@@ -71,8 +71,8 @@ class Coupling(pypeType):
 		aux = dims.calculateAuxiliararyPoints()
 		""" Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
 		# Create complete outer cylinder.
-		radius = obj.dims.M/2
-		height = obj.dims.L
+		radius = dims.M/2
+		height = dims.L
 		outer = Part.makeCylinder(radius, height,aux["p1"])
 		return outer
 		
