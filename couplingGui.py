@@ -15,8 +15,9 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dialogTitle = "Create Coupling"
 		params.fittingType = "Coupling"
 		params.dimensionsPixmap = "coupling-dimensions.png"
-		params.explanationText = "<html><head/><body><p>To construct a coupling we use these dimensions, elbow only these dimensions are used: alpha, L, N,  M, M1, POD, POD1, PID, PID1. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
+		params.explanationText = "<html><head/><body><p>To construct a coupling we use these dimensions, elbow only these dimensions are used: alpha, L, N,  M, M1, POD, POD1, PThk, and PThk1. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
 		params.settingsName = "coupling user input"
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
@@ -24,6 +25,6 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 		
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(coupling.CSV_TABLE_PATH, coupling.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable2(coupling.CSV_TABLE_PATH, coupling.DIMENSIONS_USED)
 
 

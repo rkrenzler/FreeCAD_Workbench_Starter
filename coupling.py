@@ -306,5 +306,5 @@ def TestpartFromTable(partNumber, outputType):
 
 #TestCoupling()
 #TestTable()
-TestpartFromTable("429-249", OUTPUT_TYPE_PARTS)
+#TestpartFromTable("429-249", OUTPUT_TYPE_PARTS)
 
