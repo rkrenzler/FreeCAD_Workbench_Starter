@@ -18,7 +18,7 @@ parseQuantity = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "bushing.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["POD", "POD1", "PThk1", "PID", "L", "N"]
+DIMENSIONS_USED = ["POD", "POD1", "PThk1", "L", "N"]
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of a subtracted part
@@ -248,9 +248,9 @@ class BushingFromTable:
 		else:
 			return parseQuantity(row["PThk1"])
 			
-	def create(self, partName, outputType):
+	def create(self, partNumber, outputType):
 
-		row = self.table.findPart(partName)
+		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
 			return
@@ -272,8 +272,8 @@ class BushingFromTable:
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Bushing")
-			import flBushng
-			builder = flBushng.BushingBuilder(self.document)
+			import flBushing
+			builder = flBushing.BushingBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
