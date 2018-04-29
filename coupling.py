@@ -239,8 +239,8 @@ class CouplingFromTable:
 		self.document = document
 		self.table = table
 		
-	@staticmethod
-	def getPThk1(row):
+	@classmethod
+	def getPThk(cls, row):
 		""" For compatibility results, if there is no "PThk" dimension, calculate it
 		from "PID" and "POD" """
 		if not "PThk" in row.keys():
@@ -248,8 +248,8 @@ class CouplingFromTable:
 		else:
 			return parseQuantity(row["PThk"])
 
-	@staticmethod
-	def getPThk1(row):
+	@classmethod
+	def getPThk1(cls, row):
 		""" For compatibility results, if there is no "PThk1" dimension, calculate it
 		from "PID1" and "POD1" """
 		if not "PThk1" in row.keys():
@@ -271,8 +271,8 @@ class CouplingFromTable:
 		dims.N = parseQuantity(row["N"])
 		dims.POD = parseQuantity(row["POD"])
 		dims.POD1 = parseQuantity(row["POD1"])
-		dims.PThk = parseQuantity(row["PThk"])
-		dims.PThk1 = parseQuantity(row["PThk1"])
+		dims.PThk = self.getPThk(row)
+		dims.PThk1 = self.getPThk1(row)
 		
 		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
 			coupling = Coupling(self.document)
