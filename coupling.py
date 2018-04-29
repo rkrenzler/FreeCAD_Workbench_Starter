@@ -91,9 +91,9 @@ class Dimensions:
 		return self.socketDepthA5()-self.shiftA1()
 		
 	def calculateAuxiliararyPoints(self):
-		"""Calculate auxiliarary points which are used to build a cross from cylinders.
+		"""Calculate auxiliarary points which are used to build a coupling from cylinders and cones.
 		
-		See documentation picture cross-cacluations.png
+		See documentation picture coupling-cacluations.png
 		"""
 		result = {}
 		result["p1"] = FreeCAD.Vector(0,0,0)
@@ -160,7 +160,7 @@ class Coupling:
 
 	def createInnerPart(self):
 		# Create parts which must be removed from the coupling.
-		if self.dims.PID == self.dims.PID1:
+		if self.dims.PID() == self.dims.PID1():
 			return self.createInnerPartEqual()
 		else:
 			return self.createInnerPartReduced()
@@ -173,8 +173,8 @@ class Coupling:
 		cylinder1i.Height = self.dims.socketDepthA5()
 		cylinder1i.Placement.Base = FreeCAD.Vector(aux["p1"])
 		cylinder3i = self.document.addObject("Part::Cylinder","Cylinder3i")
-		cylinder3i.Radius = self.dims.PID()
-		cylinder3i.Height = self.dims.N
+		cylinder3i.Radius = self.dims.PID()/2
+		cylinder3i.Height = self.dims.L
 		cylinder3i.Placement.Base = FreeCAD.Vector(aux["p1"])
 		cylinder2i = self.document.addObject("Part::Cylinder","Cylinder2i")
 		cylinder2i.Radius = self.dims.POD1/2
@@ -190,15 +190,16 @@ class Coupling:
 		cylinder1i = self.document.addObject("Part::Cylinder","Cylinder1i")
 		cylinder1i.Radius = self.dims.POD/2
 		cylinder1i.Height = self.dims.socketDepthA5()
+		cylinder1i.Placement.Base = aux["p1"]
 		conei = self.document.addObject("Part::Cone","Cone")
 		conei.Radius1 = self.dims.PID()/2
 		conei.Radius2 = self.dims.PID1()/2
 		conei.Height = self.dims.N
-		conei.Placement.Base = FreeCAD.Vector(0,0,cylinder1i.Height)
+		conei.Placement.Base = aux["p2"]
 		cylinder2i = self.document.addObject("Part::Cylinder","Cylinder2i")
 		cylinder2i.Radius = self.dims.POD1/2
 		cylinder2i.Height = self.dims.socketDepthA5()
-		cylinder2i.Placement.Base = FreeCAD.Vector(0,0,cylinder1i.Height+conei.Height)
+		cylinder2i.Placement.Base = aux["p3"]
 		inner = self.document.addObject("Part::MultiFuse","InnerParts")
 		inner.Shapes = [cylinder1i, conei, cylinder2i]
 		return inner
@@ -237,9 +238,10 @@ class CouplingFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, outputType):
+		
+	def create(self, partNumber, outputType):
 		coupling = Coupling(self.document)
-		row = self.table.findPart(partName)
+		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
 			return
@@ -264,16 +266,15 @@ class CouplingFromTable:
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Coupling")
-			import flCross
-			builder = flCross.CrossBuilder(self.document)
+			import flCoupling
+			builder = flCoupling.CouplingBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
 			feature.PSize = row["PSize"] # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
-			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
 			feature.PartNumber = partNumber
-    			return part
+   			return part
 
 # Test macros.
 def TestCoupling():
@@ -294,7 +295,16 @@ def TestTable():
 		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
 
+def TestpartFromTable(partNumber, outputType):
+	document = FreeCAD.activeDocument()
+	table = CsvTable2(DIMENSIONS_USED)
+	table.load(CSV_TABLE_PATH)
+	builder = CouplingFromTable(document, table)
+	print("Creating part %s"%partNumber)
+	builder.create(partNumber, outputType)
+	document.recompute()
 
 #TestCoupling()
 #TestTable()
+TestpartFromTable("429-249", OUTPUT_TYPE_PARTS)
 
