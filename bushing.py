@@ -13,12 +13,12 @@ import Part
 import OSEBase
 from piping import *
 
-tu = FreeCAD.Units.parseQuantity
+parseQuantity = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "bushing.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["POD", "PID1", "POD1", "L", "N"]
+DIMENSIONS_USED = ["POD", "POD1", "PThk1", "PID", "L", "N"]
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of a subtracted part
@@ -31,37 +31,85 @@ DIMENSIONS_USED = ["POD", "PID1", "POD1", "L", "N"]
 # Maybe there is no more problems with boolean operations.
 RELATIVE_EPSILON = 0.1
 
+# !!Warming: Several dimensions are not from specifications, they are just generated to "look nice".
+# Be cariful if you need a bushing with particular mechanical properties.
+# The unknown dimensions are of the inner cone and of the hexadecimal/octoganal thing.
+class Dimensions:
+	def __init__(self):
+		""" Inititialize with test dimensions."""
+		self.POD = parseQuantity("4 cm")
+		self.POD1 = parseQuantity("2 cm")
+		self.PThk1 = parseQuantity("0.5 cm")
+		self.N = parseQuantity("2 cm")
+		self.L = parseQuantity("3 cm")
+		
+	def isValid(self):
+		errorMsg = ""
+		if not (self.POD > 0):
+			errorMsg = "Pipe outer diameter %s must be positive."%self.POD
+		elif not (self.POD1 > 0):
+			errorMsg = "Other pipe outer diameter %s must be positive."%self.POD
+		elif not (self.PThk1 <= self.POD1/2.0):
+			errorMsg = "Pipe thickness PThk1 %s is too larg: larger than POD1/2 %s."%(self.PThk1, self.POD1/2.0)
+		elif not ( self.N > 0):
+			raise UnplausibleDimensions("Length N=%s must be positive"%self.N)
+		elif not ( self.L > self.N):
+			raise UnplausibleDimensions("The length L %s must be larger than the length N %s"%(self.L, self.N))
+		return (len(errorMsg)==0, errorMsg )
+
+	def PID1(self):
+		return self.POD1 - self.PThk1*2
+		
+	def ThingThicknessA1(self):
+		"""Return thickness of a hexagonal or octoganal thing."""
+
+		# This dimension is missing in specification.		
+		# I just take a half of (L-N)
+		return (self.L-self.N)/2.0
+		
+	def ThingLengthA2(self):
+		"""Return distance between paralal sides of a x-gonal thing."""
+		# This dimension is missing in specification.
+		# I just take 1.2 of the outer diameter of the larger pipe
+		return self.POD*1.1
+		
+	def ThicknessA3(self):
+		# I do not know this dimension. I just return pipe thickness of the other end.
+		return self.PThk1
+	
+	def ConeLengthA4(self):
+		# I do know this dimensions. I just use half of N
+		return self.N/2.0
+
+	def auxiliararyPoints(self):
+		"""Calculate auxiliarary points which are used to build a cross from cylinders.
+		
+		See documentation picture bushing-cacluations.png
+		"""
+		result = {}
+		result["p1"] = FreeCAD.Vector(0,0,0)
+		result["p2"] = FreeCAD.Vector(0,0, self.ConeLengthA4())
+		result["p3"] = FreeCAD.Vector(0,0, self.N)
+		result["p4"] = FreeCAD.Vector(0,0, self.L-self.ThingThicknessA1())
+
+		return result
+
 
 class Bushing:
 	def __init__(self, document):
 		self.document = document
-		self.POD = tu("4 cm")
-		self.PID1 = tu("1 cm")
-		self.POD1 = tu("2 cm")
-		self.N = tu("2 cm")
-		self.L = tu("3 cm")
-		
+		self.dims = Dimensions()
+
 	def checkDimensions(self):
-		if not ( self.POD > tu("0 mm") and self.PID1 > tu("0 mm") ):
-			raise UnplausibleDimensions("Pipe dimensions must be positive. They are POD=%s and PID1=%s instead"%(self.POD, self.PID1))
-		if not ( self.POD1 > self.PID1):
-			raise UnplausibleDimensions("Outer diameter POD1 %s must be larger than inner diameter PID1 %s"%(self.POD1, self.PID1))
-		if not ( self.N > 0):
-			raise UnplausibleDimensions("Length N=%s must be positive"%self.N)
-		if not ( self.POD > self.POD1):
-			raise UnplausibleDimensions("Outer diameter of the larger pipe PID %s must be larger than outer diameter of the smaller pipe POD1 %s."%(self.POD, self.PID1))
-		if not ( self.L > self.N):
-			raise UnplausibleDimensions("The length L %s must be larger than the length N %s"%(self.L, self.N))
+		valid, msg = self.dims.isValid()
+		if not valid:
+			raise UnplausibleDimensions(msg)
 
 	def createHexaThing(self):
-		# Create hexagonal thing. I do not know its name.
-
-		# I do not know how to calculate X, there fore I just
-		# take a half of (L-N)
-		X1 = (self.L-self.N)/2
-		# I also do not know what is the size of the thing.
-		# I take 1.2 of the outer diameter of the larger pipe
-		X2 = self.POD*1.1
+		"""Create hexagonal thing. I do not know its name."""
+		aux = self.dims.auxiliararyPoints()
+		X1 = self.dims.ThingThicknessA1()
+		X2 = self.dims.ThingLengthA2()
 		box1 = self.document.addObject("Part::Box","Box")
 		box1.Height = X1
 		box1.Length = X2
@@ -86,18 +134,14 @@ class Bushing:
 		common = self.document.addObject("Part::MultiCommon","Common")
 		common.Shapes = [box1,box2,box3]
 		# Put the thing at the top of the bushing
-		common.Placement.Base = FreeCAD.Vector(0,0,self.L-X1)
+		common.Placement.Base = aux["p4"]
 		return common
 
 	def createOctaThing(self):
-		# Create Octagonal thing. I do not know its name.
-
-		# I do not know how to calculate X, there fore I just
-		# take a half of (L-N)
-		X1 = (self.L-self.N)/2
-		# I also do not know what is the size of the thing.
-		# I take 1.2 of the inner diameter of the larger pipe
-		X2 = self.POD*1.1
+		"""Create Octagonal thing. I do not know its name."""
+		aux = self.dims.auxiliararyPoints()
+		X1 = self.dims.ThingThicknessA1()
+		X2 = self.dims.ThingLengthA2()
 		box1 = self.document.addObject("Part::Box","Box")
 		box1.Height = X1
 		box1.Length = X2
@@ -116,43 +160,51 @@ class Bushing:
 		common = self.document.addObject("Part::MultiCommon","Common")
 		common.Shapes = [box1,box2,]
 		# Put the thing at the top of the bushing
-		common.Placement.Base = FreeCAD.Vector(0,0,self.L-X1)
+		common.Placement.Base = aux["p4"]
 		return common
 
 	def createOuterPart(self):
+		aux = self.dims.auxiliararyPoints()
 		outer_cylinder = self.document.addObject("Part::Cylinder","OuterCynlider")
-		outer_cylinder.Radius = self.POD/2
-		outer_cylinder.Height = self.L
+		outer_cylinder.Radius = self.dims.POD/2
+		outer_cylinder.Height = self.dims.L
+		outer_cylinder.Placement.Base=aux["p1"]
 		thing = self.createOctaThing()
 		# Bind two parts.
 		fusion = self.document.addObject("Part::MultiFuse","Fusion")
 		fusion.Shapes = [outer_cylinder,thing,]
 		return fusion
 
+	def createInnerPart(self):
+		aux = self.dims.auxiliararyPoints()
+		# Create central cilinder.
+		inner_cylinder = self.document.addObject("Part::Cylinder","OuterCynlider")
+		inner_cylinder.Radius = self.dims.PID1()/2
+		inner_cylinder.Height = self.dims.L
+		inner_cylinder.Placement.Base = aux["p1"]
+		# Add upper sucket (left on the picture)
+		inner_socket = self.document.addObject("Part::Cylinder","OuterCynlider")
+		inner_socket.Radius = self.dims.POD1/2
+		inner_socket.Height = self.dims.L - self.dims.N
+		inner_socket.Placement.Base = aux["p3"]
+
+		# Make a cone for a larger socket. These dimension are missing in documentation use
+		# -- the Dimension class will try to create them to look nice. But there is no guaranty
+		# that the cone will have desired mechanical properties.
+		socket_cone = self.document.addObject("Part::Cone","Cone")
+		socket_cone.Radius2 = self.dims.PID1()/2
+		socket_cone.Radius1 = self.dims.POD/2 - self.dims.ThicknessA3()
+		socket_cone.Height = self.dims.ConeLengthA4()
+		socket_cone.Placement.Base = aux["p1"]
+		inner = self.document.addObject("Part::MultiFuse","Fusion")
+		inner.Shapes = [inner_cylinder,inner_socket,socket_cone]
+		return inner
+				
 	def create(self, convertToSolid):
 		self.checkDimensions()
 		outer = self.createOuterPart()
-		# Remove inner part of the sockets.
-		inner_cylinder = self.document.addObject("Part::Cylinder","OuterCynlider")
-		inner_cylinder.Radius = self.PID1/2
-		inner_cylinder.Height = self.L
+		inner = self.createInnerPart()
 
-		inner_socket = self.document.addObject("Part::Cylinder","OuterCynlider")
-		inner_socket.Radius = self.POD1/2
-		inner_socket.Height = self.L - self.N
-		inner_socket.Placement.Base = FreeCAD.Vector(0,0,self.N)
-
-		# Make a cone for a larger socket. There are no dimensions for this con. There fore 
-		# use simbolically a Radius such that the wall at the lower end is twice as thick
-		# as in the upper end of socket.
-		W2 = (self.POD-self.PID1)/2
-		socket_cone = self.document.addObject("Part::Cone","Cone")
-		socket_cone.Radius2 = self.PID1/2
-		socket_cone.Radius1 = self.PID1/2 + W2/2
-		socket_cone.Height = self.N/2 # I do not know what the hight of the cone should be.
-						# I just take a half. 
-		inner = self.document.addObject("Part::MultiFuse","Fusion")
-		inner.Shapes = [inner_cylinder,inner_socket,socket_cone]
 		bushing = self.document.addObject("Part::Cut","Cut")
 		bushing.Base = outer
 		bushing.Tool = inner
@@ -186,43 +238,49 @@ class BushingFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
+		
+	@classmethod
+	def getPThk1(cls, row):
+		""" For compatibility results, if there is no "Thk1" dimension, calculate it
+		from "PID1" and "POD1" """
+		if not "PThk" in row.keys():
+			return (parseQuantity(row["POD1"])-parseQuantity(row["PID1"]))/2.0
+		else:
+			return parseQuantity(row["PThk1"])
+			
 	def create(self, partName, outputType):
-		bushing = Bushing(self.document)
+
 		row = self.table.findPart(partName)
 		if row is None:
 			print("Part not found")
 			return
-		bushing.POD = tu(row["POD"])
-		bushing.PID1 = tu(row["PID1"])
-		bushing.POD1 = tu(row["POD1"])
-		bushing.N = tu(row["N"])
-		bushing.L = tu(row["L"])
+		dims = Dimensions()
+		
+		dims.N = parseQuantity(row["N"])
+		dims.L = parseQuantity(row["L"])
+		dims.POD = parseQuantity(row["POD"])
+		dims.POD1 = parseQuantity(row["POD1"])
+		dims.PThk1 = self.getPThk1(row)
 
 		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
-			bushing.POD = tu(row["POD"])
-			bushing.PID1 = tu(row["PID1"])
-			bushing.POD1 = tu(row["POD1"])
-			bushing.N = tu(row["N"])
-			bushing.L = tu(row["L"])
-
+			bushing = Bushing(self.document)
+			bushing.dims = dims
 			part = bushing.create(outputType == OUTPUT_TYPE_SOLID)
-			part.Label = partName
+			part.Label = "OSE-Bushing"
 			return part
 
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
+			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Bushing")
-			import flBushing
-			builder = flBushing.BushingBuilder(self.document)
-			builder.POD = tu(row["POD"])
-			builder.PID1 = tu(row["PID1"])
-			builder.POD1 = tu(row["POD1"])
-			builder.N = tu(row["N"])
-			builder.L = tu(row["L"])
+			import flBushng
+			builder = flBushng.BushingBuilder(self.document)
+			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
-			feature.PSize = ""
+			feature.PSize = row["PSize"] # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
-			feature.Label = partName
+			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
+			feature.PartNumber = partNumber
     			return part
 
 
@@ -230,22 +288,21 @@ class BushingFromTable:
 def TestBushing():
 	document = FreeCAD.activeDocument()
 	bushing = Bushing(document)
-	bushing.create(True)
+	bushing.create(False)
 	document.recompute()
 
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = CsvTable2(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = BushingFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
-		partName = table.getPartName(i)
-		print("Creating part %s"%partName)
-		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
+		partNumber = table.getPartKey(i)
+		print("Creating part %s"%partNumber)
+		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
-		break
-
+		
 #TestBushing()
 #TestTable()
 
