@@ -14,7 +14,7 @@ class Coupling(pypeType):
 		# Run parent __init__ and define common attributes
 		super(Coupling, self).__init__(obj)
 		obj.PType="OSE_Coupling"
-		obj.PRating="CoupleFittingFromAnyCatalog"
+		obj.PRating="CouplingFittingFromAnyCatalog"
 		obj.PSize=PSize # Pipe size
 		# Define specific attributes and set their values.
 		obj.addProperty("App::PropertyLength","L","Coupling","Length of the coupling").L=dims.L
@@ -35,7 +35,7 @@ class Coupling(pypeType):
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
-		dim_properties = [ "L", "M", "M1", "N", "POD", "POD1", "PThk", "PThk1"]
+		dim_properties = [ "L", "M", "M1", "N"]
 		if prop in dim_properties:
 			# This function is called within __init__ too. Thus we need to wait untill 
 			# we have all dimensions attributes.
