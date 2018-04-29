@@ -115,7 +115,7 @@ class Coupling(pypeType):
 		cylinder1i = Part.makeCylinder(dims.POD/2, height1)
 		# Create intermediatiate inner cylinder (from beginning to the end of the complete socket).
 		height2 = dims.L
-		cylinder2i = Part.makeCylinder(dims.PID()/2, height2, FreeCAD.Vector(aux["p1"]))
+		cylinder2i = Part.makeCylinder(dims.PID()/2, height2, aux["p1"])
 		# Create an upper inner cylinder.
 		cylinder3i = Part.makeCylinder(dims.POD/2, height1, aux["p3"])
 		inner = cylinder1i.fuse([cylinder2i, cylinder3i])
