@@ -41,7 +41,7 @@ class Dimensions:
 		if not (self.POD > 0):
 			errorMsg = "Pipe outer diameter %s must be positive."%self.POD
 		elif not (self.PThk <= self.POD/2.0):
-			errorMsg = "Pipe thickness PThk %s is too larg: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
+			errorMsg = "Pipe thickness PThk %s is too large: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
 		if not (self.POD1 > 0):
 			errorMsg = "Other pipe outer diameter %s must be positive."%self.POD
 		elif not (self.PThk1 <= self.POD/2.0):

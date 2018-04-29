@@ -30,10 +30,9 @@ class Cross(pypeType):
 		obj.addProperty("App::PropertyLength","POD1","Cross","Pipe outer Diameter of the vertical part.").POD1=dims.POD1
 		obj.addProperty("App::PropertyLength","PThk","Cross","Pipe wall thickness of the horizonal part").PThk=dims.PThk
 		obj.addProperty("App::PropertyLength","PThk1","Cross","Pipe wall thickness of the vertical part").PThk1=dims.PThk1
-		# Make Ports read only.
-		obj.setEditorMode("Ports", 1)
 		obj.addProperty("App::PropertyString","PartNumber","Cross","Part number").PartNumber=""
-		
+		# Make Ports read only.
+		obj.setEditorMode("Ports", 1)		
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
@@ -72,13 +71,10 @@ class Cross(pypeType):
 	def createOuterPart(cls, obj):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		p1 = aux["p1"]
-		p4 = aux["p4"]
-		
 		hr = dims.M/2
-		hor_cylinder = Part.makeCylinder(hr, dims.L, p1, FreeCAD.Vector(1,0,0))
+		hor_cylinder = Part.makeCylinder(hr, dims.L, aux["p1"], FreeCAD.Vector(1,0,0))
 		vr = dims.M1/2
-		vert_cylinder = Part.makeCylinder(vr, dims.L1, p4)
+		vert_cylinder = Part.makeCylinder(vr, dims.L1, aux["p4"])
 		outer = hor_cylinder.fuse(vert_cylinder)
 		return outer
 		
