@@ -239,6 +239,24 @@ class CouplingFromTable:
 		self.document = document
 		self.table = table
 		
+	@staticmethod
+	def getPThk1(row):
+		""" For compatibility results, if there is no "PThk" dimension, calculate it
+		from "PID" and "POD" """
+		if not "PThk" in row.keys():
+			return (parseQuantity(row["POD"])-parseQuantity(row["PID"]))/2.0
+		else:
+			return parseQuantity(row["PThk"])
+
+	@staticmethod
+	def getPThk1(row):
+		""" For compatibility results, if there is no "PThk1" dimension, calculate it
+		from "PID1" and "POD1" """
+		if not "PThk1" in row.keys():
+			return (parseQuantity(row["POD1"])-parseQuantity(row["PID1"]))/2.0
+		else:
+			return parseQuantity(row["PThk1"])
+			
 	def create(self, partNumber, outputType):
 		coupling = Coupling(self.document)
 		row = self.table.findPart(partNumber)

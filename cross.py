@@ -205,7 +205,7 @@ class CrossFromTable:
 	def getPThk1(row):
 		""" For compatibility results, if there is no "Thk1" dimension, calculate it
 		from "PID1" and "POD1" """
-		if not "PThk" in row.keys():
+		if not "PThk1" in row.keys():
 			return (parseQuantity(row["POD1"])-parseQuantity(row["PID1"]))/2.0
 		else:
 			return parseQuantity(row["PThk1"])
