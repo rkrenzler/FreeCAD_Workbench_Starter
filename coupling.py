@@ -139,7 +139,6 @@ class Coupling:
 		# Create socket 1.
 		cylinder1 = self.document.addObject("Part::Cylinder","Cylinder1")
 		cylinder1.Radius = self.dims.M/2
-		a1 = self.dims.shiftA1()
 		cylinder1.Height = self.dims.bottomSocketOuterLength()
 		# Create a cone and put it on the cylinder 1
 		aux = self.dims.calculateAuxiliararyPoints()
@@ -313,7 +312,7 @@ def TestTable():
 		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
 
-def TestpartFromTable(partNumber, outputType):
+def TestPartFromTable(partNumber, outputType):
 	document = FreeCAD.activeDocument()
 	table = CsvTable2(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
@@ -324,5 +323,5 @@ def TestpartFromTable(partNumber, outputType):
 
 #TestCoupling()
 #TestTable()
-#TestpartFromTable("429-249", OUTPUT_TYPE_PARTS)
+#TestPartFromTable("429-249", OUTPUT_TYPE_PARTS)
 
