@@ -155,7 +155,7 @@ class PipeFromTable:
 		self.document = document
 		self.table = table
 
-
+	
 	def create(self, partName, length, outputType):
 		row = self.table.findPart(partName)
 		if row is None:
@@ -179,6 +179,10 @@ class PipeFromTable:
 			part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
 			feature.PRating = GetPressureRatingString(row)
 			feature.Profile = "" # Currently I do not know how to interprite table data as a profile.
+			PSize = ""
+			if "PSize" in row.keys():
+				feature.PSize = row["PSize"]
+
 			feature.ViewObject.Proxy = 0
 			#feature.Label = partName
     			return part
