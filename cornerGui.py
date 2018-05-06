@@ -15,8 +15,9 @@ class MainDialog(createPartGui.BaseDialog):
 		params.selectionDialogTitle = "Select corner"
 		params.fittingType = "Corner"
 		params.dimensionsPixmap = "corner-dimensions.png"
-		params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, PID, and POD. All other dimensions are used for inromation.</p></body></html>"
+		params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, POD and PThk. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "corner user input"
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
@@ -24,6 +25,6 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(corner.CSV_TABLE_PATH, corner.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable2(corner.CSV_TABLE_PATH, corner.DIMENSIONS_USED)
 
 

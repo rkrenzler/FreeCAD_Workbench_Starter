@@ -13,35 +13,62 @@ import Part
 import OSEBase
 from piping import *
 
-tu = FreeCAD.Units.parseQuantity
+parseQuantity = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "corner.csv")
-# It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["G", "H", "M", "POD", "PID"]
+# It must contain unique values in the column "PartNumber" and also, dimensions listened below.
+DIMENSIONS_USED = ["G", "H", "M", "POD", "PThk"]
 
+class Dimensions:
+	def __init__(self):
+		self.G = parseQuantity("2 cm")
+		self.H = parseQuantity("3 cm")
+		self.M = parseQuantity("3 cm")
+		self.POD = parseQuantity("2 cm")
+		self.PThk = parseQuantity("0.5 cm")
 
+	def isValid(self):
+		errorMsg = ""
+		if not (self.POD > 0):
+			errorMsg = "Pipe outer diameter POD %s must be positive."%self.POD
+		elif not (self.PThk <= self.POD/2.0):
+			errorMsg = "Pipe thickness PThk %s is too large: larger than POD/2 %s."%(self.PThk, self.POD/2.0)
+		elif not (self.M > self.POD):
+			errorMsg = "Outer diameter M %s must be larger than outer pipe diameter POD %s"%(self.M, self.POD)
+		elif not (self.G > 0):
+			errorMsg = "Length G %s be positive"%(self.G)				
+		elif not (self.H > self.G):
+			errorMsg = "Length H %s must be larger than length G %s"%(self.H, self.G)				
+		if not (self.G > self.PID()/2.0):
+			raise UnplausibleDimensions("Length G %s must be larger than inner pipe radius PID/2=%s."%(self.G, self.PID()/2.0))
+						
+		return (len(errorMsg)==0, errorMsg )	
+				
+	def PID(self):
+		return self.POD-2*self.PThk
+
+	def calculateAuxiliararyPoints(self):
+		"""Calculate auxiliarary points which are used to build a corner from cylinders.
+		See documentation picture corner-cacluations.png
+		"""
+		result = {}
+		result["p1"] = FreeCAD.Vector(self.G,0,0)
+		result["p2"] = FreeCAD.Vector(0,self.G,0)
+		result["p3"] = FreeCAD.Vector(0,0,self.G)
+		return result
+
+		
 class Corner:
 	def __init__(self, document):
 		self.document = document
-		self.G = tu("2 cm")
-		self.H = tu("3 cm")
-		self.M = tu("3 cm")
-		self.POD = tu("2 cm")
-		self.PID = tu("1 cm")
+		# Set default values.
+		self.dims = Dimensions()
 
-		
 	def checkDimensions(self):
-		if not ( self.POD > tu("0 mm") and self.PID > tu("0 mm") ):
-			raise UnplausibleDimensions("Pipe dimensions must be positive. They are POD=%s and PID=%s instead"%(self.POD, self.PID))
-		if not (self.M > self.POD and self.POD > self.PID):
-			raise UnplausibleDimensions("Outer diameter M %s must be larger than outer pipe POD %s diamter. ",
-						"Outer pipe diameter POD %s must be larger than inner pipe diameter PID %s"%(self.M, self.POD, self.PID))
-		if not (self.G > self.PID/2):
-			raise UnplausibleDimensions("Length G %s must be larger than inner pipe radius PID/2=%s."%(self.G, self.PID/2))
-
-		if not (self.H > self.G):
-			raise UnplausibleDimensions("Length G %s must be larger than H %s."%(self.G, self.H))
+		valid, msg = self.dims.isValid()
+		if not valid:
+			raise UnplausibleDimensions(msg)
 
 	def createPrimitiveCorner(self, L, D):
 		"""Create corner consisting of two cylinder along x-,y- and y axis and a ball in the center."""
@@ -65,32 +92,32 @@ class Corner:
 	def addSockets(self, fusion):
 		"""Add socket cylinders to the fusion."""
 		x_socket = self.document.addObject("Part::Cylinder","XSocket")
-		x_socket.Radius = self.POD / 2
-		x_socket.Height = self.H - self.G
-		x_socket.Placement = FreeCAD.Placement(FreeCAD.Vector(self.G, 0,0), FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
+		x_socket.Radius = self.dims.POD / 2
+		x_socket.Height = self.dims.H - self.dims.G
+		x_socket.Placement = FreeCAD.Placement(FreeCAD.Vector(self.dims.G, 0,0), FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		y_socket = self.document.addObject("Part::Cylinder","YSocket")
-		y_socket.Radius = self.POD / 2
-		y_socket.Height = self.H - self.G
-		y_socket.Placement = FreeCAD.Placement(FreeCAD.Vector(0, self.G,0), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),-90), FreeCAD.Vector(0,0,0))
+		y_socket.Radius = self.dims.POD / 2
+		y_socket.Height = self.dims.H - self.dims.G
+		y_socket.Placement = FreeCAD.Placement(FreeCAD.Vector(0, self.dims.G,0), FreeCAD.Rotation(FreeCAD.Vector(1,0,0),-90), FreeCAD.Vector(0,0,0))
 		z_socket = self.document.addObject("Part::Cylinder","ZSocket")
-		z_socket.Radius = self.POD / 2
-		z_socket.Height = self.H - self.G
-		z_socket.Placement.Base = FreeCAD.Vector(0, 0, self.G)
+		z_socket.Radius = self.dims.POD / 2
+		z_socket.Height = self.dims.H - self.dims.G
+		z_socket.Placement.Base = FreeCAD.Vector(0, 0, self.dims.G)
 		fusion.Shapes = fusion.Shapes + [x_socket, y_socket, z_socket] # fusion.Shapes.append does not work.
 		return fusion
 
 	def createOuterPart(self):
-		return self.createPrimitiveCorner(self.H, self.M)
+		return self.createPrimitiveCorner(self.dims.H, self.dims.M)
 
 	def createInnerPart(self):
-		return self.createPrimitiveCorner(self.H, self.PID)
+		inner = self.createPrimitiveCorner(self.dims.H, self.dims.PID())
+		inner = self.addSockets(inner)
+		return inner
 
 	def create(self, convertToSolid):
 		self.checkDimensions()
 		outer = self.createOuterPart()
 		inner = self.createInnerPart()
-		inner = self.addSockets(inner)
-
 		# Remove inner part of the sockets.
 		corner = self.document.addObject("Part::Cut","Cut")
 		corner.Base = outer
@@ -125,38 +152,54 @@ class CornerFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-	def create(self, partName, outputType):
+
+	@classmethod
+	def getPThk(cls, row):
+		""" For compatibility results, if there is no "PThk" dimension, calculate it
+		from "PID" and "POD" """
+		if not "PThk" in row.keys():
+			return (parseQuantity(row["POD"])-parseQuantity(row["PID"]))/2.0
+		else:
+			return parseQuantity(row["PThk"])
+
+	@classmethod
+	def getPSize(cls, row):
+		if "PSize" in row.keys():
+			return row["PSize"]
+		else:
+			return ""
+
+	def create(self, partNumber, outputType):
 		corner = Corner(self.document)
-		row = self.table.findPart(partName)
+		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
 			return
 
-		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
-			corner.G = tu(row["G"])
-			corner.H = tu(row["H"])
-			corner.M = tu(row["M"])
-			corner.POD = tu(row["POD"])
-			corner.PID = tu(row["PID"])
+		dims = Dimensions()
+		dims.G = parseQuantity(row["G"])
+		dims.H = parseQuantity(row["H"])
+		dims.M = parseQuantity(row["M"])
+		dims.POD = parseQuantity(row["POD"])
+		dims.PThk = self.getPThk(row)
 
+		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+			corner = Corner(self.document)
+			corner.dims = dims
 			part = corner.create(outputType == OUTPUT_TYPE_SOLID)
-			part.Label = partName
+			part.Label = "OSE-Corner"
 			return part
 
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Corner")
 			import flCorner
 			builder = flCorner.CornerBuilder(self.document)
-			builder.G = tu(row["G"])
-			builder.H = tu(row["H"]) 
-			builder.M = tu(row["M"])
-			builder.POD = tu(row["POD"])
-			builder.PID = tu(row["PID"])
+			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
-			feature.PSize = ""
+			feature.PSize = self.getPSize(row)
 			feature.ViewObject.Proxy = 0
-			feature.Label = partName
+			feature.PartNumber = partNumber
     			return part
 
 
@@ -169,16 +212,16 @@ def TestCorner():
 
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = CsvTable2(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = CornerFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
-		partName = table.getPartName(i)
-		print("Creating part %s"%partName)
-		builder.create(partName, OUTPUT_TYPE_FLAMINGO)
+		partNumber = table.getPartKey(i)
+		print("Creating part %s"%partNumber)
+		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
-		break
+
 
 #TestCorner()
 #TestTable()
