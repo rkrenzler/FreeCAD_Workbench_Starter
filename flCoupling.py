@@ -72,7 +72,7 @@ class Coupling(pypeType):
 		aux = dims.calculateAuxiliararyPoints()
 		""" Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
 		# Create complete outer cylinder.
-		radius = dims.M/2
+		radius = dims.M/2.0
 		height = dims.L
 		outer = Part.makeCylinder(radius, height,aux["p1"])
 		return outer
@@ -83,11 +83,11 @@ class Coupling(pypeType):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 		# Create socket 1.
-		r1 = dims.M/2
+		r1 = dims.M/2.0
 		h1 = dims.bottomSocketOuterLength()
 		cylinder1 = Part.makeCylinder(r1, h1, aux["p1"])
 		# Create a cone and put it on the cylinder 1.
-		r2 = dims.M1/2
+		r2 = dims.M1/2.0
 		hc = dims.N
 		cone = Part.makeCone(r1, r2, hc, aux["p4"])
 		# Create a socket 2 and put it on the cone.
@@ -113,12 +113,12 @@ class Coupling(pypeType):
 		aux = dims.calculateAuxiliararyPoints()
 		# Create lower inner cylinder.
 		height1 = dims.socketDepthA5()
-		cylinder1i = Part.makeCylinder(dims.POD/2, height1)
+		cylinder1i = Part.makeCylinder(dims.POD/2.0, height1)
 		# Create intermediatiate inner cylinder (from beginning to the end of the complete socket).
 		height2 = dims.L
-		cylinder2i = Part.makeCylinder(dims.PID()/2, height2, aux["p1"])
+		cylinder2i = Part.makeCylinder(dims.PID()/2.0, height2, aux["p1"])
 		# Create an upper inner cylinder.
-		cylinder3i = Part.makeCylinder(dims.POD/2, height1, aux["p3"])
+		cylinder3i = Part.makeCylinder(dims.POD/2.0, height1, aux["p3"])
 		inner = cylinder1i.fuse([cylinder2i, cylinder3i])
 		return inner
 		
@@ -128,16 +128,18 @@ class Coupling(pypeType):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 		# Create a lower cylinder.
-		r1 = dims.POD/2
-		h1 = dims.socketDepthA5()
-		cylinder1i = Part.makeCylinder(r1, h1, aux["p1"])
+		r = dims.POD/2.0
+		h = dims.socketDepthA5()
+		cylinder1i = Part.makeCylinder(r, h, aux["p1"])
 		# Create a cone and put it on the cylinder 1.
-		r2 = dims.POD1/2
+		r1 = dims.PID()/2.0
+		r2 = dims.PID1()/2.0
 		hc = dims.N
 		cone = Part.makeCone(r1, r2, hc, aux["p2"])
 		# Create an upper cylinder.
-		h2 = h1
-		cylinder2i = Part.makeCylinder(r2, h2, aux["p3"])
+		r = dims.POD1/2	
+		h = dims.socketDepthA5()
+		cylinder2i = Part.makeCylinder(r, h, aux["p3"])
 		inner = cylinder1i.fuse([cone, cylinder2i])
 		return inner
 		
