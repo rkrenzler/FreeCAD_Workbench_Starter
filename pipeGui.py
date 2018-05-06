@@ -6,6 +6,7 @@
 import math
 import csv
 import os.path
+import createPartGui
 
 from PySide import QtCore, QtGui
 import FreeCAD
@@ -147,6 +148,7 @@ class MainDialog(QtGui.QDialog):
 	def initTable(self):
 		# Read table data from CSV
 		self.model = pipingGui.PartTableModel(self.table.headers, self.table.data)
+		self.model.keyColumnName = "PartNumber"
 		self.tableViewParts.setModel(self.model)
 		
 	def getSelectedPartName(self):
@@ -154,7 +156,7 @@ class MainDialog(QtGui.QDialog):
 		if sel.isSelected:
 			if len(sel.selectedRows())> 0:
 				rowIndex = sel.selectedRows()[0].row()
-				return self.model.getPartName(rowIndex)
+				return self.model.getPartKey(rowIndex)
 		return None
 
 	def selectPartByName(self, partName):
@@ -228,7 +230,7 @@ class MainDialog(QtGui.QDialog):
 		else : # Default is solid.
 			settings.setValue("radioButtonsOutputType", OUTPUT_TYPE_SOLID)
 		
-		settings.setValue("LastSelectedPartName", self.getSelectedPartName())
+		settings.setValue("LastSelectedPartNumber", self.getSelectedPartName())
 		settings.setValue("lineEditLength", self.lineEditLength.text())
 		
 		settings.sync()
@@ -244,7 +246,7 @@ class MainDialog(QtGui.QDialog):
 		else: # Default is solid. output == OUTPUT_TYPE_SOLID
 			self.radioButtonSolid.setChecked(True)
 
-		self.selectPartByName(settings.value("LastSelectedPartName"))
+		self.selectPartByName(settings.value("LastSelectedPartNumber"))
 		text = settings.value("lineEditLength")
 		if text is not None:
 			self.lineEditLength.setText(text)
@@ -278,28 +280,4 @@ class MainDialog(QtGui.QDialog):
 			return OUTPUT_TYPE_SOLID
 
 def GuiCheckTable():
-	# Check if the CSV file exists.
-	if os.path.isfile(CSV_TABLE_PATH) == False:
-		text = "This macro requires %s  but this file does not exist."%(CSV_TABLE_PATH)
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the pipe failed.", text)
-		msgBox.exec_()
-		exit(1) # Error
-
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%CSV_TABLE_PATH) 
-	table = CsvTable(DIMENSIONS_USED)
-	table.load(CSV_TABLE_PATH)
-
-	if table.hasValidData == False:
-		text = 'Invalid %s.\n'\
-			'It must contain columns %s.'%(CSV_TABLE_PATH, ", ".join(DIMENSIONS_USED))
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the pipe failed.", text)
-		msgBox.exec_()
-		exit(1) # Error
-	return table
-
-#doc=FreeCAD.activeDocument()
-#table = GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#form = MainDialog(doc, table)
-
-
-
+	return createPartGui.GuiCheckTable2(CSV_TABLE_PATH, DIMENSIONS_USED)

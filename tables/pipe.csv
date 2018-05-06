@@ -1,4 +1,4 @@
-"PartNumber","PipeSize","PSize","Schedule","OD","ID","PThk"
+"PartNumber","PipeSize","PSize","Schedule","OD","ID","Thk"
 "NPS 1/8"" PVC SCH 40","1/8""","DN6",40,"0.405 in","0.249 in","0.068 in"
 "NPS 1/4"" PVC SCH 40","1/4""","DN8",40,"0.54 in","0.344 in","0.088 in"
 "NPS 3/8"" PVC SCH 40","3/8""","DN10",40,"0.675 in","0.473 in","0.091 in"
