@@ -18,6 +18,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dimensionsPixmap = "elbow-dimensions.png"
 		params.explanationText = "<html><head/><body><p>To construct an elbow only these dimensions are used: BendingAngle, H, J, M, POD, and PThk. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
 		params.settingsName = "elbow user input"
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
@@ -25,5 +26,5 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 		
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(elbow.CSV_TABLE_PATH, elbow.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable2(elbow.CSV_TABLE_PATH, elbow.DIMENSIONS_USED)
 

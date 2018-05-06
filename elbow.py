@@ -223,33 +223,41 @@ class ElbowFromTable:
 		self.document = document
 		self.table = table
 
-	@staticmethod
-	def getPThk(row):
-		""" For compatibility results, if there is no "Thk" dimension, calculate it
+	@classmethod
+	def getPThk(cls, row):
+		""" For compatibility results, if there is no "PThk" dimension, calculate it
 		from "PID" and "POD" """
 		if not "PThk" in row.keys():
 			return (parseQuantity(row["POD"])-parseQuantity(row["PID"]))/2.0
 		else:
 			return parseQuantity(row["PThk"])
 
-	def create(self, partName, outputType):
-		row = self.table.findPart(partName)
+	@classmethod
+	def getPSize(cls, row):
+		if "PSize" in row.keys():
+			return row["PSize"]
+		else:
+			return ""
+
+	def create(self, partNumber, outputType):
+		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
-			
+			return
+
 		dims = Dimensions()
 		dims.BendAngle = parseQuantity(row["BendAngle"])
 		dims.H = parseQuantity(row["H"])
 		dims.J = parseQuantity(row["J"])
 		dims.M = parseQuantity(row["M"])
 		dims.POD = parseQuantity(row["POD"])
-		dims.PThk = ElbowFromTable.getPThk(row)
-			
+		dims.PThk = self.getPThk(row)
+
 		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
 			elbow = Elbow(self.document)
 			elbow.dims = dims
 			part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
-			#part.Label = partName
+			part.Label = "OSE-Elbow"
 			return part
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
@@ -259,10 +267,9 @@ class ElbowFromTable:
 			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
-			feature.PSize = row["PSize"]
+			feature.PSize = self.getPSize(row)
 			feature.ViewObject.Proxy = 0
-			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
-			feature.PartNumber = partName
+			feature.PartNumber = partNumber
     			return part
 
 # Test macros.
@@ -272,18 +279,18 @@ def TestElbow():
 	elbow.create(False)
 	document.recompute()
 
-
-def TestElbowTable():
+def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = CsvTable2(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	elbow = ElbowFromTable(document, table)
+	builder = ElbowFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
-		partName = table.getPartName(i)
-		print("Creating part %s"%partName)
-		elbow.create(partName, OUTPUT_TYPE_SOLID)
+		partNumber = table.getPartKey(i)
+		print("Creating part %s"%partNumber)
+		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
-		
+
+
 #TestElbow()
 #TestElbowTable()

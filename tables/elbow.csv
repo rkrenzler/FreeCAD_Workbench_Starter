@@ -1,4 +1,4 @@
-"Name","PipeSize","BendAngle","PSize","Schedule","POD","PThk","PID","H","J","M","Approx. Wt."
+"PartNumber","PipeSize","BendAngle","PSize","Schedule","POD","PThk","PID","H","J","M","Approx. Wt."
 "411-005F","1/2""","11+1/4 deg","DN15",40,"0.840 in","0.109 in","0.602 in","1+5/16 in","5/16 in","1+1/16 in",".05 lb"
 "411-007F","3/4""","11+1/4 deg","DN20",40,"1.050 in","0.113 in","0.804 in","1+5/16 in","5/16 in","1+1/4 in",".07 lb"
 "411-010F","1""","11+1/4 deg","DN25",40,"1.315 in","0.133 in","1.029 in","1+9/16 in","5/16 in","1+9/16 in",".10 lb"
