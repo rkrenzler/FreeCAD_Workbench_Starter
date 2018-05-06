@@ -19,11 +19,8 @@ parseQuantity = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "coupling.csv")
 
-# Note only columns "Name", "POD", "PID", "POD1", "PID1", "L", "M", "M1", and "N"
-# are used for calculations, all other are used for information. For example
-# "PipeSize", "Schedule", "PipeSize1" show pipe sizing in more readable form.
-# The table must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["POD", "PThk", "POD1", "PThk1", "L", "M", "M1", "N"]
+# The table must contain unique values in the column "PartNumber" and also, dimensions listened below.
+DIMENSIONS_USED = ["L", "M", "M1", "N", "POD1", "POD", "PThk", "PThk1"]
 
 class Dimensions:
 	def __init__(self):
@@ -112,8 +109,8 @@ class Dimensions:
 class Coupling:
 	def __init__(self, document):
 		self.document = document
-		self.dims = Dimensions()
 		# Set default values.
+		self.dims = Dimensions()
 
 	def checkDimensions(self):
 		valid, msg = self.dims.isValid()
@@ -256,6 +253,13 @@ class CouplingFromTable:
 		else:
 			return parseQuantity(row["PThk1"])
 			
+	@classmethod
+	def getPSize(cls, row):
+		if "PSize" in row.keys():
+			return row["PSize"]
+		else:
+			return ""
+
 	def create(self, partNumber, outputType):
 		coupling = Coupling(self.document)
 		row = self.table.findPart(partNumber)
@@ -272,7 +276,7 @@ class CouplingFromTable:
 		dims.POD1 = parseQuantity(row["POD1"])
 		dims.PThk = self.getPThk(row)
 		dims.PThk1 = self.getPThk1(row)
-		
+
 		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
 			coupling = Coupling(self.document)
 			coupling.dims = dims
@@ -288,7 +292,7 @@ class CouplingFromTable:
 			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
-			feature.PSize = row["PSize"] # What to do for multiple sizes?
+			feature.PSize = self.getPSize(row) # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
 			feature.PartNumber = partNumber
    			return part
