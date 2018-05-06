@@ -8,8 +8,6 @@ import csv
 import os.path
 
 import FreeCAD
-import FreeCADGui
-import Sketcher
 import Part
 
 import OSEBase
@@ -193,21 +191,28 @@ class SweepElbowFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-
-	@staticmethod
-	def getPThk(row):
-		""" For compatibility results, if there is no "Thk" dimension, calculate it
+		
+	@classmethod
+	def getPThk(cls, row):
+		""" For compatibility results, if there is no "PThk" dimension, calculate it
 		from "PID" and "POD" """
 		if not "PThk" in row.keys():
 			return (parseQuantity(row["POD"])-parseQuantity(row["PID"]))/2.0
 		else:
 			return parseQuantity(row["PThk"])
 
-	def create(self, partName, outputType):
-		row = self.table.findPart(partName)
+	@classmethod
+	def getPSize(cls, row):
+		if "PSize" in row.keys():
+			return row["PSize"]
+		else:
+			return ""
+
+	def create(self, partNumber, outputType):
+		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
-			
+			return
 		dims = Dimensions()
 		dims.G = parseQuantity(row["G"])
 		dims.H = parseQuantity(row["H"])
@@ -220,8 +225,9 @@ class SweepElbowFromTable:
 			elbow = SweepElbow(self.document)
 			elbow.dims = dims
 			part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
-			part.Label = partName
+			part.Label = "OSE-SweepElbow"
 			return part
+
 		elif outputType == OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-SweepElbow")
@@ -230,9 +236,9 @@ class SweepElbowFromTable:
 			builder.dims = dims
 			part = builder.create(feature)	
 			feature.PRating = GetPressureRatingString(row)
-			feature.PSize = ""
+			feature.PSize = self.getPSize(row)
 			feature.ViewObject.Proxy = 0
-			feature.Label = partName
+			feature.PartNumber = partNumber
     			return part
 
 
@@ -247,12 +253,12 @@ def TestSweepElbowTable():
 	document = FreeCAD.activeDocument()
 	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
-	elbow = SweepElbowFromTable(document, table)
+	builder = SweepElbowFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
-		partName = table.getPartName(i)
-		print("Creating part %s"%partName)
-		elbow.create(partName, OUTPUT_TYPE_FLAMINGO)
+		partNumber = table.getPartKey(i)
+		print("Creating part %s"%partNumber)
+		builder.create(partNumber, OUTPUT_TYPE_FLAMINGO)
 		document.recompute()
 
 #TestSweepElbow()

@@ -9,34 +9,36 @@ from pipeFeatures import pypeType #the parent class
 import sweepElbow as sweepElbowMod
 
 class SweepElbow(pypeType):
-	def __init__(self, obj, PSize="", G=50, H=60, M=30, POD=20, PThk=50):
+	def __init__(self, obj, PSize="", dims=sweepElbowMod.Dimensions()):
 		"""Create a sweep elbow with the center at (0,0,0) sockets along the z and y axis."""
 		# Run parent __init__ and define common attributes.
 		super(SweepElbow, self).__init__(obj)
 		obj.PType="OSE_SweepElbow"
 		obj.PRating=""
-		obj.PSize=PSize # What is it for?
+		obj.PSize=PSize
 		# Define specific attributes and set their values.
-		obj.addProperty("App::PropertyLength","G","SweepElbow","Distnace from the center to begin of innerpart of the socket").G=G
-		obj.addProperty("App::PropertyLength","H","SweepElbow","Distance between the center and a elbow end").H=H
-		obj.addProperty("App::PropertyLength","M","SweepElbow","Outer diameter of the elbow.").M=M
-		obj.addProperty("App::PropertyLength","POD","SweepElbow","Pipe outer diameter.").POD=POD
-		obj.addProperty("App::PropertyLength","PThk","SweepElbow","Pipe wall thickness").PThk=PThk
+		obj.addProperty("App::PropertyLength","G","SweepElbow","Distnace from the center to begin of innerpart of the socket").G=dims.G
+		obj.addProperty("App::PropertyLength","H","SweepElbow","Distance between the center and a elbow end").H=dims.H
+		obj.addProperty("App::PropertyLength","M","SweepElbow","Outer diameter of the elbow.").M=dims.M
+		obj.addProperty("App::PropertyLength","POD","SweepElbow","Pipe outer diameter.").POD=dims.POD
+		obj.addProperty("App::PropertyLength","PThk","SweepElbow","Pipe wall thickness").PThk=dims.PThk
 		obj.addProperty("App::PropertyVectorList","Ports","SweepElbow","Ports relative positions.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
-		
+		obj.addProperty("App::PropertyString","PartNumber","SweepElbow","Part number").PartNumber=""		
+
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
-		if prop in ["G", "H"]:
-			# This function is called within __init__ too. Thus we need to wait untill 
-			# we have all the required attributes.
-			if "Ports" in obj.PropertiesList:
+		dim_properties = ["G"] # Dimensions which can change port positions
+		if prop in dim_properties:
+			# This function is called within __init__ too.
+			# We wait for all dimension.
+			if set(sweepElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
-				
+
 	def getPorts(self, obj):
 		""" Calculate coordinates of the ports. """
 		# Vertical port on the bottom.
@@ -166,7 +168,7 @@ class SweepElbowBuilder:
 		Before call it, call
 		feature = self.document.addObject("Part::FeaturePython","OSE-SweepElbow")
 		"""			
-		elbow = SweepElbow(obj, PSize="", G=self.dims.G, H=self.dims.H, M=self.dims.M, POD=self.dims.POD, PThk=self.dims.PThk)
+		elbow = SweepElbow(obj, PSize="", dims=self.dims)
 		obj.ViewObject.Proxy = 0
 		obj.Placement.Base = self.pos
 		return elbow
