@@ -15,7 +15,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dialogTitle = "Create Tee"
 		params.fittingType = "Tee"
 		params.dimensionsPixmap = "tee-dimensions.png"
-		params.explanationText = "<html><head/><body><p>Only dimensions used are: M, M1, G, G1, G2, H1, H1, H2, POD, POD1, PID, PID2. All other dimensions are used for inromation.</p></body></html>"
+		params.explanationText = "<html><head/><body><p>Only dimensions used are: M, M1, M2, G, G1, G2, H, H1, H2, POD, POD1, POD2, PThk, PThk1, PThk2. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "tee user input"
 		super(MainDialog, self).__init__(params)
 
@@ -23,5 +23,6 @@ class MainDialog(createPartGui.BaseDialog):
 			builder = tee.TeeFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
+
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(tee.CSV_TABLE_PATH, tee.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable2(tee.CSV_TABLE_PATH, tee.DIMENSIONS_USED)
