@@ -170,7 +170,6 @@ class CornerFromTable:
 			return ""
 
 	def create(self, partNumber, outputType):
-		corner = Corner(self.document)
 		row = self.table.findPart(partNumber)
 		if row is None:
 			print("Part not found")
