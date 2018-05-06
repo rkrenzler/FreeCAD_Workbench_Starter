@@ -36,6 +36,7 @@ class Tee(pypeType):
 		obj.addProperty("App::PropertyLength","PThk1","Tee","Thickness of the pipe at the vertical socket.").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyLength","PThk2","Tee","Thickness of the pipe at the other horizontal socket.").PThk2=dims.PThk2
 		obj.addProperty("App::PropertyVectorList","Ports","Tee","Ports relative positions.").Ports = self.getPorts(obj)
+		obj.addProperty("App::PropertyString","PartNumber","Tee","Part number").PartNumber=""		
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
 
@@ -102,7 +103,7 @@ class Tee(pypeType):
 			h = dims.M1
 			p = FreeCAD.Vector(-dims.M1/2.0,0,0)
 			dr = FreeCAD.Vector(1,0,0) # Direction where to rotate the cylinder
-			return Part.makeCylinder(r1, h1, p, dr)
+			return Part.makeCylinder(r, h, p, dr)
 		else:
 			return None
 						
@@ -283,4 +284,4 @@ def Test():
 	builder.create(feature)
 	document.recompute()
 	
-Test()
+#Test()
