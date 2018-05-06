@@ -23,8 +23,7 @@ class MainDialog(createPartGui.BaseDialog):
 	def createNewPart(self, document, table, partName, outputType):
 			builder = coupling.CouplingFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
-		
+
+
 def GuiCheckTable():
 	return createPartGui.GuiCheckTable2(coupling.CSV_TABLE_PATH, coupling.DIMENSIONS_USED)
-
-

@@ -312,6 +312,7 @@ def TestTable():
 		builder.create(partNumber, OUTPUT_TYPE_SOLID)
 		document.recompute()
 
+
 def TestPartFromTable(partNumber, outputType):
 	document = FreeCAD.activeDocument()
 	table = CsvTable2(DIMENSIONS_USED)

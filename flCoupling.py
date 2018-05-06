@@ -17,14 +17,15 @@ class Coupling(pypeType):
 		obj.PRating="CouplingFittingFromAnyCatalog"
 		obj.PSize=PSize # Pipe size
 		# Define specific attributes and set their values.
+		# TODO: Check socket enumerations.
 		obj.addProperty("App::PropertyLength","L","Coupling","Length of the coupling").L=dims.L
 		obj.addProperty("App::PropertyLength","M","Coupling","Coupling outside diameter.").M=dims.M
 		obj.addProperty("App::PropertyLength","M1","Coupling","Coupling outside diameter of the thin end.").M1=dims.M1
 		obj.addProperty("App::PropertyLength","N","Coupling","Length of the middle part of the coupling.").N=dims.N
-		obj.addProperty("App::PropertyLength","POD","Coupling","Coupling pipe outer diameter at the socket 1.").POD=dims.POD
-		obj.addProperty("App::PropertyLength","POD1","Coupling","Coupling pipe outer diameter at the socket 2.").POD1=dims.POD1
-		obj.addProperty("App::PropertyLength","PThk","Coupling","Coupling pipe fitting at the socket 1.").PThk=dims.PThk
-		obj.addProperty("App::PropertyLength","PThk","Coupling","Coupling pipe fitting at thte socket 2.").PThk1=dims.PThk1
+		obj.addProperty("App::PropertyLength","POD","Coupling","Pipe outer diameter at the socket 1.").POD=dims.POD
+		obj.addProperty("App::PropertyLength","POD1","Coupling","Pipe outer diameter at the socket 2.").POD1=dims.POD1
+		obj.addProperty("App::PropertyLength","PThk","Coupling","Thickness of the pipe at the socket 1.").PThk=dims.PThk
+		obj.addProperty("App::PropertyLength","PThk1","Coupling","Thickenss of the pipe at the socket 2.").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyVectorList","Ports","Coupling","Ports relative positions.").Ports = self.getPorts(obj)
 		obj.addProperty("App::PropertyString","PartNumber","Coupling","Part number").PartNumber=""		
 		# Make Ports read only.
@@ -36,12 +37,11 @@ class Coupling(pypeType):
 		# e.g. -> change PSize according the new alpha, PID and POD
 
 		dim_properties = [ "L", "M", "M1", "N"]
-		all_dims = ["L", "M", "M1", "N", "POD", "POD1", "PThk0", "PThk1"]
 		
 		if prop in dim_properties:
 			# This function is called within __init__ too.
 			# We wait for all dimension.
-			if set(all_dims).issubset(obj.PropertiesList):
+			if set(couplingMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@classmethod
@@ -60,7 +60,6 @@ class Coupling(pypeType):
 	@classmethod
 	def createOuterPart(cls, obj):
 		dims = cls.extractDimensions(obj)
-		aux = dims.calculateAuxiliararyPoints()
 		
 		if dims.M == dims.M1:
 			return cls.createOuterPartEqual(obj)
