@@ -1,4 +1,4 @@
-PartNumber,PipeSize,PSize,Schedule,G,H,M,POD,PID,Pthk,Approx. Wt.
+PartNumber,PipeSize,PSize,Schedule,G,H,M,POD,PID,PThk,Approx. Wt.
 413-005,"1/2""",DN15,40,1/2 in,1+1/4 in,1+3/32 in,0.84 in,0.602 in,0.109 in,0.06 lbs
 413-007,"3/4""",DN20,40,9/16 in,1+9/16 in,1+5/16 in,1.05 in,0.804 in,0.113 in,0.10 lbs
 413-010,"1""",DN25,40,13/16 in,1+7/8 in,1+5/8 in,1.315 in,1.029 in,0.133 in,0.17 lbs
