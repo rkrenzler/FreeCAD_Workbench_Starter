@@ -250,20 +250,19 @@ class Tee:
 	def createInnerPartReducedHorizontal(self):
 		""" Create a inner part with a connic middle simmilar to createOuterPartReducedHorizontal().
 		"""	
-		""" Create a outer part which is cylinder+cone+cylinder+vertical cylinder."""
 		aux = self.dims.calculateAuxiliararyPoints()		
-		# Create socket 1.
+		# Create cylinder 1.
 		cylinder1 = self.document.addObject("Part::Cylinder","InnerCylinder1")
 		cylinder1.Radius = self.dims.PID()/2.0
 		cylinder1.Height = self.dims.H - self.dims.G 
 		cylinder1.Placement = FreeCAD.Placement(aux["p1"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))				
-		# Create a cone and put it at the right side of the cylinder 1.
+		# Create a cone and put itto the right of the cylinder 1.
 		cone = self.document.addObject("Part::Cone","InnerCone")
 		cone.Radius1 = self.dims.PID()/2.0
 		cone.Radius2 = self.dims.PID2()/2.0
 		cone.Height = self.dims.G+self.dims.G2
 		cone.Placement = FreeCAD.Placement(aux["p2"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))				
-		# Create a socket 2 and put it at the right side of the cone.
+		# Create a socket 2 and put it to the right of the cone.
 		cylinder2 = self.document.addObject("Part::Cylinder","InnerCylinder2")
 		cylinder2.Radius = self.dims.PID2()/2.0
 		cylinder2.Height = self.dims.H2 - self.dims.G2
@@ -271,7 +270,7 @@ class Tee:
 		# Create vertical part.
 		vertical_inner_cylinder = self.document.addObject("Part::Cylinder","VerticalInnerCynlider")
 		vertical_inner_cylinder.Radius = self.dims.PID1()/2.0
-		vertical_inner_cylinder.Height = self.dims.H1 - self.dims.G1
+		vertical_inner_cylinder.Height = self.dims.H1
 		# Combine all four parts.
 		inner = self.document.addObject("Part::MultiFuse","InnerParts")
 		inner.Shapes = [cylinder1, cone, cylinder2, vertical_inner_cylinder]+self.createInnerSockets()
