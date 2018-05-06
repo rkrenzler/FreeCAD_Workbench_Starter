@@ -17,6 +17,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dimensionsPixmap = "tee-dimensions.png"
 		params.explanationText = "<html><head/><body><p>Only dimensions used are: M, M1, M2, G, G1, G2, H, H1, H2, POD, POD1, POD2, PThk, PThk1, PThk2. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "tee user input"
+		params.keyColumnName = "PartNumber"		
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
