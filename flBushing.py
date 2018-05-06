@@ -30,12 +30,11 @@ class Bushing(pypeType):
 
 	def onChanged(self, obj, prop):
 		# Attributes changed, adjust the rest.
-		dim_properties = [ "L", "N"]
-		all_dims = ["L", "N", "POD", "POD1", "PThk1"]
+		dim_properties = [ "L", "N"] # Dimensions which change port locations
 		if prop in dim_properties:
 			# This function is called within __init__ too. 
 			# We wait for all dimension.
-			if set(all_dims).issubset(obj.PropertiesList):
+			if set(bushingMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 				
 	@classmethod

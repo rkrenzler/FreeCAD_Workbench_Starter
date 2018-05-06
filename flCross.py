@@ -38,15 +38,13 @@ class Cross(pypeType):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
-		#FreeCAD.Console.PrintMessage("\nonChanged called. PropertiesList is\n")
-		#FreeCAD.Console.PrintMessage(obj.PropertiesList)
-		#FreeCAD.Console.PrintMessage("\n")
 		
-		dim_properties = ["G", "G1", "H", "H1", "L", "L1", "M", "M1", "POD", "POD1", "PThk1", "PThk"]
+		dim_properties = ["G", "G1"] # Properties which can change port locations
+
 		if prop in dim_properties:
 			# This function is called within __init__ too. Thus we need to wait untill 
 			# we have all dimensions attributes.
-			if set(dim_properties).issubset(obj.PropertiesList):
+			if set(crossMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@classmethod

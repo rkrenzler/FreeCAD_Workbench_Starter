@@ -9,7 +9,7 @@ from pipeFeatures import pypeType #the parent class
 import coupling as couplingMod
 
 class Coupling(pypeType):
-	def __init__(self, obj, PSize="",  dims=couplingMod.Dimensions()):
+	def __init__(self, obj, PSize="", dims=couplingMod.Dimensions()):
 		"""Create a coupling"""
 		# Run parent __init__ and define common attributes
 		super(Coupling, self).__init__(obj)
@@ -27,9 +27,9 @@ class Coupling(pypeType):
 		obj.addProperty("App::PropertyLength","PThk","Coupling","Thickness of the pipe at the socket 1.").PThk=dims.PThk
 		obj.addProperty("App::PropertyLength","PThk1","Coupling","Thickenss of the pipe at the socket 2.").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyVectorList","Ports","Coupling","Ports relative positions.").Ports = self.getPorts(obj)
-		obj.addProperty("App::PropertyString","PartNumber","Coupling","Part number").PartNumber=""		
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
+		obj.addProperty("App::PropertyString","PartNumber","Coupling","Part number").PartNumber=""		
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
