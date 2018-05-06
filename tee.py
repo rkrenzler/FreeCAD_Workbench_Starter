@@ -19,7 +19,7 @@ parseQuantity = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table. 
 CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "tee.csv")
 
-DIMENSIONS_USED = ["G", "G1", "G2", "H", "H1", "H2", "POD", "POD1", "POD2", "PThk", "PThk1", "PThk2", "M", "M1", "M2"]
+DIMENSIONS_USED = ["G", "G1", "G2", "H", "H1", "H2",  "M", "M1", "M2", "POD", "POD1", "POD2", "PThk", "PThk1", "PThk2"]
 
 class Dimensions:
 	def __init__(self):
@@ -145,8 +145,8 @@ class Tee:
 			return self.createOuterPartReducedHorizontal()
 			
 	def HorizontalWallEnhancement(self):
-		""" If the diameter of the vertical part is larger, than the diamter of the horizontal part
-		add additional cylinder to the outer part in the middle.
+		""" If the diameter of the vertical part is larger than the diamter of the horizontal part,
+		add an additional cylinder to the outer part in the middle.
 		
 		For some reasons this code crashes freecad.
 		"""
@@ -271,7 +271,7 @@ class Tee:
 		# Create vertical part.
 		vertical_inner_cylinder = self.document.addObject("Part::Cylinder","VerticalInnerCynlider")
 		vertical_inner_cylinder.Radius = self.dims.PID1()/2.0
-		vertical_inner_cylinder.Height = self.dims.H1
+		vertical_inner_cylinder.Height = self.dims.H1 - self.dims.G1
 		# Combine all four parts.
 		inner = self.document.addObject("Part::MultiFuse","InnerParts")
 		inner.Shapes = [cylinder1, cone, cylinder2, vertical_inner_cylinder]+self.createInnerSockets()
@@ -287,7 +287,7 @@ class Tee:
 		
 		socket_right = self.document.addObject("Part::Cylinder","SocketRight")
 		socket_right.Radius = self.dims.POD2/2.0
-		socket_right.Height = self.dims.H-self.dims.G
+		socket_right.Height = self.dims.H2-self.dims.G2
 		socket_right.Placement = FreeCAD.Placement(aux["p3"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		
 		socket_top = self.document.addObject("Part::Cylinder","SocketTop")
@@ -298,6 +298,7 @@ class Tee:
 		return [socket_left, socket_top, socket_right]
 	
 	def create(self, convertToSolid):
+		self.checkDimensions()
 		outer = self.createOuterPart()
 		inner = self.createInnerPart()
 		tee = self.document.addObject("Part::Cut","tee")
