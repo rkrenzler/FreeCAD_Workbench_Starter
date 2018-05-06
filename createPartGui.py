@@ -211,7 +211,7 @@ class BaseDialog(QtGui.QDialog):
 		else : # Default is solid.
 			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID)
 
-		settings.setValue("LastSelectedPartName", self.getSelectedPartName())
+		settings.setValue("LastSelectedPartNumber", self.getSelectedPartName())
 		settings.sync()
 
 	def restoreInput(self):
@@ -225,7 +225,7 @@ class BaseDialog(QtGui.QDialog):
 		else: # Default is solid. output == piping.OUTPUT_TYPE_SOLID
 			self.radioButtonSolid.setChecked(True)
 
-		self.selectPartByName(settings.value("LastSelectedPartName"))
+		self.selectPartByName(settings.value("LastSelectedPartNumber"))
 
 	def getOutputType(self):
 		if self.radioButtonFlamingo.isChecked():
