@@ -200,6 +200,10 @@ class BaseDialog(QtGui.QDialog):
 			return self.acceptSelectionMode()
 		else:
 			self.acceptCreationMode()
+
+	def saveAdditionalData(self, settings):
+		pass
+					
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
@@ -212,7 +216,11 @@ class BaseDialog(QtGui.QDialog):
 			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID)
 
 		settings.setValue("LastSelectedPartNumber", self.getSelectedPartName())
+		self.saveAdditionalData(settings)		
 		settings.sync()
+
+	def restoreAdditionalInput(self, settings):
+		pass
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
@@ -226,6 +234,7 @@ class BaseDialog(QtGui.QDialog):
 			self.radioButtonSolid.setChecked(True)
 
 		self.selectPartByName(settings.value("LastSelectedPartNumber"))
+		self.restoreAdditionalInput(settings)
 
 	def getOutputType(self):
 		if self.radioButtonFlamingo.isChecked():

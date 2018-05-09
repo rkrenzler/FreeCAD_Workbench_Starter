@@ -55,6 +55,13 @@ class MainDialog(createPartGui.BaseDialog):
 		widget = self.createLengthWidget(Dialog)
 		self.verticalLayout.insertWidget(after_index, widget)
 		
+	def saveAdditionalData(self, settings):
+		settings.setValue("lineEditLength", self.lineEditLength.text())
+		
+	def restoreAdditionalInput(self, settings):
+		text = settings.value("lineEditLength")
+		if text is not None:
+			self.lineEditLength.setText(text)
 	
 	def createNewPart(self, document, table, partName, outputType):
 		length = FreeCAD.Units.parseQuantity(self.lineEditLength.text())
