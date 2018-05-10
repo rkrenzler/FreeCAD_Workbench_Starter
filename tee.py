@@ -24,20 +24,20 @@ DIMENSIONS_USED = ["G", "G1", "G2", "H", "H1", "H2",  "M", "M1", "M2", "POD", "P
 class Dimensions:
 	def __init__(self):
 		self.G = parseQuantity("3 cm")
-		self.G1 = parseQuantity("3 cm")
-		self.G2 = parseQuantity("2 cm")
+		self.G1 = parseQuantity("2 cm")
+		self.G2 = parseQuantity("3 cm")
 		self.H = parseQuantity("4 cm") # It is L/2 for symetrical Tee. Why extra dimension?
-		self.H1 = parseQuantity("5 cm")
-		self.H2 = parseQuantity("3 cm")		
+		self.H1 = parseQuantity("3 cm")		
+		self.H2 = parseQuantity("5 cm")
 		self.PThk = parseQuantity("0.5 cm")
 		self.PThk1 = parseQuantity("0.5 cm")
 		self.PThk2 = parseQuantity("0.5 cm")
 		self.POD = parseQuantity("4 cm")
-		self.POD1 = parseQuantity("2 cm")
-		self.POD2 = parseQuantity("3 cm")
+		self.POD1 = parseQuantity("3 cm")
+		self.POD2 = parseQuantity("2 cm")
 		self.M = parseQuantity("5 cm")
-		self.M1 = parseQuantity("3 cm")
-		self.M2 = parseQuantity("4 cm")
+		self.M1 = parseQuantity("4 cm")
+		self.M2 = parseQuantity("3 cm")
 		
 	def isValid(self):
 		errorMsg = ""
@@ -84,9 +84,9 @@ class Dimensions:
 		
 		See Dimensions.shiftA1 in coupling module, for explanation how calclulate a1.
 		"""
-		a2 = max(self.M-self.POD, self.M1-self.POD2) / 2
-		x = (self.POD-self.POD2)
-		N = (self.G+self.G2)
+		a2 = max(self.M-self.POD, self.M2-self.POD1) / 2
+		x = (self.POD-self.POD1)
+		N = (self.G+self.G1)
 		# The math.sqrt will return Float. That is why
 		# we need to convert x in float too.
 		factor = x.Value/math.sqrt(4*N**2+x**2)
@@ -103,7 +103,7 @@ class Dimensions:
 		"""Return outer length of the socket on the to in FreeCAD
 		(on the right size in the picture).
 		"""
-		return self.H2-self.G2-self.shiftA1()
+		return self.H1-self.G1-self.shiftA1()
 		
 	def calculateAuxiliararyPoints(self):
 		"""Calculate auxiliarary points which are used to build a coupling from cylinders and cones.
@@ -113,10 +113,10 @@ class Dimensions:
 		result = {}
 		result["p1"] = FreeCAD.Vector(-self.H,0,0)
 		result["p2"] = FreeCAD.Vector(-self.G,0,0)
-		result["p3"] = FreeCAD.Vector(self.G2,0,0)
-		result["p4"] = FreeCAD.Vector(0,0,self.G1)
+		result["p3"] = FreeCAD.Vector(self.G1,0,0)
+		result["p4"] = FreeCAD.Vector(0,0,self.G2)
 		result["p5"] = FreeCAD.Vector(-self.G+self.shiftA1(),0,0)
-		result["p6"] = FreeCAD.Vector(self.G2+self.shiftA1(),0,0)		
+		result["p6"] = FreeCAD.Vector(self.G1+self.shiftA1(),0,0)		
 		return result
 		
 	def PID(self):
@@ -139,7 +139,7 @@ class Tee:
 			raise UnplausibleDimensions(msg)
 
 	def createOuterPart(self):
-		if self.dims.M == self.dims.M2:
+		if self.dims.M == self.dims.M1:
 			return self.createOuterPartEqualHorizontal()
 		else:
 			return self.createOuterPartReducedHorizontal()
@@ -150,24 +150,24 @@ class Tee:
 		
 		For some reasons this code crashes freecad.
 		"""
-		if self.dims.M1 > self.dims.M or self.dims.M1 > self.dims.M2:
+		if self.dims.M2 > self.dims.M or self.dims.M2 > self.dims.M1:
 			cylinder = self.document.addObject("Part::Cylinder","HorizontalEnhancement")
-			cylinder.Radius = self.dims.M1/2.0
-			cylinder.Height = self.dims.M1
-			p = FreeCAD.Vector(-self.dims.M1/2.0,0,0)
+			cylinder.Radius = self.dims.M2/2.0
+			cylinder.Height = self.dims.M2
+			p = FreeCAD.Vector(-self.dims.M2/2.0,0,0)
 			cylinder.Placement = FreeCAD.Placement(p, FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 			return cylinder
 		else:
 			return None
 
 	def createOuterPartEqualHorizontal(self):
-		""" Create an outer part, where the left and the right outer dimensions M and M2 are equal.
+		""" Create an outer part, where the left and the right outer dimensions M and M1 are equal.
 		"""
 		aux = self.dims.calculateAuxiliararyPoints()
-		L = self.dims.H+self.dims.H2
+		L = self.dims.H+self.dims.H1
 		vertical_outer_cylinder = self.document.addObject("Part::Cylinder","VerticalOuterCynlider")
-		vertical_outer_cylinder.Radius = self.dims.M1/2.0
-		vertical_outer_cylinder.Height = self.dims.H1
+		vertical_outer_cylinder.Radius = self.dims.M2/2.0
+		vertical_outer_cylinder.Height = self.dims.H2
 		horizontal_outer_cylinder = self.document.addObject("Part::Cylinder","HorizontalOuterCynlider")
 		horizontal_outer_cylinder.Radius = self.dims.M/2.0
 		horizontal_outer_cylinder.Height = L
@@ -198,18 +198,18 @@ class Tee:
 		# Create a cone and put it at the right side of the cylinder 1.
 		cone = self.document.addObject("Part::Cone","Cone")
 		cone.Radius1 = self.dims.M/2.0
-		cone.Radius2 = self.dims.M2/2.0
-		cone.Height = self.dims.G+self.dims.G2
+		cone.Radius2 = self.dims.M1/2.0
+		cone.Height = self.dims.G+self.dims.G1
 		cone.Placement = FreeCAD.Placement(aux["p5"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))				
 		# Create a socket 2 and put it at the right side of the cone.
 		cylinder2 = self.document.addObject("Part::Cylinder","Cylinder2")
-		cylinder2.Radius = self.dims.M2/2.0
+		cylinder2.Radius = self.dims.M1/2.0
 		cylinder2.Height = self.dims.rightSocketOuterLength()
 		cylinder2.Placement = FreeCAD.Placement(aux["p6"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))						
 		# Create vertical part.
 		vertical_outer_cylinder = self.document.addObject("Part::Cylinder","VerticalOuterCynlider")
-		vertical_outer_cylinder.Radius = self.dims.M1/2.0
-		vertical_outer_cylinder.Height = self.dims.H1
+		vertical_outer_cylinder.Radius = self.dims.M2/2.0
+		vertical_outer_cylinder.Height = self.dims.H2
 		# Combine all four parts and, if necessary, add enhacement.
 		outer = self.document.addObject("Part::MultiFuse","OuterParts")
 		enh = self.HorizontalWallEnhancement()
@@ -226,7 +226,7 @@ class Tee:
 		return outer
 
 	def createInnerPart(self):
-		if self.dims.PID() == self.dims.PID2():
+		if self.dims.PID() == self.dims.PID1():
 			return self.createInnerPartEqualHorizontal()
 		else:
 			return self.createInnerPartReducedHorizontal()
@@ -235,10 +235,10 @@ class Tee:
 		""" Create a cylindrical inner part simmilar to createOuterPartEqualHorizontal().
 		"""
 		aux = self.dims.calculateAuxiliararyPoints()
-		L = self.dims.H+self.dims.H2
+		L = self.dims.H+self.dims.H1
 		vertical_inner_cylinder = self.document.addObject("Part::Cylinder","VerticalInnerCynlider")
-		vertical_inner_cylinder.Radius = self.dims.PID1()/2.0
-		vertical_inner_cylinder.Height = self.dims.H1
+		vertical_inner_cylinder.Radius = self.dims.PID2()/2.0
+		vertical_inner_cylinder.Height = self.dims.H2
 		horizontal_inner_cylinder = self.document.addObject("Part::Cylinder","HorizontalInnerCynlider")
 		horizontal_inner_cylinder.Radius = self.dims.PID()/2.0
 		horizontal_inner_cylinder.Height = L
@@ -259,18 +259,18 @@ class Tee:
 		# Create a cone and put itto the right of the cylinder 1.
 		cone = self.document.addObject("Part::Cone","InnerCone")
 		cone.Radius1 = self.dims.PID()/2.0
-		cone.Radius2 = self.dims.PID2()/2.0
-		cone.Height = self.dims.G+self.dims.G2
+		cone.Radius2 = self.dims.PID1()/2.0
+		cone.Height = self.dims.G+self.dims.G1
 		cone.Placement = FreeCAD.Placement(aux["p2"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))				
 		# Create a socket 2 and put it to the right of the cone.
 		cylinder2 = self.document.addObject("Part::Cylinder","InnerCylinder2")
-		cylinder2.Radius = self.dims.PID2()/2.0
-		cylinder2.Height = self.dims.H2 - self.dims.G2
+		cylinder2.Radius = self.dims.PID1()/2.0
+		cylinder2.Height = self.dims.H1 - self.dims.G1
 		cylinder2.Placement = FreeCAD.Placement(aux["p3"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))						
 		# Create vertical part.
 		vertical_inner_cylinder = self.document.addObject("Part::Cylinder","VerticalInnerCynlider")
-		vertical_inner_cylinder.Radius = self.dims.PID1()/2.0
-		vertical_inner_cylinder.Height = self.dims.H1
+		vertical_inner_cylinder.Radius = self.dims.PID2()/2.0
+		vertical_inner_cylinder.Height = self.dims.H2
 		# Combine all four parts.
 		inner = self.document.addObject("Part::MultiFuse","InnerParts")
 		inner.Shapes = [cylinder1, cone, cylinder2, vertical_inner_cylinder]+self.createInnerSockets()
@@ -285,13 +285,13 @@ class Tee:
 
 		
 		socket_right = self.document.addObject("Part::Cylinder","SocketRight")
-		socket_right.Radius = self.dims.POD2/2.0
-		socket_right.Height = self.dims.H2-self.dims.G2
+		socket_right.Radius = self.dims.POD1/2.0
+		socket_right.Height = self.dims.H1-self.dims.G1
 		socket_right.Placement = FreeCAD.Placement(aux["p3"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 		
 		socket_top = self.document.addObject("Part::Cylinder","SocketTop")
-		socket_top.Radius = self.dims.POD1/2.0
-		socket_top.Height = self.dims.H1 - self.dims.G1
+		socket_top.Radius = self.dims.POD2/2.0
+		socket_top.Height = self.dims.H2 - self.dims.G2
 		socket_top.Placement = FreeCAD.Placement(aux["p4"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),0), FreeCAD.Vector(0,0,0))
 
 		return [socket_left, socket_top, socket_right]
