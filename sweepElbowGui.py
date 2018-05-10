@@ -17,6 +17,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dimensionsPixmap = "sweep-elbow-dimensions.png"
 		params.explanationText = "<html><head/><body><p>Only dimensions used are: G, H, M POD, PThk. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "sweep elbow user input"
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
@@ -24,4 +25,4 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(sweepElbow.CSV_TABLE_PATH, sweepElbow.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable2(sweepElbow.CSV_TABLE_PATH, sweepElbow.DIMENSIONS_USED)
