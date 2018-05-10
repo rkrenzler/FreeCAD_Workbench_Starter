@@ -77,7 +77,7 @@ class Tee(pypeType):
 	def createOuterPart(cls, obj):
 		dims = cls.extractDimensions(obj)
 			
-		if dims.M == dims.M2:
+		if dims.M == dims.M1:
 			return cls.createOuterPartEqualHorizontal(obj)
 		else:
 			return cls.createOuterPartReducedHorizontal(obj)
@@ -86,7 +86,7 @@ class Tee(pypeType):
 	def createOuterPartEqual(cls, obj):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		""" Create the outer part is a simple cylinder. This is when M and M2 are the equal."""
+		""" Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
 
 		return outer
 		
@@ -98,10 +98,10 @@ class Tee(pypeType):
 		"""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		if dims.M1 > dims.M or dims.M1 > dims.M2:
-			r = dims.M1/2.0
-			h = dims.M1
-			p = FreeCAD.Vector(-dims.M1/2.0,0,0)
+		if dims.M2 > dims.M or dims.M2 > dims.M1:
+			r = dims.M2/2.0
+			h = dims.M2
+			p = FreeCAD.Vector(-dims.M2/2.0,0,0)
 			dr = FreeCAD.Vector(1,0,0) # Direction where to rotate the cylinder
 			return Part.makeCylinder(r, h, p, dr)
 		else:
@@ -109,13 +109,13 @@ class Tee(pypeType):
 						
 	@classmethod
 	def createOuterPartEqualHorizontal(cls, obj):
-		""" Create an outer part, where the left and the right outer dimensions M and M2 are equal.
+		""" Create an outer part, where the left and the right outer dimensions M and M1 are equal.
 		"""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		L = dims.H+dims.H2
-		r = dims.M1/2.0
-		h = dims.H1
+		L = dims.H+dims.H1
+		r = dims.M2/2.0
+		h = dims.H2
 		vertical_outer_cylinder = Part.makeCylinder(r, h)
 		r = dims.M/2.0
 		h = L
@@ -144,18 +144,18 @@ class Tee(pypeType):
 		cylinder1 = Part.makeCylinder(r, h, aux["p1"], dr)
 		# Create a cone and put it at the right side of the cylinder 1.
 		r1 = dims.M/2.0
-		r2 = dims.M2/2.0
-		h = dims.G+dims.G2
+		r2 = dims.M1/2.0
+		h = dims.G+dims.G1
 		dr = FreeCAD.Vector(1,0,0)
 		cone = Part.makeCone(r1, r2, h, aux["p5"], dr)
 		# Create a socket 2 and put it at the right side of the cone.
-		r = dims.M2/2.0
+		r = dims.M1/2.0
 		h = dims.rightSocketOuterLength()
 		dr = FreeCAD.Vector(1,0,0) # Put the cylinder along the x-ayis.
 		cylinder2 = Part.makeCylinder(r, h, aux["p6"], dr)
 		# Create vertical part.
-		r = dims.M1/2.0
-		h = dims.H1
+		r = dims.M2/2.0
+		h = dims.H2
 		vertical_outer_cylinder = Part.makeCylinder(r, h)
 		# Combine all four parts and, if necessary, add enhacement.
 		enh = cls.horizontalWallEnhancement(obj)		
@@ -170,7 +170,7 @@ class Tee(pypeType):
 	@classmethod
 	def createInnerPart(cls, obj):
 		dims = cls.extractDimensions(obj)
-		if dims.PID() == dims.PID2():
+		if dims.PID() == dims.PID1():
 			return cls.createInnerPartEqualHorizontal(obj)
 		else:
 			return cls.createInnerPartReducedHorizontal(obj)
@@ -185,25 +185,25 @@ class Tee(pypeType):
 		dr = FreeCAD.Vector(1,0,0) # Put cylinder along the x-axis.
 		socket_left = Part.makeCylinder(r, h, aux["p1"], dr)
 		
-		r = dims.POD2/2.0
-		h = dims.H2-dims.G2
-		socket_right = Part.makeCylinder(r, h, aux["p3"], dr)
-
 		r = dims.POD1/2.0
 		h = dims.H1-dims.G1
+		socket_right = Part.makeCylinder(r, h, aux["p3"], dr)
+
+		r = dims.POD2/2.0
+		h = dims.H2-dims.G2
 		socket_top = Part.makeCylinder(r, h, aux["p4"])
 
 		return [socket_left, socket_top, socket_right]
 
 	@classmethod
 	def createInnerPartEqualHorizontal(cls, obj):
-		""" Create an outer part, where the left and the right outer dimensions M and M2 are equal.
+		""" Create an outer part, where the left and the right outer dimensions M and M1 are equal.
 		"""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		L = dims.H+dims.H2
-		r = dims.PID1()/2.0
-		h = dims.H1
+		L = dims.H+dims.H1
+		r = dims.PID2()/2.0
+		h = dims.H2
 		vertical_inner_cylinder = Part.makeCylinder(r, h)
 		r = dims.PID()/2.0
 		h = L
@@ -225,16 +225,16 @@ class Tee(pypeType):
 		cylinder1 = Part.makeCylinder(r, h, aux["p1"], dr)
 		# Create a cone and put it to the right of the cylinder 1.
 		r1 = dims.PID()/2.0
-		r2 = dims.PID2()/2.0
-		h = dims.G+dims.G2
+		r2 = dims.PID1()/2.0
+		h = dims.G+dims.G1
 		cone = Part.makeCone(r1, r2, h, aux["p2"], dr)
 		# Create a socket 2 and put it at the right side of the cone.
-		r = dims.PID2()/2.0
-		h = dims.H2 - dims.G2
+		r = dims.PID1()/2.0
+		h = dims.H1 - dims.G1
 		cylinder2 = Part.makeCylinder(r, h, aux["p3"], dr)
 		# Create vertical part.
-		r = dims.PID1()/2.0
-		h = dims.H1
+		r = dims.PID2()/2.0
+		h = dims.H2
 		vertical_cylinder = Part.makeCylinder(r, h)
 		# Combine all parts.
 		return cylinder1.fuse([cone, cylinder2, vertical_cylinder]+cls.createInnerSockets(obj))
