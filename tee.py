@@ -372,6 +372,7 @@ class TeeFromTable:
 		dims = Dimensions()
 		dims.G = parseQuantity(row["G"])
 		dims.G1 = parseQuantity(row["G1"])
+		dims.G2 = parseQuantity(row["G2"])
 		dims.H = parseQuantity(row["H"]) 
 		dims.H1 = parseQuantity(row["H1"])
 		dims.H2 = parseQuantity(row["H2"])
