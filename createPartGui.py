@@ -267,7 +267,7 @@ class BaseDialog(QtGui.QDialog):
 		
 	
 # Before working with macros, try to load the dimension table.
-def GuiCheckTable2(tablePath, dimensionsUsed):
+def GuiCheckTable(tablePath, dimensionsUsed):
 	# Check if the CSV file exists.
 	if os.path.isfile(tablePath) == False:
 		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
@@ -277,7 +277,7 @@ def GuiCheckTable2(tablePath, dimensionsUsed):
 		exit(1) # Error
 
         FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath) 
-	table = piping.CsvTable2(dimensionsUsed)
+	table = piping.CsvTable(dimensionsUsed)
 	table.load(tablePath)
 
 	if table.hasValidData == False:

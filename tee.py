@@ -415,7 +415,7 @@ def TestTee():
 
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable2(DIMENSIONS_USED)
+	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = TeeFromTable(document, table)
 	for i in range(0, len(table.data)):
@@ -428,7 +428,7 @@ def TestTable():
 
 def TestPartFromTable(partNumber, outputType):
 	document = FreeCAD.activeDocument()
-	table = CsvTable2(DIMENSIONS_USED)
+	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = TeeFromTable(document, table)
 	print("Creating part %s"%partNumber)

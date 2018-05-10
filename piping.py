@@ -70,7 +70,7 @@ class CsvError(Error):
 		super(Error, self).__init__(message)
 
 
-class CsvTable2:
+class CsvTable:
 	""" Read pipe dimensions from a csv file.
 	one part of the column must be unique and contains a unique key.
 

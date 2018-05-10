@@ -32,5 +32,5 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 		
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable2(cross.CSV_TABLE_PATH, cross.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable(cross.CSV_TABLE_PATH, cross.DIMENSIONS_USED)
 

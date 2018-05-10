@@ -25,4 +25,4 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable2(sweepElbow.CSV_TABLE_PATH, sweepElbow.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable(sweepElbow.CSV_TABLE_PATH, sweepElbow.DIMENSIONS_USED)

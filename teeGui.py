@@ -26,4 +26,4 @@ class MainDialog(createPartGui.BaseDialog):
 
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable2(tee.CSV_TABLE_PATH, tee.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable(tee.CSV_TABLE_PATH, tee.DIMENSIONS_USED)

@@ -260,7 +260,7 @@ def TestCross():
 # Test macro.
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable2(DIMENSIONS_USED)
+	table = CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	cross = CrossFromTable(document, table)
 	for i in range(0, len(table.data)):

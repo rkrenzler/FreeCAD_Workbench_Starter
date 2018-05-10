@@ -26,5 +26,5 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 		
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable2(elbow.CSV_TABLE_PATH, elbow.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable(elbow.CSV_TABLE_PATH, elbow.DIMENSIONS_USED)
 

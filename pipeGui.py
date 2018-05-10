@@ -70,4 +70,4 @@ class MainDialog(createPartGui.BaseDialog):
 
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable2(pipe.CSV_TABLE_PATH, pipe.DIMENSIONS_USED)
+	return createPartGui.GuiCheckTable(pipe.CSV_TABLE_PATH, pipe.DIMENSIONS_USED)
