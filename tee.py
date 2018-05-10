@@ -84,7 +84,7 @@ class Dimensions:
 		
 		See Dimensions.shiftA1 in coupling module, for explanation how calclulate a1.
 		"""
-		a2 = max(self.M-self.POD, self.M2-self.POD1) / 2
+		a2 = max(self.M-self.POD, self.M1-self.POD1) / 2
 		x = (self.POD-self.POD1)
 		N = (self.G+self.G1)
 		# The math.sqrt will return Float. That is why
