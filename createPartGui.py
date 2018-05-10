@@ -265,28 +265,6 @@ class BaseDialog(QtGui.QDialog):
 					None, QtGui.QApplication.UnicodeUTF8))
 		self.exec_()
 		
-# Before working with macros, try to load the dimension table.
-def GuiCheckTable(tablePath, dimensionsUsed):
-	# Check if the CSV file exists.
-	if os.path.isfile(tablePath) == False:
-		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, 
-			"Creating of the part failed.", text)
-		msgBox.exec_()
-		exit(1) # Error
-
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath) 
-	table = piping.CsvTable(dimensionsUsed)
-	table.load(tablePath)
-
-	if table.hasValidData == False:
-		text = 'Invalid %s.\n'\
-			'It must contain columns %s.'%(tablePath, ", ".join(dimensionsUsed))
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, "Creating of the part failed.", text)
-		msgBox.exec_()
-		exit(1) # Error
-
-	return table
 	
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable2(tablePath, dimensionsUsed):
