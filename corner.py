@@ -10,13 +10,13 @@ import os.path
 import FreeCAD
 import Part
 
-import OSEBase
+import OSEBasePiping
 from piping import *
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "corner.csv")
+CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "corner.csv")
 # It must contain unique values in the column "PartNumber" and also, dimensions listened below.
 DIMENSIONS_USED = ["G", "H", "M", "POD", "PThk"]
 

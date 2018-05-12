@@ -11,7 +11,7 @@ import os.path
 from PySide import QtCore, QtGui
 import FreeCAD
 
-import OSEBase
+import OSEBasePiping
 import piping
 import pipingGui
 
@@ -61,7 +61,7 @@ class BaseDialog(QtGui.QDialog):
 #
 # The file paths needs to be adjusted manually. For example
 # self.label.setPixmap(QtGui.QPixmap(GetMacroPath()+"coupling-dimensions.png"))
-# os.path.join(OSEBase.IMAGE_PATH, self.params.dimensionsPixmap)
+# os.path.join(OSEBasePiping.IMAGE_PATH, self.params.dimensionsPixmap)
 # access datata in some special FreeCAD directory.
 	def setupUi(self, Dialog):
 		Dialog.setObjectName("Dialog")
@@ -104,7 +104,7 @@ class BaseDialog(QtGui.QDialog):
 		self.verticalLayout.addWidget(self.labelExplanation)
 		self.labelImage = QtGui.QLabel(Dialog)
 		self.labelImage.setText("")
-		self.labelImage.setPixmap(os.path.join(OSEBase.IMAGE_PATH, self.params.dimensionsPixmap))
+		self.labelImage.setPixmap(os.path.join(OSEBasePiping.IMAGE_PATH, self.params.dimensionsPixmap))
 		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
 		self.labelImage.setObjectName("labelImage")
 		self.verticalLayout.addWidget(self.labelImage)

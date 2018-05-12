@@ -12,13 +12,13 @@ import FreeCADGui
 import Sketcher
 import Part
 
-import OSEBase
+import OSEBasePiping
 from piping import *
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBase.TABLE_PATH, "elbow.csv")
+CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "elbow.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["BendAngle", "POD", "PThk", "H", "J", "M"]
 

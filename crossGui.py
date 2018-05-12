@@ -9,7 +9,6 @@ import os.path
 import cross
 import createPartGui
 
-import OSEBase
 from cross import *
 from piping import *
 import pipingGui

@@ -23,7 +23,7 @@
 #*                                                                         *
 #***************************************************************************
 
-import FreeCAD, Part, OSEBase
+import FreeCAD, Part, OSEBasePiping
 import couplingGui
 import pipeGui, bushingGui, teeGui
 import cornerGui, elbowGui, crossGui
@@ -35,7 +35,7 @@ from FreeCAD import Gui
 class OSE_CreatePipeClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a pipe",
                 'ToolTip' : "Adds a pipe into the center of the document."}
@@ -59,7 +59,7 @@ class OSE_CreatePipeClass():
 class OSE_CreateCouplingClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateCoupling.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCoupling.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a coupling",
                 'ToolTip' : "Adds a coupling."}
@@ -83,7 +83,7 @@ class OSE_CreateCouplingClass():
 class OSE_CreateBushingClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateBushing.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateBushing.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a bushing",
                 'ToolTip' : "Adds a bushing."}
@@ -106,7 +106,7 @@ class OSE_CreateBushingClass():
 class OSE_CreateElbowClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add an elbow",
                 'ToolTip' : "Adds an elbow."}
@@ -129,7 +129,7 @@ class OSE_CreateElbowClass():
 class OSE_CreateSweepElbowClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateSweepElbow.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateSweepElbow.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a sweep elbow",
                 'ToolTip' : "Adds a sweep elbow."}
@@ -151,7 +151,7 @@ class OSE_CreateSweepElbowClass():
 class OSE_CreateTeeClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateTee.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateTee.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a tee",
                 'ToolTip' : "Adds a tee."}
@@ -175,7 +175,7 @@ class OSE_CreateTeeClass():
 class OSE_CreateCornerClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateCorner.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCorner.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a outer corner",
                 'ToolTip' : "Adds a outer corner."}
@@ -197,7 +197,7 @@ class OSE_CreateCornerClass():
 
 class OSE_CreateCrossClass():
     def GetResources(self):
-        return {'Pixmap'  : OSEBase.ICON_PATH + '/CreateCross.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCross.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a cross",
                 'ToolTip' : "Adds a cross."}

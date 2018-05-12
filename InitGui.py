@@ -32,12 +32,12 @@ class OSE_PipingWorkbench (Workbench):
 
     def __init__(self):
 	# This is the only place, where I could initialize the workbach icon.
-        import os, OSEBase
-        self.__class__.Icon = os.path.join(OSEBase.ICON_PATH,"Workbench.svg")
+        import os, OSEBasePiping
+        self.__class__.Icon = os.path.join(OSEBasePiping.ICON_PATH,"Workbench.svg")
     def Initialize(self):
         "This function is executed when FreeCAD starts"
 
-        import OSEBase, OSE_CommandsPiping # import here all the needed files that create your FreeCAD commands
+        import OSEBasePiping, OSE_CommandsPiping # import here all the needed files that create your FreeCAD commands
         self.list = ["OSE_CreatePipe", "OSE_CreateCoupling", "OSE_CreateBushing", "OSE_CreateElbow", "OSE_CreateSweepElbow",
 			 "OSE_CreateTee", "OSE_CreateCorner", "OSE_CreateCross"] # A list of command names created in the line above
         self.appendToolbar("Piping", self.list) # creates a new toolbar with your commands
