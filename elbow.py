@@ -18,11 +18,18 @@ CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "elbow.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["BendAngle", "POD", "PThk", "H", "J", "M"]
 
+# The value RELATIVE_EPSILON is used to slightly change the size of parts
+# to prevent problems with boolean operations.
+# Keep this value very small.
+# For example, the outer bent part of the elbow dissaperas when it has
+# the same radius as the cylinder at the ends.
+RELATIVE_EPSILON = 0.000001
+
 
 class Dimensions:
     def __init__(self):
         # Init class with test values
-        self.BendAngle = parseQuantity("45 deg")
+        self.BendAngle = parseQuantity("60 deg")
         self.H = parseQuantity("3 cm")
         self.J = parseQuantity("2 cm")
         self.M = parseQuantity("3 cm")
@@ -53,26 +60,31 @@ class Dimensions:
         See documentation picture elbow-cacluations.png
         """
         rBend = self.M / 2.0
-        alpha = float(self.BendAngle.getValueAs("deg"))
+        beta = 180 - float(self.BendAngle.getValueAs("deg"))
+        beta_rad = math.pi - float(self.BendAngle.getValueAs("rad"))
         J = self.J
         H = self.H
+        M = self.M
 
-        p1 = FreeCAD.Vector(0, 0, -H)
-        p2 = FreeCAD.Vector(0, 0, -math.tan(math.radians(alpha) / 2) * rBend)
-        p3 = FreeCAD.Vector(rBend, 0, p2.z)
+        # Start with a normalized vector along th bisectrix of the x and y-axis.
+        # Then stretch and rotate this vector by -beta/2 and +beta/2 along the z axis.
+        bs = FreeCAD.Vector(1, 1, 0).normalize()
+        neg_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), -beta/2)
+
+        p1 = neg_rot.multVec(bs*float(H))
+        p5 = neg_rot.multVec(bs*float(J))
+
+        pos_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), +beta/2)
+        p6 = pos_rot.multVec(bs*float(J))
+
+        # p3 lies on the bissectrix. And has the length M/2/sin(alpha/2)
+        p3 = bs*float(M/2.0/math.sin(beta_rad/2.0))
         # Calculate coordinates of the base cirle at the end of sweep.
         # It will be necessary to create a solid body base+walls+cap
-        # Create an auxiliary vector, rotate around (0,0,0)
-        # and translated it to the center of the bent trajectory.
-        aux = FreeCAD.Vector(-p3.x, 0, 0)
-        rot = FreeCAD.Rotation(FreeCAD.Vector(0, 1, 0), alpha)
-        aux = rot.multVec(aux)
-        p4 = aux + p3
-
-        p5 = FreeCAD.Vector(0, 0, -J)
-        aux = FreeCAD.Vector(0, 0, J)
-        rot = FreeCAD.Rotation(FreeCAD.Vector(0, 1, 0), alpha)
-        p6 = rot.multVec(aux)
+        # Convert angle to radias, in order to use it with trigonometric python functions.
+        l = float(M/2.0/math.tan(beta_rad/2.0))
+        p2 = neg_rot.multVec(bs*l)
+        p4 = pos_rot.multVec(bs*l)
 
         return {"p1": p1, "p2": p2, "p3": p3, "p4": p4, "p5": p5, "p6": p6}
 
@@ -88,11 +100,10 @@ class Elbow:
             raise UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc):
-        """ Create alpha° bent cylinder in x-z plane with radius r.
+        """ Create alpha° bent cylinder in x-y plane with radius r.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
-        :param rBend: Distance from the bend center to the origin (0,0,0).
 
         See documentation picture elbow-cacluations.png
         """
@@ -105,17 +116,18 @@ class Elbow:
         rBend = self.dims.M / 2.0
 
         # Calculate coordinates of the base circle.
-        # Add cylinder
+        # Add cylinder.
         base = self.document.addObject("Part::Circle", "Base")
         base.Radius = rCirc
         base.Placement.Base = p2
+        base.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2)
+
         # Add trajectory
         trajectory = self.document.addObject("Part::Circle", "Trajectory")
         trajectory.Radius = rBend
         trajectory.Angle0 = 180 - alpha
         trajectory.Angle1 = 180
-        trajectory.Placement = FreeCAD.Placement(p3, FreeCAD.Rotation(
-            FreeCAD.Vector(1, 0, 0), 90), FreeCAD.Vector(0, 0, 0))
+        trajectory.Placement.Base = p3
 
         # Sweep the circle along the trajectory.
         sweep = self.document.addObject('Part::Sweep', 'Sweep')
@@ -130,17 +142,22 @@ class Elbow:
         p1 = aux["p1"]
         p2 = aux["p2"]
         p4 = aux["p4"]
-        bentPart = self.createBentCylinder(group, self.dims.M / 2)
+        # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
+        # the substraction of the inner part.
+        bentPart = self.createBentCylinder(group, self.dims.M / 2*(1 + RELATIVE_EPSILON))
         # Create socket along the z axis.
         socket1 = self.document.addObject("Part::Cylinder", "OuterSocket1")
         socket1.Radius = self.dims.M / 2
-        socket1.Height = float(self.dims.H) + p2.z
-        socket1.Placement.Base = p1
+        socket1.Height = float(self.dims.H) - p2.Length
+        socket1.Placement.Base = p2
+        socket1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2)
+#        socket1.Placement = FreeCAD.Placement(p2, FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2),
+#                                              FreeCAD.Vector(0, 0, 0))
         # Create socket along the bent part.
         socket2 = self.document.addObject("Part::Cylinder", "OuterSocket2")
         socket2.Radius = socket1.Radius
         socket2.Height = socket1.Height
-        socket2.Placement = FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0, 1, 0), self.dims.BendAngle),
+        socket2.Placement = FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p4),
                                               FreeCAD.Vector(0, 0, 0))
         outer = self.document.addObject("Part::MultiFuse", "Outer")
         outer.Shapes = [bentPart, socket1, socket2]
@@ -151,29 +168,35 @@ class Elbow:
         aux = self.dims.calculateAuxiliararyPoints()
         p2 = aux["p2"]
         p4 = aux["p4"]
+        p5 = aux["p5"]
         p6 = aux["p6"]
         pid = self.dims.POD - self.dims.PThk * 2
         bentPart = self.createBentCylinder(group, pid / 2)
         chan1 = self.document.addObject("Part::Cylinder", "InnerChannel1")
         chan1.Radius = pid / 2
-        chan1.Height = float(self.dims.H) + p2.z
-        chan1.Placement.Base = FreeCAD.Vector(0, 0, -self.dims.H)
+        # This high is longer as necessary but it is even better, because it can prevent
+        # some anomalies when substracting shapes.
+        chan1.Height = float(self.dims.H)
+        chan1.Placement.Base = p2
+        chan1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2)
+
         chan2 = self.document.addObject("Part::Cylinder", "InnerChannel2")
         chan2.Radius = chan1.Radius
         chan2.Height = chan1.Height
-        chan2.Placement = FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0, 1, 0), self.dims.BendAngle),
-                                            FreeCAD.Vector(0, 0, 0))
+        chan2.Placement.Base = p4
+        chan2.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p4)
         # Add sockets
         socket1 = self.document.addObject("Part::Cylinder", "Socket1")
         socket1.Radius = self.dims.POD / 2
         socket1.Height = self.dims.H - self.dims.J
-        socket1.Placement = chan1.Placement
+        socket1.Placement.Base = p5
+        socket1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p5)
 
         socket2 = self.document.addObject("Part::Cylinder", "Socket2")
         socket2.Radius = socket1.Radius
         socket2.Height = socket1.Height
-        socket2.Placement = FreeCAD.Placement(p6, FreeCAD.Rotation(
-            FreeCAD.Vector(0, 1, 0), self.dims.BendAngle), FreeCAD.Vector(0, 0, 0))
+        socket2.Placement.Base = p6
+        socket2.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p6)
 
         inner = self.document.addObject("Part::MultiFuse", "Inner")
         inner.Shapes = [bentPart, chan1, chan2, socket1, socket2]
@@ -186,13 +209,12 @@ class Elbow:
         # Create new group to put all the temporal data.
         group = self.document.addObject(
             "App::DocumentObjectGroup", "elbow group")
-        # ----------------------- Test code ---------------
-        #self.createBentCylinder(self.document, group, self.M/2, self.M/2, self.alpha)
         outer = self.createOuterPart(group)
         inner = self.createInnerPart(group)
         elbow = self.document.addObject("Part::Cut", "Elbow")
         elbow.Base = outer
         elbow.Tool = inner
+        elbow = inner
         group.addObject(elbow)
         if convertToSolid:
             # Before making a solid, recompute documents. Otherwise there will be
@@ -297,5 +319,5 @@ def TestTable():
         document.recompute()
 
 
-# TestElbow()
+#TestElbow()
 # TestElbowTable()
