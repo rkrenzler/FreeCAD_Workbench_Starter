@@ -3,8 +3,6 @@
 # Date: 24 March 2018
 # Create a elbow-fitting using Flamingo workbench.
 
-import math
-
 import FreeCAD
 import Part
 
@@ -83,6 +81,7 @@ class Elbow(pypeType):
         """
         # Convert alpha to degree value
         dims = Elbow.extractDimensions(obj)
+
         aux = dims.calculateAuxiliararyPoints()
         p2 = aux["p2"]
         p3 = aux["p3"]
@@ -190,14 +189,11 @@ class ElbowBuilder:
 
     def create(self, obj):
         """Create an elbow. """
-#			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
         elbow = Elbow(obj, PSize="", BendAngle=self.dims.BendAngle, M=self.dims.M, POD=self.dims.POD,
                       PThk=self.dims.PThk, H=self.dims.H, J=self.dims.J)
         obj.ViewObject.Proxy = 0
         obj.Placement.Base = self.pos
-        #rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
-        # obj.Placement.Rotation=rot.multiply(obj.Placement.Rotation)
-        # feature.ViewObject.Transparency=70
+
         return elbow
 
 
