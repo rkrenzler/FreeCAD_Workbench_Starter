@@ -69,22 +69,22 @@ class Dimensions:
         # Start with a normalized vector along th bisectrix of the x and y-axis.
         # Then stretch and rotate this vector by -beta/2 and +beta/2 along the z axis.
         bs = FreeCAD.Vector(1, 1, 0).normalize()
-        neg_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), -beta/2)
+        neg_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), -beta / 2)
 
-        p1 = neg_rot.multVec(bs*float(H))
-        p5 = neg_rot.multVec(bs*float(J))
+        p1 = neg_rot.multVec(bs * float(H))
+        p5 = neg_rot.multVec(bs * float(J))
 
-        pos_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), +beta/2)
-        p6 = pos_rot.multVec(bs*float(J))
+        pos_rot = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), +beta / 2)
+        p6 = pos_rot.multVec(bs * float(J))
 
         # p3 lies on the bissectrix. And has the length M/2/sin(alpha/2)
-        p3 = bs*float(M/2.0/math.sin(beta_rad/2.0))
+        p3 = bs * float(M / 2.0 / math.sin(beta_rad / 2.0))
         # Calculate coordinates of the base cirle at the end of sweep.
         # It will be necessary to create a solid body base+walls+cap
         # Convert angle to radias, in order to use it with trigonometric python functions.
-        l = float(M/2.0/math.tan(beta_rad/2.0))
-        p2 = neg_rot.multVec(bs*l)
-        p4 = pos_rot.multVec(bs*l)
+        l = float(M / 2.0 / math.tan(beta_rad / 2.0))
+        p2 = neg_rot.multVec(bs * l)
+        p4 = pos_rot.multVec(bs * l)
 
         return {"p1": p1, "p2": p2, "p3": p3, "p4": p4, "p5": p5, "p6": p6}
 
@@ -144,13 +144,15 @@ class Elbow:
         p4 = aux["p4"]
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
         # the substraction of the inner part.
-        bentPart = self.createBentCylinder(group, self.dims.M / 2*(1 + RELATIVE_EPSILON))
+        bentPart = self.createBentCylinder(
+            group, self.dims.M / 2 * (1 + RELATIVE_EPSILON))
         # Create socket along the z axis.
         socket1 = self.document.addObject("Part::Cylinder", "OuterSocket1")
         socket1.Radius = self.dims.M / 2
         socket1.Height = float(self.dims.H) - p2.Length
         socket1.Placement.Base = p2
-        socket1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2)
+        socket1.Placement.Rotation = FreeCAD.Rotation(
+            FreeCAD.Vector(0, 0, 1), p2)
 #        socket1.Placement = FreeCAD.Placement(p2, FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2),
 #                                              FreeCAD.Vector(0, 0, 0))
         # Create socket along the bent part.
@@ -178,25 +180,29 @@ class Elbow:
         # some anomalies when substracting shapes.
         chan1.Height = float(self.dims.H)
         chan1.Placement.Base = p2
-        chan1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2)
+        chan1.Placement.Rotation = FreeCAD.Rotation(
+            FreeCAD.Vector(0, 0, 1), p2)
 
         chan2 = self.document.addObject("Part::Cylinder", "InnerChannel2")
         chan2.Radius = chan1.Radius
         chan2.Height = chan1.Height
         chan2.Placement.Base = p4
-        chan2.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p4)
+        chan2.Placement.Rotation = FreeCAD.Rotation(
+            FreeCAD.Vector(0, 0, 1), p4)
         # Add sockets
         socket1 = self.document.addObject("Part::Cylinder", "Socket1")
         socket1.Radius = self.dims.POD / 2
         socket1.Height = self.dims.H - self.dims.J
         socket1.Placement.Base = p5
-        socket1.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p5)
+        socket1.Placement.Rotation = FreeCAD.Rotation(
+            FreeCAD.Vector(0, 0, 1), p5)
 
         socket2 = self.document.addObject("Part::Cylinder", "Socket2")
         socket2.Radius = socket1.Radius
         socket2.Height = socket1.Height
         socket2.Placement.Base = p6
-        socket2.Placement.Rotation = FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p6)
+        socket2.Placement.Rotation = FreeCAD.Rotation(
+            FreeCAD.Vector(0, 0, 1), p6)
 
         inner = self.document.addObject("Part::MultiFuse", "Inner")
         inner.Shapes = [bentPart, chan1, chan2, socket1, socket2]
@@ -319,5 +325,5 @@ def TestTable():
         document.recompute()
 
 
-#TestElbow()
+# TestElbow()
 # TestElbowTable()
