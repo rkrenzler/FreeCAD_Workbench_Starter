@@ -34,7 +34,7 @@ class Elbow(pypeType):
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
 		obj.addProperty("App::PropertyString","PartNumber","Elbow","Part number").PartNumber=""
-		
+
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
@@ -61,12 +61,12 @@ class Elbow(pypeType):
 
 	@staticmethod
 	def createBentCylinder(obj, rCirc):
-		""" Create alpha° bent cylinder in x-z plane with radius r. 
-		
+		""" Create alpha° bent cylinder in x-z plane with radius r.
+
 		:param group: Group where to add created objects.
 		:param rCirc: Radius of the cylinder.
 		:param rBend: Distance from the bend center to the origin (0,0,0).
-		
+
 		See documentation picture elbow-cacluations.png
 		"""
 		# Convert alpha to degree value
@@ -78,10 +78,10 @@ class Elbow(pypeType):
 
 		alpha = float(dims.BendAngle.getValueAs("deg"))
 		rBend = dims.M/2.0
-		
+
 		# Calculate coordinates of the base circle.
 		base = Part.makeCircle(rCirc, p2)
-		
+
 		# Add trajectory
 		trajectory = Part.makeCircle(rBend, p3, FreeCAD.Vector(0,-1,0), 180-alpha,180)
 
@@ -97,7 +97,7 @@ class Elbow(pypeType):
 		end2=Part.Face(Part.Wire(cap))
 		solid = Part.Solid(Part.Shell([end1, sweep, end2]))
 		return solid
-		
+
 
 	@staticmethod
 	def createOuterPart(obj):
@@ -106,7 +106,7 @@ class Elbow(pypeType):
 		p1 = aux["p1"]
 		p2 = aux["p2"]
 		p4 = aux["p4"]
-		
+
 		r = dims.M/2
 		# For unknow reasons, witoutm the factor r*0.999999 the middle part disappears.
 		bentPart = Elbow.createBentCylinder(obj, r*(1+RELATIVE_EPSILON))
@@ -118,7 +118,7 @@ class Elbow(pypeType):
 
 		outer = bentPart.fuse([socket1, socket2])
 		return outer
-		
+
 	@staticmethod
 	def createInnerPart(obj):
 		dims = Elbow.extractDimensions(obj)
@@ -129,7 +129,7 @@ class Elbow(pypeType):
 		p6 = aux["p6"]
 
 		r = dims.POD/2-dims.PThk
-		
+
 		bentPart = Elbow.createBentCylinder(obj, r*(1+RELATIVE_EPSILON))
 		# Create a channel along the z axis.
 		h = float(dims.H)+p2.z
@@ -137,30 +137,30 @@ class Elbow(pypeType):
 		# Create a channel along the bent part.
 		chan2 = Part.makeCylinder(r, h, p4, p4)
 		# Create corresponding socktes.
-		
+
 		rSocket = dims.POD/2
 		hSocket = dims.H-dims.J
 		socket1 = Part.makeCylinder(rSocket, hSocket, p1)
 		socket2 = Part.makeCylinder(rSocket, hSocket, p6, p6)
-		
+
 		inner = bentPart.fuse([chan1, chan2, socket1, socket2])
 		return inner
-		
-	@staticmethod	
+
+	@staticmethod
 	def createShape(obj):
 		outer = Elbow.createOuterPart(obj)
 		inner = Elbow.createInnerPart(obj)
 		return outer.cut(inner)
 		#return outer
 		#return inner
-		
+
 	def execute(self,obj):
 		# Create the shape of the tee.
 		shape = Elbow.createShape(obj)
 		obj.Shape = shape
 		# Recalculate ports.
 		obj.Ports = self.getPorts(obj)
-		
+
 	def getPorts(self, obj):
 		dims = Elbow.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
@@ -174,7 +174,7 @@ class ElbowBuilder:
 		self.dims = elbowMod.Dimensions()
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
 		self.document = document
-		
+
 	def create(self, obj):
 		"""Create an elbow. """
 #			feature = self.document.addObject("Part::FeaturePython","OSE-elbow")
@@ -195,5 +195,5 @@ def TestElbow():
 	#builder.dims.BendAngle = FreeCAD.Units.parseQuantity("90 deg")
 	builder.create(feature)
 	document.recompute()
-	
+
 #TestElbow()
