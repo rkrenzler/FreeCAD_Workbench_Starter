@@ -4,16 +4,12 @@
 # Create a elbow-fitting.
 
 import math
-import csv
 import os.path
 
 import FreeCAD
-import FreeCADGui
-import Sketcher
-import Part
 
 import OSEBasePiping
-from piping import *
+import piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
@@ -104,7 +100,6 @@ class Elbow:
         aux = self.dims.calculateAuxiliararyPoints()
         p2 = aux["p2"]
         p3 = aux["p3"]
-        p4 = aux["p4"]
 
         alpha = float(self.dims.BendAngle.getValueAs("deg"))
         rBend = self.dims.M / 2.0
@@ -206,9 +201,9 @@ class Elbow:
             # exception.
             self.document.recompute()
             # Now convert all parts to solid, and remove intermediate data.
-            solid = toSolid(self.document, elbow, "elbow (solid)")
+            solid = piping.toSolid(self.document, elbow, "elbow (solid)")
             # Remove previous (intermediate parts).
-            parts = nestedObjects(group)
+            parts = piping.nestedObjects(group)
             # Document.removeObjects can remove multple objects, when we use
             # parts directly. To prevent exceptions with deleted objects,
             # use the name list instead.
@@ -234,7 +229,7 @@ class ElbowFromTable:
     def getPThk(cls, row):
         """ For compatibility results, if there is no "PThk" dimension, calculate it
         from "PID" and "POD" """
-        if not "PThk" in row.keys():
+        if "PThk" not in row.keys():
             return (parseQuantity(row["POD"]) - parseQuantity(row["PID"])) / 2.0
         else:
             return parseQuantity(row["PThk"])
@@ -260,13 +255,13 @@ class ElbowFromTable:
         dims.POD = parseQuantity(row["POD"])
         dims.PThk = self.getPThk(row)
 
-        if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+        if outputType == piping.OUTPUT_TYPE_PARTS or outputType == piping.OUTPUT_TYPE_SOLID:
             elbow = Elbow(self.document)
             elbow.dims = dims
-            part = elbow.create(outputType == OUTPUT_TYPE_SOLID)
+            part = elbow.create(outputType == piping.OUTPUT_TYPE_SOLID)
             part.Label = "OSE-Elbow"
             return part
-        elif outputType == OUTPUT_TYPE_FLAMINGO:
+        elif outputType == piping.OUTPUT_TYPE_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Elbow")
@@ -274,15 +269,14 @@ class ElbowFromTable:
             builder = flElbow.ElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)
-            feature.PRating = GetPressureRatingString(row)
+            feature.PRating = piping.GetPressureRatingString(row)
             feature.PSize = self.getPSize(row)
             feature.ViewObject.Proxy = 0
             feature.PartNumber = partNumber
             return part
 
+
 # Test macros.
-
-
 def TestElbow():
     document = FreeCAD.activeDocument()
     elbow = Elbow(document)
@@ -292,14 +286,14 @@ def TestElbow():
 
 def TestTable():
     document = FreeCAD.activeDocument()
-    table = CsvTable(DIMENSIONS_USED)
+    table = piping.CsvTable(DIMENSIONS_USED)
     table.load(CSV_TABLE_PATH)
     builder = ElbowFromTable(document, table)
     for i in range(0, len(table.data)):
         print("Selecting row %d" % i)
         partNumber = table.getPartKey(i)
         print("Creating part %s" % partNumber)
-        builder.create(partNumber, OUTPUT_TYPE_SOLID)
+        builder.create(partNumber, piping.OUTPUT_TYPE_SOLID)
         document.recompute()
 
 
