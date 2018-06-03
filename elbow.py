@@ -168,10 +168,6 @@ class Elbow:
 
     def createInnerPart(self, group):
         aux = self.dims.calculateAuxiliararyPoints()
-        p2 = aux["p2"]
-        p4 = aux["p4"]
-        p5 = aux["p5"]
-        p6 = aux["p6"]
         pid = self.dims.POD - self.dims.PThk * 2
         bentPart = self.createBentCylinder(group, pid / 2)
         chan1 = self.document.addObject("Part::Cylinder", "InnerChannel1")
@@ -179,30 +175,30 @@ class Elbow:
         # This high is longer as necessary but it is even better, because it can prevent
         # some anomalies when substracting shapes.
         chan1.Height = float(self.dims.H)
-        chan1.Placement.Base = p2
+        chan1.Placement.Base = aux["p2"]
         chan1.Placement.Rotation = FreeCAD.Rotation(
-            FreeCAD.Vector(0, 0, 1), p2)
+            FreeCAD.Vector(0, 0, 1), aux["p2"])
 
         chan2 = self.document.addObject("Part::Cylinder", "InnerChannel2")
         chan2.Radius = chan1.Radius
         chan2.Height = chan1.Height
-        chan2.Placement.Base = p4
+        chan2.Placement.Base = aux["p4"]
         chan2.Placement.Rotation = FreeCAD.Rotation(
-            FreeCAD.Vector(0, 0, 1), p4)
+            FreeCAD.Vector(0, 0, 1), aux["p4"])
         # Add sockets
         socket1 = self.document.addObject("Part::Cylinder", "Socket1")
         socket1.Radius = self.dims.POD / 2
         socket1.Height = self.dims.H - self.dims.J
-        socket1.Placement.Base = p5
+        socket1.Placement.Base = aux["p5"]
         socket1.Placement.Rotation = FreeCAD.Rotation(
-            FreeCAD.Vector(0, 0, 1), p5)
+            FreeCAD.Vector(0, 0, 1), aux["p5"])
 
         socket2 = self.document.addObject("Part::Cylinder", "Socket2")
         socket2.Radius = socket1.Radius
         socket2.Height = socket1.Height
-        socket2.Placement.Base = p6
+        socket2.Placement.Base = aux["p6"]
         socket2.Placement.Rotation = FreeCAD.Rotation(
-            FreeCAD.Vector(0, 0, 1), p6)
+            FreeCAD.Vector(0, 0, 1), aux["p6"])
 
         inner = self.document.addObject("Part::MultiFuse", "Inner")
         inner.Shapes = [bentPart, chan1, chan2, socket1, socket2]
