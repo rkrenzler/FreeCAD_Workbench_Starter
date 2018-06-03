@@ -13,7 +13,7 @@
    version="1.1"
    inkscape:output_extension="org.inkscape.output.svg.inkscape"
    sodipodi:docname="CreateSweepElbow.svg"
-   inkscape:version="0.92.2 (unknown)"
+   inkscape:version="0.92.3 (unknown)"
    sodipodi:version="0.32"
    id="svg2821"
    height="64px"
@@ -187,21 +187,43 @@
        x2="36"
        y2="112"
        spreadMethod="reflect" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient3801-5"
+       id="linearGradient4558"
+       x1="8"
+       y1="12"
+       x2="48"
+       y2="44"
+       gradientUnits="userSpaceOnUse" />
+    <filter
+       inkscape:collect="always"
+       style="color-interpolation-filters:sRGB"
+       id="filter4613"
+       x="-0.064643593"
+       width="1.1292872"
+       y="-0.064957166"
+       height="1.1299143">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.86560807"
+         id="feGaussianBlur4615" />
+    </filter>
   </defs>
   <sodipodi:namedview
      inkscape:snap-text-baseline="false"
-     inkscape:window-maximized="1"
-     inkscape:window-y="24"
-     inkscape:window-x="65"
-     inkscape:window-height="1176"
-     inkscape:window-width="1855"
+     inkscape:window-maximized="0"
+     inkscape:window-y="159"
+     inkscape:window-x="664"
+     inkscape:window-height="865"
+     inkscape:window-width="1079"
      inkscape:grid-bbox="true"
      inkscape:document-units="px"
      showgrid="true"
-     inkscape:current-layer="layer1"
-     inkscape:cy="-37.954902"
-     inkscape:cx="124.88816"
-     inkscape:zoom="2.7676601"
+     inkscape:current-layer="g1630"
+     inkscape:cy="51.037144"
+     inkscape:cx="43.677911"
+     inkscape:zoom="3.9140624"
      inkscape:pageshadow="2"
      inkscape:pageopacity="0.0"
      borderopacity="1.0"
@@ -230,7 +252,7 @@
             <dc:title>[wmayer]</dc:title>
           </cc:Agent>
         </dc:creator>
-        <dc:title></dc:title>
+        <dc:title />
         <dc:date>2011-10-10</dc:date>
         <dc:relation>http://www.freecadweb.org/wiki/index.php?title=Artwork</dc:relation>
         <dc:publisher>
@@ -280,7 +302,7 @@
          inkscape:connector-curvature="0"
          id="rect4625-6"
          d="m 54.369141,5.8320312 c -1.160969,0 -2.958697,0.00615 -5.275391,0.017578 -1.205642,0.0059 -1.438282,2.070494 -2.908203,2.078125 C 43,8 46,8 41,8 23.474277,8.432382 9.2761718,22.412106 8.25,39.835938 8,42 8.2532735,44.113434 8.1855469,45.828125 8.1760469,47.227586 6.0726037,47.193162 6.0585938,48.638672 6.0426237,50.286887 6.02307,52.030607 6,54.011719 c -7.33e-4,2.63205 5.43518,4.765835 12.140625,4.765625 6.705445,2.1e-4 12.141358,-2.133575 12.140625,-4.765625 0,-1.160969 -0.0061,-2.96065 -0.01758,-5.277344 -0.0059,-1.205642 -2.070494,-1.436329 -2.078125,-2.90625 -0.04287,-1.744099 0.01178,-3.119303 0.03906,-4 C 28.224609,34.078813 34.270863,28.008649 42,28 c 2,0 3.109966,-0.09558 4.185547,-0.07227 1.399461,0.0095 1.36699,2.112943 2.8125,2.126954 1.648215,0.01597 3.389982,0.03552 5.371094,0.05859 2.63205,7.33e-4 4.765835,-5.43518 4.765625,-12.140625 2.1e-4,-6.705445 -2.133575,-12.1413577 -4.765625,-12.1406248 z"
-         style="opacity:1;fill:#fce94f;fill-opacity:1;stroke:#000000;stroke-width:1.9993701;stroke-miterlimit:4.5;stroke-dasharray:none" />
+         style="opacity:1;fill:url(#linearGradient4558);fill-opacity:1;stroke:#000000;stroke-width:1.9993701;stroke-miterlimit:4.5;stroke-dasharray:none" />
       <path
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
@@ -293,6 +315,12 @@
          id="path1610-6"
          d="m 49,6 c 2.685641,8.032935 2.647637,16.032469 0,24"
          style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         style="opacity:1;fill:none;fill-opacity:1;stroke:#fce94f;stroke-width:2.70434952;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;filter:url(#filter4613)"
+         d="M 13.162873,44.981989 C 13.162873,27.318824 27.551155,13 45.3,13"
+         id="path4562"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cc" />
     </g>
   </g>
 </svg>
