@@ -188,7 +188,7 @@ class Elbow:
         # Add sockets
         socket1 = self.document.addObject("Part::Cylinder", "Socket1")
         socket1.Radius = self.dims.POD / 2
-        socket1.Height = self.dims.H - self.dims.J
+        socket1.Height = self.dims.H
         socket1.Placement.Base = aux["p5"]
         socket1.Placement.Rotation = FreeCAD.Rotation(
             FreeCAD.Vector(0, 0, 1), aux["p5"])
@@ -320,5 +320,5 @@ def TestTable():
         document.recompute()
 
 
-# TestElbow()
+#TestElbow()
 # TestElbowTable()
