@@ -70,12 +70,15 @@ class Elbow(pypeType):
         return dims
 
     @staticmethod
-    def createBentCylinder(obj, rCirc):
-        """ Create alpha° bent cylinder in x-z plane with radius r.
+    def createBentCylinderDoesNotWork(obj, rCirc):
+        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
+        and is streight in the ends.
+        The little streight part is necessary, because otherwise the part is not displayed
+        correctly after performing a boolean operations. Thus we need some overlapping
+        between bent part and the socket.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
-        :param rBend: Distance from the bend center to the origin (0,0,0).
 
         See documentation picture elbow-cacluations.png
         """
@@ -83,23 +86,64 @@ class Elbow(pypeType):
         dims = Elbow.extractDimensions(obj)
 
         aux = dims.calculateAuxiliararyPoints()
-        p2 = aux["p2"]
-        p3 = aux["p3"]
-        p4 = aux["p4"]
 
         alpha = float(dims.BendAngle.getValueAs("deg"))
         rBend = dims.M / 2.0
 
-        # Calculate coordinates of the base circle.
-        base = Part.makeCircle(rCirc, p2)
+        # Put a base on the streight part.
+        base = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
+
+        # Add trajectory
+        line1 = Part.makeLine( aux["p5"], aux["p2"])
+        arc = Part.makeCircle(
+            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha/2, 225 + alpha/2)
+        line2 = Part.makeLine( aux["p4"], aux["p6"])
+
+        trajectory = Part.Shape([line1, arc, line2])
+        # Show trajectory for debugging.
+        # W = W1.fuse([trajectory.Edges])
+        # Part.Show(W)
+        # Add a cap (circle, at the other end of the bent cylinder).
+        cap = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
+        # Sweep the circle along the trajectory.
+        sweep = Part.makeSweepSurface(trajectory, base) # Does not work
+        sweep = Part.makeSweepSurface(W, base) # Does not work.
+        # The sweep is only a 2D service consisting of walls only.
+        # Add circles on both ends of this wall.
+        end1 = Part.Face(Part.Wire(base))
+        # Create other end.
+        end2 = Part.Face(Part.Wire(cap))
+        solid = Part.Solid(Part.Shell([end1, sweep, end2]))
+        return solid
+
+    @staticmethod
+    def createBentCylinder(obj, rCirc):
+        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
+
+        :param group: Group where to add created objects.
+        :param rCirc: Radius of the cylinder.
+
+        See documentation picture elbow-cacluations.png
+        """
+        # Convert alpha to degree value
+        dims = Elbow.extractDimensions(obj)
+
+        aux = dims.calculateAuxiliararyPoints()
+
+        alpha = float(dims.BendAngle.getValueAs("deg"))
+        rBend = dims.M / 2.0
+
+        # Put a base on the streight part.
+        base = Part.makeCircle(rCirc, aux["p2"], aux["p2"])
 
         # Add trajectory
         trajectory = Part.makeCircle(
-            rBend, p3, FreeCAD.Vector(0, -1, 0), 180 - alpha, 180)
-
+            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha/2, 225 + alpha/2)
+        # Show trajectory for debugging.
+        # W = W1.fuse([trajectory.Edges])
+        # Part.Show(W)
         # Add a cap (circle, at the other end of the bent cylinder).
-
-        cap = Part.makeCircle(rCirc, p4, p4)
+        cap = Part.makeCircle(rCirc, aux["p4"], aux["p4"])
         # Sweep the circle along the trajectory.
         sweep = Part.makeSweepSurface(trajectory, base)
         # The sweep is only a 2D service consisting of walls only.
@@ -114,18 +158,14 @@ class Elbow(pypeType):
     def createOuterPart(obj):
         dims = Elbow.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
-        p1 = aux["p1"]
-        p2 = aux["p2"]
-        p4 = aux["p4"]
-
         r = dims.M / 2
         # For unknow reasons, witoutm the factor r*0.999999 the middle part disappears.
         bentPart = Elbow.createBentCylinder(obj, r * (1 + RELATIVE_EPSILON))
         # Create socket along the z axis.
-        h = float(dims.H) + p2.z
-        socket1 = Part.makeCylinder(r, h, p1)
+        h = float(dims.H) - aux["p2"].Length
+        socket1 = Part.makeCylinder(r, h, aux["p2"], aux["p2"])
         # Create socket along the bent part.
-        socket2 = Part.makeCylinder(r, h, p4, p4)
+        socket2 = Part.makeCylinder(r, h, aux["p4"], aux["p4"])
 
         outer = bentPart.fuse([socket1, socket2])
         return outer
@@ -134,25 +174,24 @@ class Elbow(pypeType):
     def createInnerPart(obj):
         dims = Elbow.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
-        p1 = aux["p1"]
-        p2 = aux["p2"]
-        p4 = aux["p4"]
-        p6 = aux["p6"]
 
         r = dims.POD / 2 - dims.PThk
 
         bentPart = Elbow.createBentCylinder(obj, r * (1 + RELATIVE_EPSILON))
-        # Create a channel along the z axis.
-        h = float(dims.H) + p2.z
-        chan1 = Part.makeCylinder(r, h, p1)
+        # Create a channel along the z axis. It is longer then necessaryself.
+        # But it possible can prevent problems with boolean operations.
+        h = float(dims.H)
+        chan1 = Part.makeCylinder(r, h, aux["p2"],aux["p2"])
         # Create a channel along the bent part.
-        chan2 = Part.makeCylinder(r, h, p4, p4)
+        chan2 = Part.makeCylinder(r, h, aux["p4"], aux["p4"])
         # Create corresponding socktes.
 
         rSocket = dims.POD / 2
-        hSocket = dims.H - dims.J
-        socket1 = Part.makeCylinder(rSocket, hSocket, p1)
-        socket2 = Part.makeCylinder(rSocket, hSocket, p6, p6)
+        # The socket length is actually dims.H - dims.J. But we do it longer
+        # to prevent problems with bulean operations
+        hSocket = dims.H
+        socket1 = Part.makeCylinder(rSocket, hSocket, aux["p5"], aux["p5"])
+        socket2 = Part.makeCylinder(rSocket, hSocket, aux["p6"], aux["p6"])
 
         inner = bentPart.fuse([chan1, chan2, socket1, socket2])
         return inner
@@ -162,8 +201,7 @@ class Elbow(pypeType):
         outer = Elbow.createOuterPart(obj)
         inner = Elbow.createInnerPart(obj)
         return outer.cut(inner)
-        # return outer
-        # return inner
+        #return inner
 
     def execute(self, obj):
         # Create the shape of the tee.
@@ -206,4 +244,4 @@ def TestElbow():
     builder.create(feature)
     document.recompute()
 
-# TestElbow()
+TestElbow()
