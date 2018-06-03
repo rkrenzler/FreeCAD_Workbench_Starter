@@ -244,4 +244,4 @@ def TestElbow():
     builder.create(feature)
     document.recompute()
 
-TestElbow()
+#TestElbow()
