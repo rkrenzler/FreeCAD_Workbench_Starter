@@ -125,8 +125,8 @@ class Elbow:
         # Add trajectory
         trajectory = self.document.addObject("Part::Circle", "Trajectory")
         trajectory.Radius = rBend
-        trajectory.Angle0 = 180 - alpha
-        trajectory.Angle1 = 180
+        trajectory.Angle0 = 225 - alpha/2
+        trajectory.Angle1 = 225 + alpha/2
         trajectory.Placement.Base = p3
 
         # Sweep the circle along the trajectory.
@@ -220,7 +220,6 @@ class Elbow:
         elbow = self.document.addObject("Part::Cut", "Elbow")
         elbow.Base = outer
         elbow.Tool = inner
-        elbow = inner
         group.addObject(elbow)
         if convertToSolid:
             # Before making a solid, recompute documents. Otherwise there will be
