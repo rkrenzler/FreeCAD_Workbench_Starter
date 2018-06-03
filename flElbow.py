@@ -101,8 +101,8 @@ class Elbow(pypeType):
 
         trajectory = Part.Shape([line1, arc, line2])
         # Show trajectory for debugging.
-        # W = W1.fuse([trajectory.Edges])
-        # Part.Show(W)
+        # W Part.Wire([line1, arc, line2])
+        # Part.show(W)
         # Add a cap (circle, at the other end of the bent cylinder).
         cap = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
         # Sweep the circle along the trajectory.
@@ -201,7 +201,6 @@ class Elbow(pypeType):
         outer = Elbow.createOuterPart(obj)
         inner = Elbow.createInnerPart(obj)
         return outer.cut(inner)
-        #return inner
 
     def execute(self, obj):
         # Create the shape of the tee.
