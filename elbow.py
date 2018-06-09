@@ -40,6 +40,9 @@ class Dimensions:
         errorMsg = ""
         if not (self.POD > 0):
             errorMsg = "Pipe outer diameter %s must be positive" % self.POD
+        elif not (self.BendAngle > 0):
+            errorMsg = "Bend Angle {}  must be positive.".format(
+                self.BendAngle)
         elif not (self.PThk <= self.POD / 2.0):
             errorMsg = "Pipe thickness %s is too larg: larger than POD/2 %s." % (
                 self.PThk, self.POD / 2.0)
@@ -97,7 +100,7 @@ class Elbow:
     def checkDimensions(self):
         valid, msg = self.dims.isValid()
         if not valid:
-            raise UnplausibleDimensions(msg)
+            raise piping.UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc):
         """ Create alpha° bent cylinder in x-y plane with radius r.
@@ -125,8 +128,8 @@ class Elbow:
         # Add trajectory
         trajectory = self.document.addObject("Part::Circle", "Trajectory")
         trajectory.Radius = rBend
-        trajectory.Angle0 = 225 - alpha/2
-        trajectory.Angle1 = 225 + alpha/2
+        trajectory.Angle0 = 225 - alpha / 2
+        trajectory.Angle1 = 225 + alpha / 2
         trajectory.Placement.Base = p3
 
         # Sweep the circle along the trajectory.
@@ -320,5 +323,5 @@ def TestTable():
         document.recompute()
 
 
-#TestElbow()
+# TestElbow()
 # TestElbowTable()
