@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 
 from pipeFeatures import pypeType  # the parent class
-import elbowSweep as elbowSweepMod
+import sweepElbow as sweepElbowMod
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of parts
@@ -27,8 +27,10 @@ class SweepElbow(pypeType):
         obj.PRating = ""
         obj.PSize = PSize
         # Define specific attributes and set their values.
+        obj.addProperty("App::PropertyAngle", "BendAngle",
+                        "SweepElbow", "Bend Angle.").BendAngle = dims.BendAngle
         obj.addProperty("App::PropertyLength", "J", "SweepElbow",
-                        "Distnace from the center to begin of innerpart of the socket").G = dims.J
+                        "Distnace from the center to begin of innerpart of the socket").J = dims.J
         obj.addProperty("App::PropertyLength", "H", "SweepElbow",
                         "Distance between the center and a elbow end").H = dims.H
         obj.addProperty("App::PropertyLength", "M", "SweepElbow",
@@ -49,114 +51,99 @@ class SweepElbow(pypeType):
         # place the code here:
         # e.g. -> change PSize according the new alpha, PID and POD
 
-        dim_properties = ["G"]  # Dimensions which can change port positions
+        # Dimensions which can change port positions.
+        dim_properties = ["BendAngle", "J"]
         if prop in dim_properties:
             # This function is called within __init__ too.
             # We wait for all dimension.
             if set(sweepElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
 
-    def getPorts(self, obj):
-        """ Calculate coordinates of the ports. """
-        # Vertical port on the bottom.
-        portV = FreeCAD.Vector(0, 0, -obj.G)
-        # Horizonatl port on the right.
-        portH = FreeCAD.Vector(obj.G, 0, 0)
-
-        return [portV, portH]
+    @staticmethod
+    def extractDimensions(obj):
+        dims = sweepElbowMod.Dimensions()
+        dims.BendAngle = obj.BendAngle
+        dims.H = obj.H
+        dims.J = obj.J
+        dims.M = obj.M
+        dims.POD = obj.POD
+        dims.PThk = obj.PThk
+        return dims
 
     @staticmethod
-    def createBentCylinder(r, l):
-        """ Create 90° bent cylinder in x-z plane with radius r.
+    def createBentCylinder(obj, rCirc):
+        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
 
         :param group: Group where to add created objects.
-        :param r: Radius of the cylinder.
-        :param l: Distance to the origin (0,0,0).
+        :param rCirc: Radius of the cylinder.
 
-        See documentation picture sweep-elbow-cacluations.png.
+        See documentation picture sweep-elbow-cacluations.png
         """
-        p1 = FreeCAD.Vector(0, 0, -l)
-        # Add cylinder
-        base = Part.makeCircle(r, p1)
-        # makeCylinder
-        baseCyl = Part.makeCylinder(r, 0.1, p1)
+        # Convert alpha to degree value
+        dims = SweepElbow.extractDimensions(obj)
+
+        aux = dims.calculateAuxiliararyPoints()
+
+        alpha = float(dims.BendAngle.getValueAs("deg"))
+        rBend = (aux["p3"] - aux["p5"]).Length
+
+        # Put a base on the streight part.
+        base = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
+
         # Add trajectory
-        p3 = FreeCAD.Vector(l, 0, -l)
-        trajectory = Part.makeCircle(l, p3, FreeCAD.Vector(0, -1, 0), 90, 180)
+        trajectory = Part.makeCircle(
+            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha / 2, 225 + alpha / 2)
+        # Show trajectory for debugging.
+        # W = W1.fuse([trajectory.Edges])
+        # Part.Show(W)
+        # Add a cap (circle, at the other end of the bent cylinder).
+        cap = Part.makeCircle(rCirc, aux["p6"], aux["p6"])
         # Sweep the circle along the trajectory.
         sweep = Part.makeSweepSurface(trajectory, base)
         # The sweep is only a 2D service consisting of walls only.
         # Add circles on both ends of this wall.
         end1 = Part.Face(Part.Wire(base))
         # Create other end.
-        base2 = Part.makeCircle(r, FreeCAD.Vector(
-            l, 0, 0), FreeCAD.Vector(1, 0, 0))
-        end2 = Part.Face(Part.Wire(base2))
+        end2 = Part.Face(Part.Wire(cap))
         solid = Part.Solid(Part.Shell([end1, sweep, end2]))
         return solid
 
     @staticmethod
     def createOuterPart(obj):
-        """Create bending part and socket cylinders.
+        dims = SweepElbow.extractDimensions(obj)
+        aux = dims.calculateAuxiliararyPoints()
+        # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
+        # the substraction of the inner part.
+        r = ((dims.PID() / 2 + dims.fitThk()) * (1 + RELATIVE_EPSILON))
+        bentPart = SweepElbow.createBentCylinder(obj, r)
+        # Create socket along the z axis.
+        h = float(dims.H) - aux["p2"].Length
+        r = dims.M / 2
+        socket1 = Part.makeCylinder(r, h, aux["p2"], aux["p2"])
+        # Create socket along the bent part.
+        socket2 = Part.makeCylinder(r, h, aux["p4"], aux["p4"])
 
-        See documentation picture sweep-elbow-cacluations.png.
-        """
-        POD = obj.POD
-        G = obj.G
-        H = obj.H
-        M = obj.M
-        # Create a bent part.
-        bentPart = SweepElbow.createBentCylinder(POD / 2.0, G)
-        # Create vertical socket (on the bottom).
-        socketR = M / 2.0
-        # Calculate wall thickness of the fitting.
-        fitThk = (M - POD) / 2.0
-        # Calculate socket Height.
-        a2 = H - G + fitThk
-        # Calculate socket position.
-        p2 = FreeCAD.Vector(0, 0, -H)
-        socket1 = Part.makeCylinder(socketR, a2, p2)
-        # Calculate second socket (on the right).
-        # Calculate socket position.
-        p3 = FreeCAD.Vector(H - a2, 0, 0)
-        socket2 = Part.makeCylinder(socketR, a2, p3, FreeCAD.Vector(1, 0, 0))
-        outer = bentPart.fuse([bentPart, socket1, socket2])
+        outer = bentPart.fuse([socket1, socket2])
         return outer
 
     @staticmethod
     def createInnerPart(obj):
-        """Create bending part and socket cylinders.
+        dims = SweepElbow.extractDimensions(obj)
+        aux = dims.calculateAuxiliararyPoints()
 
-        See documentation picture sweep-elbow-cacluations.png.
+        r = dims.POD / 2 - dims.PThk
 
-        Note: The inner part differs from the outer part not only by socket sizes
-        and the size of the bent part, the sockets positions are also different.
-        In the inner part the sockets justs touch the inner parts.
-        In the outer part the sockets intesects with bent part (the intersection
-        width corresponds to the wall thickness of the fitting).
-        """
-        G = obj.G
-        H = obj.H
-        M = obj.M
-        PThk = obj.PThk
-        POD = obj.POD
-        # Create a bent part.
-        socketR = POD / 2.0
-        innerR = POD / 2.0 - PThk
-        bentPart = SweepElbow.createBentCylinder(innerR, G)
-        # Create vertical socket (on the bottom).
-        # Calculate wall thickness of the fitting.
-        fitThk = (M - POD) / 2.0
-        # Calculate socket Height.
-        a1 = H - G
-        # Calculate socket position.
-        p2 = FreeCAD.Vector(0, 0, -H)
-        socket1 = Part.makeCylinder(socketR, a1, p2)
-        # Calculate horizonal socket (on the right).
-        # Calculate socket position.
-        p4 = FreeCAD.Vector(H - a1, 0, 0)
-        socket2 = Part.makeCylinder(socketR, a1, p4, FreeCAD.Vector(1, 0, 0))
-        inner = bentPart.fuse([bentPart, socket1, socket2])
+        bentPart = SweepElbow.createBentCylinder(
+            obj, r * (1 + RELATIVE_EPSILON))
+
+        rSocket = dims.POD / 2
+        # The socket length is actually dims.H - dims.J. But we do it longer
+        # to prevent problems with bulean operations
+        hSocket = dims.H
+        socket1 = Part.makeCylinder(rSocket, hSocket, aux["p5"], aux["p5"])
+        socket2 = Part.makeCylinder(rSocket, hSocket, aux["p6"], aux["p6"])
+
+        inner = bentPart.fuse([socket1, socket2])
         return inner
 
     @staticmethod
@@ -171,6 +158,12 @@ class SweepElbow(pypeType):
         obj.Shape = shape
         # Recalculate ports.
         obj.Ports = self.getPorts(obj)
+
+    def getPorts(self, obj):
+        dims = SweepElbow.extractDimensions(obj)
+        aux = dims.calculateAuxiliararyPoints()
+#	 	FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
+        return [aux["p5"], aux["p6"]]
 
 
 class SweepElbowBuilder:
