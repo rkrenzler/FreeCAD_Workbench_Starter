@@ -15,16 +15,17 @@ from piping import *
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
-# This is the path to the dimensions table. 
+# This is the path to the dimensions table.
 CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "sweep-elbow.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["H", "G", "M", "POD", "PThk"]
+DIMENSIONS_USED = ["BendAngle", "G", "J", "M", "POD", "PThk"]
 
 class Dimensions:
 	def __init__(self):
 		# Init class with test values
-		self.G = parseQuantity("5 cm")
+		self.BendAngle = parseQuantity("90 deg")
 		self.H = parseQuantity("6 cm")
+		self.J = parseQuantity("5 cm")
 		self.M = parseQuantity("3 cm")
 		self.POD = parseQuantity("2 cm")
 		self.PThk = parseQuantity("0.5 cm")
@@ -45,6 +46,8 @@ class Dimensions:
 			errorMsg = "Length H=%s must be larger than G=%s"%(self.H, self.G)
 		return (len(errorMsg)==0, errorMsg)
 
+
+
 class SweepElbow:
 	def __init__(self, document):
 		self.document = document
@@ -54,15 +57,15 @@ class SweepElbow:
 		valid, msg = self.dims.isValid()
 		if not valid:
 			raise UnplausibleDimensions(msg)
-	
+
 	@staticmethod
 	def createBentCylinder(doc, group, r, l):
-		""" Create 90° bent cylinder in x-z plane with radius r. 
-		
+		""" Create 90° bent cylinder in x-z plane with radius r.
+
 		:param group: Group where to add created objects.
 		:param r: Radius of the cylinder.
 		:param l: Distance to the origin (0,0,0).
-		
+
 		See documentation picture sweep-elbow-cacluations.png
 		"""
 		p1 = FreeCAD.Vector(0,0,-l)
@@ -84,10 +87,10 @@ class SweepElbow:
 		sweep.Solid = True
 		group.addObjects([trajectory, sweep])
 		return sweep
-		
+
 	def createOuterPart(self, group):
 		"""Create bending part and socket cylinders.
-		
+
 		See documentation picture sweep-elbow-cacluations.png.
 		"""
 		# Create a bent part.
@@ -114,11 +117,11 @@ class SweepElbow:
 		outer.Shapes = [bentPart, socket1, socket2]
 		group.addObject(outer)
 		return outer
-		
+
 	def createInnerPart(self, group):
 		"""Create inner bending part and socket cylinders.
 		See documentation picture sweep-elbow-cacluations.png.
-		
+
 		Note: The inner part differs from the outer part not only by socket sizes
 		and the size of the bent part, the sockets positions are also different.
 		In the inner part the sockets justs touch the inner parts.
@@ -151,7 +154,7 @@ class SweepElbow:
 		inner.Shapes = [bentPart, socket1, socket2]
 		group.addObject(inner)
 		return inner
-		
+
 	def create(self, convertToSolid):
 		self.checkDimensions()
 		# Create new group to put all the temporal data.
@@ -191,7 +194,7 @@ class SweepElbowFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-		
+
 	@classmethod
 	def getPThk(cls, row):
 		""" For compatibility results, if there is no "PThk" dimension, calculate it
@@ -234,7 +237,7 @@ class SweepElbowFromTable:
 			import flSweepElbow
 			builder = flSweepElbow.SweepElbowBuilder(self.document)
 			builder.dims = dims
-			part = builder.create(feature)	
+			part = builder.create(feature)
 			feature.PRating = GetPressureRatingString(row)
 			feature.PSize = self.getPSize(row)
 			feature.ViewObject.Proxy = 0
