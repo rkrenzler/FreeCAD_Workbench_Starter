@@ -156,27 +156,25 @@ class SweepElbow:
 
     def createOuterPart(self, group):
         aux = self.dims.calculateAuxiliararyPoints()
-        p1 = aux["p1"]
-        p2 = aux["p2"]
-        p4 = aux["p4"]
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
         # the substraction of the inner part.
+        r = ((self.dims.PID() / 2 + self.dims.fitThk()) * (1 + RELATIVE_EPSILON))
         bentPart = self.createBentCylinder(
-            group, ((self.dims.PID() / 2 + self.dims.fitThk()) * (1 + RELATIVE_EPSILON)), RELATIVE_EPSILON)
+            group, r, RELATIVE_EPSILON)
         # Create socket along the z axis.
         socket1 = self.document.addObject("Part::Cylinder", "OuterSocket1")
         socket1.Radius = self.dims.M / 2
-        socket1.Height = float(self.dims.H) - p2.Length
-        socket1.Placement.Base = p2
+        socket1.Height = float(self.dims.H) - aux["p2"].Length
+        socket1.Placement.Base = aux["p2"]
         socket1.Placement.Rotation = FreeCAD.Rotation(
-            FreeCAD.Vector(0, 0, 1), p2)
+            FreeCAD.Vector(0, 0, 1), aux["p2"])
 #        socket1.Placement = FreeCAD.Placement(p2, FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p2),
 #                                              FreeCAD.Vector(0, 0, 0))
         # Create socket along the bent part.
         socket2 = self.document.addObject("Part::Cylinder", "OuterSocket2")
         socket2.Radius = socket1.Radius
         socket2.Height = socket1.Height
-        socket2.Placement = FreeCAD.Placement(p4, FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), p4),
+        socket2.Placement = FreeCAD.Placement(aux["p4"], FreeCAD.Rotation(FreeCAD.Vector(0, 0, 1), aux["p4"]),
                                               FreeCAD.Vector(0, 0, 0))
         outer = self.document.addObject("Part::MultiFuse", "Outer")
         outer.Shapes = [bentPart, socket1, socket2]
