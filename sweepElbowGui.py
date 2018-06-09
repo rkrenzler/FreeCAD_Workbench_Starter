@@ -15,7 +15,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dialogTitle = "Create Sweep Elbow"
 		params.fittingType = "SweepElbow"
 		params.dimensionsPixmap = "sweep-elbow-dimensions.png"
-		params.explanationText = "<html><head/><body><p>Only dimensions used are: G, H, M POD, PThk. All other dimensions are used for inromation.</p></body></html>"
+		params.explanationText = "<html><head/><body><p>Only dimensions used are: BendAngle, H, J, M POD, PThk. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "sweep elbow user input"
 		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
