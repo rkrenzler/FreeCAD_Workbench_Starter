@@ -16,7 +16,7 @@ parseQuantity = FreeCAD.Units.parseQuantity
 # This is the path to the dimensions table.
 CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "sweep-elbow.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
-DIMENSIONS_USED = ["BendAngle", "G", "J", "M", "POD", "PThk"]
+DIMENSIONS_USED = ["BendAngle", "H", "J", "M", "POD", "PThk"]
 
 # The value RELATIVE_EPSILON is used to slightly change the size of parts
 # to prevent problems with boolean operations.
@@ -41,6 +41,9 @@ class Dimensions:
         errorMsg = ""
         if not (self.POD > 0):
             errorMsg = "Pipe outer diameter %s must be positive" % self.PID
+        elif not (self.BendAngle > 0):
+            errorMsg = "Bend Angle {}  must be positive.".format(
+                self.PThk, self.POD / 2.0)
         elif not (self.PThk <= self.POD / 2.0):
             errorMsg = "Pipe thickness %s is too larger: larger than POD/2 %s." % (
                 self.PThk, self.POD / 2.0)
@@ -111,7 +114,7 @@ class SweepElbow:
     def checkDimensions(self):
         valid, msg = self.dims.isValid()
         if not valid:
-            raise UnplausibleDimensions(msg)
+            raise piping.UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc, bendEps=0):
         """ Create 90° bent cylinder in x-z plane with radius r.
@@ -308,8 +311,8 @@ class SweepElbowFromTable:
             print("Part not found")
             return
         dims = Dimensions()
-        dims.G = parseQuantity(row["G"])
         dims.H = parseQuantity(row["H"])
+        dims.J = parseQuantity(row["J"])
         dims.M = parseQuantity(row["M"])
         dims.POD = parseQuantity(row["POD"])
         dims.Thk = SweepElbowFromTable.getPThk(row)
@@ -321,7 +324,7 @@ class SweepElbowFromTable:
             part.Label = "OSE-SweepElbow"
             return part
 
-        elif outputType == OUTPUT_TYPE_FLAMINGO:
+        elif outputType == piping.OUTPUT_TYPE_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-SweepElbow")
@@ -356,5 +359,5 @@ def TestSweepElbowTable():
         builder.create(partNumber, piping.OUTPUT_TYPE_FLAMINGO)
         document.recompute()
 
-#TestSweepElbow()
+# TestSweepElbow()
 # TestSweepElbowTable()
