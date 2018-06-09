@@ -25,13 +25,13 @@ $EXTMIN
  10
 -220
  20
--310
+-400.0000000000018
  30
 0
   9
 $EXTMAX
  10
-566.6666666666666
+860
  20
 130
  30
@@ -2313,7 +2313,7 @@ AcDbLayerTableRecord
   2
 axis
  70
-    1
+    0
  62
     1
   6
@@ -9465,52 +9465,6 @@ ByLayer
 100
 AcDbMText
  10
-86.66666666666666
- 20
--200
- 30
-0
- 40
-30
- 41
-36.66666666666667
- 71
-    1
- 72
-    1
-  1
-p2
-  7
-standard
-210
-0
-220
-0
-230
-1
- 50
-0
- 73
-    2
- 44
-1
-  0
-MTEXT
-  5
-12C
-100
-AcDbEntity
-  8
-additional-dimensions
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbMText
- 10
 40
  20
 130
@@ -9543,7 +9497,7 @@ standard
   0
 MTEXT
   5
-12D
+12C
 100
 AcDbEntity
   8
@@ -9589,7 +9543,7 @@ standard
   0
 DIMENSION
   5
-12E
+12D
 100
 AcDbEntity
   8
@@ -9649,7 +9603,7 @@ AcDbAlignedDimension
   0
 MTEXT
   5
-12F
+12E
 100
 AcDbEntity
   8
@@ -9695,7 +9649,7 @@ standard
   0
 LINE
   5
-130
+12F
 100
 AcDbEntity
   8
@@ -9719,7 +9673,7 @@ AcDbLine
   0
 LINE
   5
-131
+130
 100
 AcDbEntity
   8
@@ -9743,7 +9697,7 @@ AcDbLine
   0
 MTEXT
   5
-132
+131
 100
 AcDbEntity
   8
@@ -9789,7 +9743,7 @@ standard
   0
 DIMENSION
   5
-133
+132
 100
 AcDbEntity
   8
@@ -9853,7 +9807,7 @@ AcDbRotatedDimension
   0
 MTEXT
   5
-134
+133
 100
 AcDbEntity
   8
@@ -9899,7 +9853,7 @@ standard
   0
 DIMENSION
   5
-135
+134
 100
 AcDbEntity
   8
@@ -9963,7 +9917,7 @@ AcDbRotatedDimension
   0
 DIMENSION
   5
-136
+135
 100
 AcDbEntity
   8
@@ -10035,7 +9989,7 @@ AcDb2LineAngularDimension
   0
 MTEXT
   5
-137
+136
 100
 AcDbEntity
   8
@@ -10079,55 +10033,9 @@ standard
  44
 1
   0
-MTEXT
-  5
-138
-100
-AcDbEntity
-  8
-additional-dimensions
-  6
-ByLayer
- 62
-  256
-370
-   -1
-100
-AcDbMText
- 10
--212.632955718024
- 20
--80.04002439435267
- 30
-0
- 40
-30
- 41
-36.66666666666853
- 71
-    1
- 72
-    1
-  1
-p5
-  7
-standard
-210
-0
-220
-0
-230
-1
- 50
-0
- 73
-    2
- 44
-1
-  0
 LEADER
   5
-139
+137
 100
 AcDbEntity
   8
@@ -10178,6 +10086,98 @@ Standard
 -120
  30
 0
+  0
+MTEXT
+  5
+138
+100
+AcDbEntity
+  8
+additional-dimensions
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbMText
+ 10
+86.66666666666666
+ 20
+-200
+ 30
+0
+ 40
+30
+ 41
+36.66666666666853
+ 71
+    1
+ 72
+    1
+  1
+p5
+  7
+standard
+210
+0
+220
+0
+230
+1
+ 50
+0
+ 73
+    2
+ 44
+1
+  0
+MTEXT
+  5
+139
+100
+AcDbEntity
+  8
+additional-dimensions
+  6
+ByLayer
+ 62
+  256
+370
+   -1
+100
+AcDbMText
+ 10
+-212.632955718024
+ 20
+-80.04002439435267
+ 30
+0
+ 40
+30
+ 41
+36.66666666666667
+ 71
+    1
+ 72
+    1
+  1
+p2
+  7
+standard
+210
+0
+220
+0
+230
+1
+ 50
+0
+ 73
+    2
+ 44
+1
   0
 ENDSEC
   0
