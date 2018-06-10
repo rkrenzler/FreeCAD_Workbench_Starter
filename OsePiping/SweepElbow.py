@@ -267,17 +267,7 @@ class SweepElbow:
             # Now convert all parts to solid, and remove intermediate data.
             solid = Piping.toSolid(self.document, elbow, "sweep elbow (solid)")
             # Remove previous (intermediate parts).
-            parts = Piping.nestedObjects(group)
-            # Document.removeObjects can remove multple objects, when we use
-            # parts directly. To prevent exceptions with deleted objects,
-            # use the name list instead.
-            names_to_remove = []
-            for part in parts:
-                if part.Name not in names_to_remove:
-                    names_to_remove.append(part.Name)
-            for name in names_to_remove:
-                print("Deleting temporary objects %s." % name)
-                self.document.removeObject(name)
+            Piping.removePartWithChildren(self.document, group)
             return solid
         return group
 
