@@ -3,13 +3,13 @@
 # Date: 06 February 2018
 # Create a tee-fitting.
 
-import tee
-import createPartGui
+import Tee
+import CreatePartGui
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Tee"
@@ -17,13 +17,13 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dimensionsPixmap = "tee-dimensions.png"
 		params.explanationText = "<html><head/><body><p>Only dimensions used are: M, M1, M2, G, G1, G2, H, H1, H2, POD, POD1, POD2, PThk, PThk1, PThk2. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "tee user input"
-		params.keyColumnName = "PartNumber"		
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = tee.TeeFromTable(self.params.document, self.params.table)
+			builder = Tee.TeeFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(tee.CSV_TABLE_PATH, tee.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(Tee.CSV_TABLE_PATH, Tee.DIMENSIONS_USED)

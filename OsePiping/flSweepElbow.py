@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 
 from pipeFeatures import pypeType  # the parent class
-import sweepElbow as sweepElbowMod
+import SweepElbow as SweepElbowMod
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of parts
@@ -19,7 +19,7 @@ RELATIVE_EPSILON = 0.000001
 
 
 class SweepElbow(pypeType):
-    def __init__(self, obj, PSize="", dims=sweepElbowMod.Dimensions()):
+    def __init__(self, obj, PSize="", dims=SweepElbowMod.Dimensions()):
         """Create a sweep elbow with the center at (0,0,0) sockets along the z and y axis."""
         # Run parent __init__ and define common attributes.
         super(SweepElbow, self).__init__(obj)
@@ -56,12 +56,12 @@ class SweepElbow(pypeType):
         if prop in dim_properties:
             # This function is called within __init__ too.
             # We wait for all dimension.
-            if set(sweepElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
+            if set(SweepElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
 
     @staticmethod
     def extractDimensions(obj):
-        dims = sweepElbowMod.Dimensions()
+        dims = SweepElbowMod.Dimensions()
         dims.BendAngle = obj.BendAngle
         dims.H = obj.H
         dims.J = obj.J
@@ -170,7 +170,7 @@ class SweepElbowBuilder:
     """ Create a sweep elbow using flamingo. """
 
     def __init__(self, document):
-        self.dims = sweepElbowMod.Dimensions()
+        self.dims = SweepElbowMod.Dimensions()
         self.pos = FreeCAD.Vector(0, 0, 0)  # Define default initial position.
         self.document = document
 

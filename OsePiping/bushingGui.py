@@ -4,12 +4,12 @@
 # Create a bushing-fitting.
 
 import bushing
-import createPartGui
+import CreatePartGui
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Bushing"
@@ -17,7 +17,7 @@ class MainDialog(createPartGui.BaseDialog):
 		params.dimensionsPixmap = "bushing-dimensions.png"
 		params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: L, N, POD, POD1 and PThk1. All other dimensions are used for inromation.</p></body></html>"
 		params.settingsName = "bushing user input"
-		params.keyColumnName = "PartNumber"		
+		params.keyColumnName = "PartNumber"
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
@@ -25,4 +25,4 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(bushing.CSV_TABLE_PATH, bushing.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(bushing.CSV_TABLE_PATH, bushing.DIMENSIONS_USED)

@@ -5,15 +5,15 @@
 
 
 import pipe
-import createPartGui
+import CreatePartGui
 
 from PySide import QtCore, QtGui
 import FreeCAD
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
     def __init__(self, document, table):
-        params = createPartGui.DialogParams()
+        params = CreatePartGui.DialogParams()
         params.document = document
         params.table = table
         params.dialogTitle = "Create Pipe"
@@ -72,4 +72,4 @@ class MainDialog(createPartGui.BaseDialog):
 
 
 def GuiCheckTable():
-    return createPartGui.GuiCheckTable(pipe.CSV_TABLE_PATH, pipe.DIMENSIONS_USED)
+    return CreatePartGui.GuiCheckTable(pipe.CSV_TABLE_PATH, pipe.DIMENSIONS_USED)

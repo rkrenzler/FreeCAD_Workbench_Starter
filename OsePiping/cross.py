@@ -9,13 +9,13 @@ import os.path
 import FreeCAD
 import Part
 
-import OSEBasePiping
-from piping import *
+import OsePipingBase
+import Piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
-# This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "cross.csv")
+# This is the path to the dimensions table.
+CSV_TABLE_PATH = os.path.join(OsePipingBase.TABLE_PATH, "cross.csv")
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["POD", "POD1", "PThk", "PThk1", "G", "G1", "H", "H1", "M", "M1"]
 
@@ -55,19 +55,19 @@ class Dimensions:
 		elif not (self.H1 > self.G1):
 			errorMsg = "Length H1=%s must be larger then length G1=%s"%(self.H1, self.G1)
 		return (len(errorMsg)==0, errorMsg )
-		
+
 	def PID(self):
 		return self.POD - self.PThk*2
-	
+
 	def PID1(self):
 		return self.POD1 - self.PThk1*2
-		
+
 	def socketDepthRight(self):
 		return (self.H - self.G)
-		
+
 	def socketDepthLeft(self):
 		return (self.L - self.H - self.G)
-		
+
 	def socketDepthBottom(self):
 		return (self.H1 - self.G1)
 
@@ -76,19 +76,19 @@ class Dimensions:
 
 	def calculateAuxiliararyPoints(self):
 		"""Calculate auxiliarary points which are used to build a cross from cylinders.
-		
+
 		See documentation picture cross-cacluations.png
 		"""
 		result = {}
 		result["p1"] = FreeCAD.Vector(-self.H,0,0)
 		result["p2"] = FreeCAD.Vector(-self.G,0,0)
 		result["p3"] = FreeCAD.Vector(self.G,0,0) # This is an assumption, because the drawing of
-							  # of Aetnoplastics does not contain this value							
+							  # of Aetnoplastics does not contain this value
 		result["p4"] = FreeCAD.Vector(0,0,-self.H1)
 		result["p5"] = FreeCAD.Vector(0,0,-self.G1)
-		result["p6"] = FreeCAD.Vector(0,0,self.G1) # This is an assumption, because not		
+		result["p6"] = FreeCAD.Vector(0,0,self.G1) # This is an assumption, because not
 							   # of Aetnoplastics does not contain this value
-	
+
 		return result
 
 class Cross:
@@ -117,16 +117,16 @@ class Cross:
 		vertical_outer_cylinder.Radius = self.dims.M1/2
 		vertical_outer_cylinder.Height = self.dims.L1
 		vertical_outer_cylinder.Placement.Base = aux["p4"]
-		
+
 		outer_fusion = self.document.addObject("Part::MultiFuse","OuterCrossFusion")
 		outer_fusion.Shapes = [horizontal_outer_cylinder, vertical_outer_cylinder]
 		return outer_fusion
-	
+
 	def createInnerPart(self):
 		aux = self.dims.calculateAuxiliararyPoints()
 		PID = self.dims.PID()
 		PID1 = self.dims.PID1()
-		
+
 		horizontal_inner_cylinder = self.document.addObject("Part::Cylinder","HorizontalInnerCynlider")
 		horizontal_inner_cylinder.Radius = PID/2
 		horizontal_inner_cylinder.Height = self.dims.L
@@ -136,19 +136,19 @@ class Cross:
 		vertical_inner_cylinder.Radius = PID1/2
 		vertical_inner_cylinder.Height = self.dims.L1
 		vertical_inner_cylinder.Placement.Base = aux["p4"]
-		
+
 		# Add sockets
 		socket_left = self.document.addObject("Part::Cylinder","SocketLeft")
 		socket_left.Radius = self.dims.POD /2
 		socket_left.Height = self.dims.socketDepthLeft()
 		socket_left.Placement = FreeCAD.Placement(aux["p1"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
 
-		
+
 		socket_right = self.document.addObject("Part::Cylinder","SocketRight")
 		socket_right.Radius = self.dims.POD /2
 		socket_right.Height = self.dims.socketDepthRight()
 		socket_right.Placement = FreeCAD.Placement(aux["p3"], FreeCAD.Rotation(FreeCAD.Vector(0,1,0),90), FreeCAD.Vector(0,0,0))
-		
+
 		socket_bottom = self.document.addObject("Part::Cylinder","SocketBottom")
 		socket_bottom.Radius = self.dims.POD1 /2
 		socket_bottom.Height = self.dims.socketDepthBottom()
@@ -166,7 +166,7 @@ class Cross:
 
 	def create(self, convertToSolid):
 		self.checkDimensions()
-		
+
 		outer = self.createOuterPart()
 		inner = self.createInnerPart()
 		cross = self.document.addObject("Part::Cut","Cross")
@@ -181,9 +181,9 @@ class Cross:
 			self.document.recompute()
 			# Now convert all parts to solid, and remove intermediate data.
 			solid = toSolid(self.document, cross, "cross (solid)")
-			removePartWithChildren(self.document, cross)
+			Piping.removePartWithChildren(self.document, cross)
 			return solid
-	
+
 		return cross
 
 class CrossFromTable:
@@ -228,22 +228,22 @@ class CrossFromTable:
 		dims.POD1 = parseQuantity(row["POD1"])
 		dims.PThk = CrossFromTable.getPThk(row)
 		dims.PThk1 = CrossFromTable.getPThk1(row)
-		
 
-		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+
+		if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
 			cross = Cross(self.document)
 			cross.dims = dims
-			part = cross.create(outputType == OUTPUT_TYPE_SOLID)
+			part = cross.create(outputType == Piping.OUTPUT_TYPE_SOLID)
 			part.Label = "OSE-Cross"
 			return part
-		elif outputType == OUTPUT_TYPE_FLAMINGO:
+		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Cross")
 			import flCross
 			builder = flCross.CrossBuilder(self.document)
 			builder.dims = dims
-			part = builder.create(feature)	
-			feature.PRating = GetPressureRatingString(row)
+			part = builder.create(feature)
+			feature.PRating = Piping.GetPressureRatingString(row)
 			feature.PSize = row["PSize"] # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
 			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
@@ -260,19 +260,15 @@ def TestCross():
 # Test macro.
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = Piping.CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	cross = CrossFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partName = table.getPartKey(i)
 		print("Creating part %s"%partName)
-		cross.create(partName, OUTPUT_TYPE_SOLID)
+		cross.create(partName, Piping.OUTPUT_TYPE_SOLID)
 		document.recompute()
 
 #TestCross()
 #TestTable()
-
-
-
-

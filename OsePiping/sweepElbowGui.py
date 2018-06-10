@@ -3,13 +3,13 @@
 # Date: 30 March February 2018
 # Create a sweepElbow-fitting.
 
-import sweepElbow
-import createPartGui
+import SweepElbow
+import CreatePartGui
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Sweep Elbow"
@@ -21,8 +21,8 @@ class MainDialog(createPartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = sweepElbow.SweepElbowFromTable(self.params.document, self.params.table)
+			builder = SweepElbow.SweepElbowFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(sweepElbow.CSV_TABLE_PATH, sweepElbow.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(SweepElbow.CSV_TABLE_PATH, SweepElbow.DIMENSIONS_USED)

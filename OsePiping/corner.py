@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # Author: Ruslan Krenzler.
 # Date: 09 February 2018
-# Create a corner-fitting. 
+# Create a corner-fitting.
 
 import math
 import csv
@@ -10,13 +10,13 @@ import os.path
 import FreeCAD
 import Part
 
-import OSEBasePiping
-from piping import *
+import OsePipingBase
+import Piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
-# This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "corner.csv")
+# This is the path to the dimensions table.
+CSV_TABLE_PATH = os.path.join(OsePipingBase.TABLE_PATH, "corner.csv")
 # It must contain unique values in the column "PartNumber" and also, dimensions listened below.
 DIMENSIONS_USED = ["G", "H", "M", "POD", "PThk"]
 
@@ -37,14 +37,14 @@ class Dimensions:
 		elif not (self.M > self.POD):
 			errorMsg = "Outer diameter M %s must be larger than outer pipe diameter POD %s"%(self.M, self.POD)
 		elif not (self.G > 0):
-			errorMsg = "Length G %s be positive"%(self.G)				
+			errorMsg = "Length G %s be positive"%(self.G)
 		elif not (self.H > self.G):
-			errorMsg = "Length H %s must be larger than length G %s"%(self.H, self.G)				
+			errorMsg = "Length H %s must be larger than length G %s"%(self.H, self.G)
 		if not (self.G > self.PID()/2.0):
-			raise UnplausibleDimensions("Length G %s must be larger than inner pipe radius PID/2=%s."%(self.G, self.PID()/2.0))
-						
-		return (len(errorMsg)==0, errorMsg )	
-				
+			raise Piping.UnplausibleDimensions("Length G %s must be larger than inner pipe radius PID/2=%s."%(self.G, self.PID()/2.0))
+
+		return (len(errorMsg)==0, errorMsg )
+
 	def PID(self):
 		return self.POD-2*self.PThk
 
@@ -58,7 +58,7 @@ class Dimensions:
 		result["p3"] = FreeCAD.Vector(0,0,self.G)
 		return result
 
-		
+
 class Corner:
 	def __init__(self, document):
 		self.document = document
@@ -68,7 +68,7 @@ class Corner:
 	def checkDimensions(self):
 		valid, msg = self.dims.isValid()
 		if not valid:
-			raise UnplausibleDimensions(msg)
+			raise Piping.UnplausibleDimensions(msg)
 
 	def createPrimitiveCorner(self, L, D):
 		"""Create corner consisting of two cylinder along x-,y- and y axis and a ball in the center."""
@@ -122,7 +122,7 @@ class Corner:
 		corner = self.document.addObject("Part::Cut","Cut")
 		corner.Base = outer
 		corner.Tool = inner
-		
+
 		if convertToSolid:
 			# Before making a solid, recompute documents. Otherwise there will be
 			#    s = Part.Solid(Part.Shell(s))
@@ -130,9 +130,9 @@ class Corner:
 			# exception.
 			self.document.recompute()
 			# Now convert all parts to solid, and remove intermediate data.
-			solid = toSolid(self.document, corner, "corner (solid)")
+			solid = Piping.toSolid(self.document, corner, "corner (solid)")
 			# Remove previous (intermediate parts).
-			parts = nestedObjects(corner)
+			parts = Piping.nestedObjects(corner)
 			# Document.removeObjects can remove multple objects, when we use
 			# parts directly. To prevent exceptions with deleted objects,
 			# use the name list instead.
@@ -182,20 +182,20 @@ class CornerFromTable:
 		dims.POD = parseQuantity(row["POD"])
 		dims.PThk = self.getPThk(row)
 
-		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+		if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
 			corner = Corner(self.document)
 			corner.dims = dims
-			part = corner.create(outputType == OUTPUT_TYPE_SOLID)
+			part = corner.create(outputType == Piping.OUTPUT_TYPE_SOLID)
 			part.Label = "OSE-Corner"
 			return part
 
-		elif outputType == OUTPUT_TYPE_FLAMINGO:
+		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Corner")
 			import flCorner
 			builder = flCorner.CornerBuilder(self.document)
 			builder.dims = dims
-			part = builder.create(feature)	
-			feature.PRating = GetPressureRatingString(row)
+			part = builder.create(feature)
+			feature.PRating = Piping.GetPressureRatingString(row)
 			feature.PSize = self.getPSize(row)
 			feature.ViewObject.Proxy = 0
 			feature.PartNumber = partNumber
@@ -211,17 +211,16 @@ def TestCorner():
 
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = Piping.CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = CornerFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partNumber = table.getPartKey(i)
 		print("Creating part %s"%partNumber)
-		builder.create(partNumber, OUTPUT_TYPE_SOLID)
+		builder.create(partNumber, Piping.OUTPUT_TYPE_SOLID)
 		document.recompute()
 
 
 #TestCorner()
 #TestTable()
-

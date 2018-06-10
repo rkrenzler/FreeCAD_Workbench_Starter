@@ -11,13 +11,13 @@ import os.path
 import FreeCAD
 import Part
 
-import OSEBasePiping
-from piping import *
+import OsePipingBase
+import Piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
-# This is the path to the dimensions table. 
-CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, "coupling.csv")
+# This is the path to the dimensions table.
+CSV_TABLE_PATH = os.path.join(OsePipingBase.TABLE_PATH, "coupling.csv")
 
 # The table must contain unique values in the column "PartNumber" and also, dimensions listened below.
 DIMENSIONS_USED = ["L", "M", "M1", "N", "POD1", "POD", "PThk", "PThk1"]
@@ -46,19 +46,19 @@ class Dimensions:
 		elif not (self.M > self.POD):
 			errorMsg = "Outer diameter M %s must be larger than outer pipe diameter POD %s"%(self.M, self.POD)
 		elif not (self.M1 > self.POD1):
-			errorMsg = "Outer diameter M1 %s must be larger than outer pipe diameter POD1 %s"%(self.M1, self.POD1)				
+			errorMsg = "Outer diameter M1 %s must be larger than outer pipe diameter POD1 %s"%(self.M1, self.POD1)
 		elif not ( self.L > self.N):
 			errorMsg = "The total length L=%s must be larger than the length N"%(self.L, self.N)
 		elif not ( self.N > 0):
 			errorMsg = "Length N=%s must be positive"%self.N
-		return (len(errorMsg)==0, errorMsg )			
-			
+		return (len(errorMsg)==0, errorMsg )
+
 	def shiftA1(self):
 		"""Determine an additional length a1 of the socket 1, such that the wall size of the intermediate
 		section on it thin part is not smaller than the walls of the sockets.
 		The size a1 does not come from some document or standard. It is only chosen to avoid thin walls
 		in the intermediate section of thecoupling. Probably a1 must be even larger.
-		
+
 		a1 is positive if POD > POD1, it is negative if POD < POD1.
 		"""
 		a2 = max(self.M-self.POD, self.M1-self.POD1) / 2
@@ -68,28 +68,28 @@ class Dimensions:
 		factor = x.Value/math.sqrt(4*self.N**2+x**2)
 		a1 = factor*a2
 		return a1
-		
+
 	def socketDepthA5(self):
 		"""Determin the length of the bottom (or left) socket.
 		We assume that the socket lengthes are the same on both ends.
 		"""
 		return (self.L - self.N)/2.0
-	
+
 	def bottomSocketOuterLength(self):
 		"""Return outer length of the socket on the bottom in FreeCAD
 		(on the left size in the picture).
 		"""
 		return self.socketDepthA5()+self.shiftA1()
-		
+
 	def topSocketOuterLength(self):
 		"""Return outer length of the socket on the to in FreeCAD
 		(on the right size in the picture).
 		"""
 		return self.socketDepthA5()-self.shiftA1()
-		
+
 	def calculateAuxiliararyPoints(self):
 		"""Calculate auxiliarary points which are used to build a coupling from cylinders and cones.
-		
+
 		See documentation picture coupling-cacluations.png
 		"""
 		result = {}
@@ -99,13 +99,13 @@ class Dimensions:
 		result["p4"] = FreeCAD.Vector(0,0,self.socketDepthA5() + self.shiftA1())
 		result["p5"] = FreeCAD.Vector(0,0,self.L - self.socketDepthA5() + self.shiftA1())
 		return result
-		
+
 	def PID(self):
 		return self.POD-2*self.PThk
 
 	def PID1(self):
 		return self.POD1-2*self.PThk1
-	
+
 class Coupling:
 	def __init__(self, document):
 		self.document = document
@@ -115,8 +115,8 @@ class Coupling:
 	def checkDimensions(self):
 		valid, msg = self.dims.isValid()
 		if not valid:
-			raise UnplausibleDimensions(msg)
-		
+			raise Piping.UnplausibleDimensions(msg)
+
 	def createOuterPart(self):
 		if self.dims.M == self.dims.M1:
 			return self.createOuterPartEqual()
@@ -144,7 +144,7 @@ class Coupling:
 		cone.Radius2 = self.dims.M1/2
 		cone.Height = self.dims.N
 		cone.Placement.Base = FreeCAD.Vector(aux["p4"])
-		# Create a socket 2 and put it on the cone 
+		# Create a socket 2 and put it on the cone
 		cylinder2 = self.document.addObject("Part::Cylinder","Cylinder2")
 		cylinder2.Radius = self.dims.M1/2
 		cylinder2.Height = self.dims.topSocketOuterLength()
@@ -199,7 +199,7 @@ class Coupling:
 		inner = self.document.addObject("Part::MultiFuse","InnerParts")
 		inner.Shapes = [cylinder1i, conei, cylinder2i]
 		return inner
-		
+
 	def create(self, convertToSolid):
 		self.checkDimensions()
 		outer = self.createOuterPart()
@@ -212,9 +212,9 @@ class Coupling:
 			# Before making a solid, recompute documents.
 			self.document.recompute()
 			# Now convert all parts to solid, and remove intermediate data.
-			solid = toSolid(self.document, coupling, "coupling (solid)")
+			solid = Piping.toSolid(self.document, coupling, "coupling (solid)")
 			# Remove previous (intermediate parts).
-			parts = nestedObjects(coupling)
+			parts = Piping.nestedObjects(coupling)
 			# Document.removeObjects can remove multple objects, when we use
 			# parts directly. To prevent exceptions with deleted objects,
 			# use the name list instead.
@@ -234,7 +234,7 @@ class CouplingFromTable:
 	def __init__ (self, document, table):
 		self.document = document
 		self.table = table
-		
+
 	@classmethod
 	def getPThk(cls, row):
 		""" For compatibility results, if there is no "PThk" dimension, calculate it
@@ -252,7 +252,7 @@ class CouplingFromTable:
 			return (parseQuantity(row["POD1"])-parseQuantity(row["PID1"]))/2.0
 		else:
 			return parseQuantity(row["PThk1"])
-			
+
 	@classmethod
 	def getPSize(cls, row):
 		if "PSize" in row.keys():
@@ -277,21 +277,21 @@ class CouplingFromTable:
 		dims.PThk = self.getPThk(row)
 		dims.PThk1 = self.getPThk1(row)
 
-		if outputType == OUTPUT_TYPE_PARTS or outputType == OUTPUT_TYPE_SOLID:
+		if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
 			coupling = Coupling(self.document)
 			coupling.dims = dims
-			part = coupling.create(outputType == OUTPUT_TYPE_SOLID)
+			part = coupling.create(outputType == Piping.OUTPUT_TYPE_SOLID)
 			part.Label = "OSE-Coupling"
 			return part
-			
-		elif outputType == OUTPUT_TYPE_FLAMINGO:
+
+		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Coupling")
 			import flCoupling
 			builder = flCoupling.CouplingBuilder(self.document)
 			builder.dims = dims
-			part = builder.create(feature)	
-			feature.PRating = GetPressureRatingString(row)
+			part = builder.create(feature)
+			feature.PRating = Piping.GetPressureRatingString(row)
 			feature.PSize = self.getPSize(row) # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
 			feature.PartNumber = partNumber
@@ -306,20 +306,20 @@ def TestCoupling():
 
 def TestTable():
 	document = FreeCAD.activeDocument()
-	table = CsvTable(DIMENSIONS_USED)
+	table = Piping.CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = CouplingFromTable(document, table)
 	for i in range(0, len(table.data)):
 		print("Selecting row %d"%i)
 		partNumber = table.getPartKey(i)
 		print("Creating part %s"%partNumber)
-		builder.create(partNumber, OUTPUT_TYPE_SOLID)
+		builder.create(partNumber, Piping.OUTPUT_TYPE_SOLID)
 		document.recompute()
 
 
 def TestPartFromTable(partNumber, outputType):
 	document = FreeCAD.activeDocument()
-	table = CsvTable2(DIMENSIONS_USED)
+	table = Piping.CsvTable(DIMENSIONS_USED)
 	table.load(CSV_TABLE_PATH)
 	builder = CouplingFromTable(document, table)
 	print("Creating part %s"%partNumber)
@@ -329,4 +329,3 @@ def TestPartFromTable(partNumber, outputType):
 #TestCoupling()
 #TestTable()
 #TestPartFromTable("429-249", OUTPUT_TYPE_PARTS)
-

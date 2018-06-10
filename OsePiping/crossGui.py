@@ -6,16 +6,12 @@
 import math
 import os.path
 
-import cross
-import createPartGui
+import Cross
+import CreatePartGui
 
-from cross import *
-from piping import *
-import pipingGui
-
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Cross"
@@ -27,9 +23,8 @@ class MainDialog(createPartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = cross.CrossFromTable(self.params.document, self.params.table)
+			builder = Cross.CrossFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
-		
-def GuiCheckTable():
-	return createPartGui.GuiCheckTable(cross.CSV_TABLE_PATH, cross.DIMENSIONS_USED)
 
+def GuiCheckTable():
+	return CreatePartGui.GuiCheckTable(Cross.CSV_TABLE_PATH, Cross.DIMENSIONS_USED)

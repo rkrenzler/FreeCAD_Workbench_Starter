@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 # Author: Ruslan Krenzler.
 # Date: 09 February 2018
-# Create a corner-fitting. 
+# Create a corner-fitting.
 
 import corner
-import createPartGui
+import CreatePartGui
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create corner"
@@ -25,6 +25,4 @@ class MainDialog(createPartGui.BaseDialog):
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(corner.CSV_TABLE_PATH, corner.DIMENSIONS_USED)
-
-
+	return CreatePartGui.GuiCheckTable(corner.CSV_TABLE_PATH, corner.DIMENSIONS_USED)

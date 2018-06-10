@@ -3,13 +3,13 @@
 # Date: 20 Januar December 2018
 # Create a coupling fitting using a gui.
 
-import coupling
-import createPartGui
+import Coupling
+import CreatePartGui
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Coupling"
@@ -21,9 +21,9 @@ class MainDialog(createPartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = coupling.CouplingFromTable(self.params.document, self.params.table)
+			builder = Coupling.CouplingFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
 
 def GuiCheckTable():
-	return createPartGui.GuiCheckTable(coupling.CSV_TABLE_PATH, coupling.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(Coupling.CSV_TABLE_PATH, Coupling.DIMENSIONS_USED)

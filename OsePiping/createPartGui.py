@@ -11,9 +11,9 @@ import os.path
 from PySide import QtCore, QtGui
 import FreeCAD
 
-import OSEBasePiping
-import piping
-import pipingGui
+import OsePipingBase
+import Piping
+import PipingGui
 
 class DialogParams:
 	def __init__(self):
@@ -27,7 +27,7 @@ class DialogParams:
 		self.settingsName = None
 		self.selectionMode = False
 		self.keyColumnName = "Name" # Old style column name for the unique ID of the part.
-		
+
 class BaseDialog(QtGui.QDialog):
 	QSETTINGS_APPLICATION = "OSE piping workbench"
 
@@ -35,16 +35,16 @@ class BaseDialog(QtGui.QDialog):
 		super(BaseDialog, self).__init__()
 		self.params = params
 		self.initUi()
-		if piping.HasFlamingoSupport():
-			self.radioButtonFlamingo.setEnabled(True)			
+		if Piping.HasFlamingoSupport():
+			self.radioButtonFlamingo.setEnabled(True)
 		else:
 			self.radioButtonFlamingo.setEnabled(False)
-			
-	def initUi(self): 
-		Dialog = self # Added 
-		self.result = -1 
+
+	def initUi(self):
+		Dialog = self # Added
+		self.result = -1
 		self.setupUi(self)
-		# Fill table with dimensions. 
+		# Fill table with dimensions.
 		self.initTable()
 
 		# Restore previous user input. Ignore exceptions to prevent this part
@@ -104,7 +104,7 @@ class BaseDialog(QtGui.QDialog):
 		self.verticalLayout.addWidget(self.labelExplanation)
 		self.labelImage = QtGui.QLabel(Dialog)
 		self.labelImage.setText("")
-		self.labelImage.setPixmap(os.path.join(OSEBasePiping.IMAGE_PATH, self.params.dimensionsPixmap))
+		self.labelImage.setPixmap(os.path.join(OsePipingBase.IMAGE_PATH, self.params.dimensionsPixmap))
 		self.labelImage.setAlignment(QtCore.Qt.AlignCenter)
 		self.labelImage.setObjectName("labelImage")
 		self.verticalLayout.addWidget(self.labelImage)
@@ -129,10 +129,10 @@ class BaseDialog(QtGui.QDialog):
 
 	def initTable(self):
 		# Read table data from CSV
-		self.model = pipingGui.PartTableModel(self.params.table.headers, self.params.table.data)
+		self.model = PipingGui.PartTableModel(self.params.table.headers, self.params.table.data)
 		self.model.keyColumnName = self.params.keyColumnName
 		self.tableViewParts.setModel(self.model)
-		
+
 	def getSelectedPartName(self):
 		sel = self.tableViewParts.selectionModel()
 		if sel.isSelected:
@@ -150,7 +150,7 @@ class BaseDialog(QtGui.QDialog):
 
 	def createNewPart(self, document, table, partName, outputType):
 		""" This function must be implement by the parent class.
-		
+
 		It must return a part if succees and None if fail."""
 		pass
 
@@ -179,7 +179,7 @@ class BaseDialog(QtGui.QDialog):
 				self.saveInput()
 				# Call parent class.
 				super(BaseDialog, self).accept()
-				
+
 		else:
 			msgBox = QtGui.QMessageBox()
 			msgBox.setText("Select part")
@@ -194,7 +194,7 @@ class BaseDialog(QtGui.QDialog):
 			msgBox.exec_()
 		else:
 			super(BaseDialog, self).accept()
-	
+
 	def accept(self):
 		if self.params.selectionMode:
 			return self.acceptSelectionMode()
@@ -203,20 +203,20 @@ class BaseDialog(QtGui.QDialog):
 
 	def saveAdditionalData(self, settings):
 		pass
-					
+
 	def saveInput(self):
 		"""Store user input for the next run."""
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
 
 		if self.radioButtonFlamingo.isChecked():
-			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_FLAMINGO)
+			settings.setValue("radioButtonsOutputType", Piping.OUTPUT_TYPE_FLAMINGO)
 		elif self.radioButtonParts.isChecked():
-			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_PARTS)
+			settings.setValue("radioButtonsOutputType", Piping.OUTPUT_TYPE_PARTS)
 		else : # Default is solid.
-			settings.setValue("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID)
+			settings.setValue("radioButtonsOutputType", Piping.OUTPUT_TYPE_SOLID)
 
 		settings.setValue("LastSelectedPartNumber", self.getSelectedPartName())
-		self.saveAdditionalData(settings)		
+		self.saveAdditionalData(settings)
 		settings.sync()
 
 	def restoreAdditionalInput(self, settings):
@@ -224,11 +224,11 @@ class BaseDialog(QtGui.QDialog):
 
 	def restoreInput(self):
 		settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
-		
-		output = int(settings.value("radioButtonsOutputType", piping.OUTPUT_TYPE_SOLID))
-		if output == piping.OUTPUT_TYPE_FLAMINGO and piping.HasFlamingoSupport():
-			self.radioButtonFlamingo.setChecked(True)			
-		elif  output == piping.OUTPUT_TYPE_PARTS:
+
+		output = int(settings.value("radioButtonsOutputType", Piping.OUTPUT_TYPE_SOLID))
+		if output == Piping.OUTPUT_TYPE_FLAMINGO and Piping.HasFlamingoSupport():
+			self.radioButtonFlamingo.setChecked(True)
+		elif  output == Piping.OUTPUT_TYPE_PARTS:
 			self.radioButtonParts.setChecked(True)
 		else: # Default is solid. output == piping.OUTPUT_TYPE_SOLID
 			self.radioButtonSolid.setChecked(True)
@@ -238,11 +238,11 @@ class BaseDialog(QtGui.QDialog):
 
 	def getOutputType(self):
 		if self.radioButtonFlamingo.isChecked():
-			return piping.OUTPUT_TYPE_FLAMINGO
+			return Piping.OUTPUT_TYPE_FLAMINGO
 		elif self.radioButtonParts.isChecked():
-			return piping.OUTPUT_TYPE_PARTS
+			return Piping.OUTPUT_TYPE_PARTS
 		else: # Default is solid.
-			return piping.OUTPUT_TYPE_SOLID
+			return Piping.OUTPUT_TYPE_SOLID
 
 	def showForSelection(self, partName=None):
 		""" Show pipe dialog, to select pipe and not to create it.
@@ -258,26 +258,26 @@ class BaseDialog(QtGui.QDialog):
 			self.selectPartByName(partName)
 		self.exec_()
 		return self.selectedPart
-		
+
 	def showForCreation(self):
 		self.params.selectionMode = False
 		self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
 					None, QtGui.QApplication.UnicodeUTF8))
 		self.exec_()
-		
-	
+
+
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):
 	# Check if the CSV file exists.
 	if os.path.isfile(tablePath) == False:
 		text = "This tablePath requires %s  but this file does not exist."%(tablePath)
-		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning, 
+		msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
 			"Creating of the part failed.", text)
 		msgBox.exec_()
 		exit(1) # Error
 
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath) 
-	table = piping.CsvTable(dimensionsUsed)
+        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath)
+	table = Piping.CsvTable(dimensionsUsed)
 	table.load(tablePath)
 
 	if table.hasValidData == False:
@@ -293,5 +293,3 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 #doc=FreeCAD.activeDocument()
 #table = GuiCheckTable() # Open a CSV file, check its content, and return it as a piping.CsvTable object.
 #form = BaseDialog(doc, table)
-
-

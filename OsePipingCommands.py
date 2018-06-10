@@ -10,7 +10,7 @@
 #*  modify it under the terms of the GNU Lesser General Public             *
 #*  License as published by the Free Software Foundation; either           *
 #*  version 2 of the License, or (at your option) any later version.       *
-#*                                                                         *            
+#*                                                                         *
 #*  This library is distributed in the hope that it will be useful,        *
 #*  but WITHOUT ANY WARRANTY; without even the implied warranty of         *
 #*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU      *
@@ -23,19 +23,25 @@
 #*                                                                         *
 #***************************************************************************
 
-import FreeCAD, Part, OSEBasePiping
-import couplingGui
-import pipeGui, bushingGui, teeGui
-import cornerGui, elbowGui, crossGui
-import sweepElbowGui
-import createPartGui
+import FreeCAD
+import Part
+import OsePipingBase
+import OsePiping.CouplingGui as CouplingGui
+import OsePiping.PipeGui as PipeGui
+import OsePiping.BushingGui as BushingGui
+import OsePiping.TeeGui as TeeGui
+import OsePiping.CornerGui as CornerGui
+import OsePiping.ElbowGui as ElbowGui
+import OsePiping.CrossGui as CrossGui
+import OsePiping.SweepElbowGui as SweepElbowGui
+import OsePiping.createPartGui as CreatePartGui
 
 from FreeCAD import Gui
 
-class OSE_CreatePipeClass():
+class OsePiping_PipeClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreatePipe.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a pipe",
                 'ToolTip' : "Adds a pipe into the center of the document."}
@@ -45,9 +51,9 @@ class OSE_CreatePipeClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = pipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = PipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
  #       FreeCAD.Console.PrintMessage("Showing pipe UI.")
-	form = pipeGui.MainDialog(doc, table)
+	form = PipeGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -56,10 +62,10 @@ class OSE_CreatePipeClass():
         return True
 
 
-class OSE_CreateCouplingClass():
+class OsePiping_CouplingClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCoupling.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateCoupling.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a coupling",
                 'ToolTip' : "Adds a coupling."}
@@ -69,9 +75,9 @@ class OSE_CreateCouplingClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = couplingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = CouplingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer coupling UI.")
-	form = couplingGui.MainDialog(doc, table)
+	form = CouplingGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -80,10 +86,10 @@ class OSE_CreateCouplingClass():
         return True
 
 
-class OSE_CreateBushingClass():
+class OsePiping_BushingClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateBushing.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateBushing.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a bushing",
                 'ToolTip' : "Adds a bushing."}
@@ -93,9 +99,9 @@ class OSE_CreateBushingClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = bushingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = BushingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer bushing UI.")
-	form = bushingGui.MainDialog(doc, table)
+	form = BushingGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -103,10 +109,10 @@ class OSE_CreateBushingClass():
         are met or not. This function is optional."""
         return True
 
-class OSE_CreateElbowClass():
+class OsePiping_ElbowClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateElbow.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add an elbow",
                 'ToolTip' : "Adds an elbow."}
@@ -116,20 +122,20 @@ class OSE_CreateElbowClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = elbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = ElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer elbow UI.")
-	form = elbowGui.MainDialog(doc, table)
+	form = ElbowGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
         are met or not. This function is optional."""
         return True
-        
-class OSE_CreateSweepElbowClass():
+
+class OsePiping_SweepElbowClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateSweepElbow.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateSweepElbow.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a sweep elbow",
                 'ToolTip' : "Adds a sweep elbow."}
@@ -139,8 +145,8 @@ class OSE_CreateSweepElbowClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = sweepElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-	form = sweepElbowGui.MainDialog(doc, table)
+	table = SweepElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	form = SweepElbowGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -148,10 +154,10 @@ class OSE_CreateSweepElbowClass():
         are met or not. This function is optional."""
         return True
 
-class OSE_CreateTeeClass():
+class OsePiping_TeeClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateTee.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateTee.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a tee",
                 'ToolTip' : "Adds a tee."}
@@ -161,9 +167,9 @@ class OSE_CreateTeeClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = teeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = TeeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer tee UI.")
-	form = teeGui.MainDialog(doc, table)
+	form = TeeGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -172,10 +178,10 @@ class OSE_CreateTeeClass():
         return True
 
 
-class OSE_CreateCornerClass():
+class OsePiping_CornerClass():
 
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCorner.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateCorner.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a outer corner",
                 'ToolTip' : "Adds a outer corner."}
@@ -185,9 +191,9 @@ class OSE_CreateCornerClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = cornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = CornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
-	form = cornerGui.MainDialog(doc, table)
+	form = CornerGui.MainDialog(doc, table)
 	form.showForCreation()
 
     def IsActive(self):
@@ -195,9 +201,9 @@ class OSE_CreateCornerClass():
         are met or not. This function is optional."""
         return True
 
-class OSE_CreateCrossClass():
+class OsePiping_CrossClass():
     def GetResources(self):
-        return {'Pixmap'  : OSEBasePiping.ICON_PATH + '/CreateCross.svg', # the name of a svg file available in the resources
+        return {'Pixmap'  : OsePipingBase.ICON_PATH + '/CreateCross.svg', # the name of a svg file available in the resources
 #                'Accel' : "Shift+S", # a default shortcut (optional)
                 'MenuText': "Add a cross",
                 'ToolTip' : "Adds a cross."}
@@ -207,9 +213,9 @@ class OSE_CreateCrossClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = crossGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+	table = CrossGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
-	form = crossGui.MainDialog(doc, table)
+	form = CrossGui.MainDialog(doc, table)
 	form.exec_()
 
     def IsActive(self):
@@ -217,11 +223,11 @@ class OSE_CreateCrossClass():
         are met or not. This function is optional."""
         return True
 
-Gui.addCommand('OSE_CreatePipe', OSE_CreatePipeClass())
-Gui.addCommand('OSE_CreateCoupling', OSE_CreateCouplingClass())
-Gui.addCommand('OSE_CreateBushing', OSE_CreateBushingClass())
-Gui.addCommand('OSE_CreateElbow', OSE_CreateElbowClass())
-Gui.addCommand('OSE_CreateSweepElbow', OSE_CreateSweepElbowClass())
-Gui.addCommand('OSE_CreateTee', OSE_CreateTeeClass())
-Gui.addCommand('OSE_CreateCorner', OSE_CreateCornerClass())
-Gui.addCommand('OSE_CreateCross', OSE_CreateCrossClass())
+Gui.addCommand('OsePiping_Pipe', OsePiping_PipeClass())
+Gui.addCommand('OsePiping_Coupling', OsePiping_CouplingClass())
+Gui.addCommand('OsePiping_Bushing', OsePiping_BushingClass())
+Gui.addCommand('OsePiping_Elbow', OsePiping_ElbowClass())
+Gui.addCommand('OsePiping_SweepElbow', OsePiping_SweepElbowClass())
+Gui.addCommand('OsePiping_Tee', OsePiping_TeeClass())
+Gui.addCommand('OsePiping_Corner', OsePiping_CornerClass())
+Gui.addCommand('OsePiping_Cross', OsePiping_CrossClass())

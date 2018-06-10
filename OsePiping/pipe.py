@@ -7,13 +7,13 @@ import os.path
 
 import FreeCAD
 
-import OSEBasePiping
-import piping
+import OsePipingBase
+import Piping
 
 tu = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table.
-CSV_TABLE_PATH = os.path.join(OSEBasePiping.TABLE_PATH, 'pipe.csv')
+CSV_TABLE_PATH = os.path.join(OsePipingBase.TABLE_PATH, 'pipe.csv')
 # It must contain unique values in the column "Name" and also, dimensions listened below.
 DIMENSIONS_USED = ["OD", "Thk"]
 
@@ -38,13 +38,13 @@ class Pipe:
 
     def checkDimensions(self):
         if not (self.OD > tu("0 mm")):
-            raise piping.UnplausibleDimensions(
+            raise Piping.UnplausibleDimensions(
                 "OD (inner diameter) of the pipe must be positive. It is %s instead" % (self.OD))
         if not (2 * self.Thk <= self.OD):
-            raise piping.UnplausibleDimensions(
+            raise Piping.UnplausibleDimensions(
                 "2*Thk (2*Thickness) %s must be less than or equlat to OD (outer diameter)%s " % (2 * self.Thk, self.OD))
         if not (self.H > tu("0 mm")):
-            raise piping.UnplausibleDimensions(
+            raise Piping.UnplausibleDimensions(
                 "Height H=%s must be positive" % self.H)
 
     def create(self, convertToSolid):
@@ -80,9 +80,9 @@ class Pipe:
             # exception.
             self.document.recompute()
             # Now convert all parts to solid, and remove intermediate data.
-            solid = piping.toSolid(self.document, pipe, "pipe (solid)")
+            solid = Piping.toSolid(self.document, pipe, "pipe (solid)")
             # Remove previous (intermediate parts).
-            parts = piping.nestedObjects(pipe)
+            parts = Piping.nestedObjects(pipe)
             # Document.removeObjects can remove multple objects, when we use
             # parts directly. To prevent exceptions with deleted objects,
             # use the name list instead.
@@ -109,23 +109,23 @@ class PipeFromTable:
         if row is None:
             print("Part not found")
             return
-        if outputType == piping.OUTPUT_TYPE_PARTS or outputType == piping.OUTPUT_TYPE_SOLID:
+        if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
             pipe = Pipe(self.document)
             pipe.OD = tu(row["OD"])
             pipe.Thk = tu(row["Thk"])
             pipe.H = length
-            part = pipe.create(outputType == piping.OUTPUT_TYPE_SOLID)
+            part = pipe.create(outputType == Piping.OUTPUT_TYPE_SOLID)
             return part
-        elif outputType == piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Pipe")
             import pipeFeatures
-            DN = piping.GetDnString(row)
+            DN = Piping.GetDnString(row)
             OD = tu(row["OD"])
             Thk = tu(row["Thk"])
             part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
-            feature.PRating = piping.GetPressureRatingString(row)
+            feature.PRating = Piping.GetPressureRatingString(row)
             # Currently I do not know how to interprite table data as a profile.
             feature.Profile = ""
             if "PSize" in row.keys():
@@ -145,7 +145,7 @@ def TestPipe():
 
 def TestTable():
     document = FreeCAD.activeDocument()
-    table = piping.CsvTable(DIMENSIONS_USED)
+    table = Piping.CsvTable(DIMENSIONS_USED)
     table.load(CSV_TABLE_PATH)
     pipe = PipeFromTable(document, table)
     for i in range(0, len(table.data)):

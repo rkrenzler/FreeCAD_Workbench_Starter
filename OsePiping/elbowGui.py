@@ -4,13 +4,13 @@
 # Create a elbow-fitting.
 
 
-import elbow
-import createPartGui
+import Elbow
+import CreatePartGui
 
 
-class MainDialog(createPartGui.BaseDialog):
+class MainDialog(CreatePartGui.BaseDialog):
 	def __init__(self, document, table):
-		params = createPartGui.DialogParams()
+		params = CreatePartGui.DialogParams()
 		params.document = document
 		params.table = table
 		params.dialogTitle = "Create Elbow"
@@ -22,9 +22,8 @@ class MainDialog(createPartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = elbow.ElbowFromTable(self.params.document, self.params.table)
+			builder = Elbow.ElbowFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
-		
-def GuiCheckTable():
-	return createPartGui.GuiCheckTable(elbow.CSV_TABLE_PATH, elbow.DIMENSIONS_USED)
 
+def GuiCheckTable():
+	return CreatePartGui.GuiCheckTable(Elbow.CSV_TABLE_PATH, Elbow.DIMENSIONS_USED)
