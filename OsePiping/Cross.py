@@ -180,7 +180,7 @@ class Cross:
 			# exception.
 			self.document.recompute()
 			# Now convert all parts to solid, and remove intermediate data.
-			solid = toSolid(self.document, cross, "cross (solid)")
+			solid = Piping.toSolid(self.document, cross, "cross (solid)")
 			Piping.removePartWithChildren(self.document, cross)
 			return solid
 
@@ -239,8 +239,8 @@ class CrossFromTable:
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Cross")
-			import flCross
-			builder = flCross.CrossBuilder(self.document)
+			import FlCross
+			builder = FlCross.CrossBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
 			feature.PRating = Piping.GetPressureRatingString(row)

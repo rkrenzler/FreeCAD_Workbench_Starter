@@ -272,8 +272,8 @@ class BushingFromTable:
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Bushing")
-			import flBushing
-			builder = flBushing.BushingBuilder(self.document)
+			import FlBushing
+			builder = FlBushing.BushingBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
 			feature.PRating = Piping.GetPressureRatingString(row)

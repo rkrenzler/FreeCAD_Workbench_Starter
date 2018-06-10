@@ -34,7 +34,7 @@ import OsePiping.CornerGui as CornerGui
 import OsePiping.ElbowGui as ElbowGui
 import OsePiping.CrossGui as CrossGui
 import OsePiping.SweepElbowGui as SweepElbowGui
-import OsePiping.createPartGui as CreatePartGui
+import OsePiping.CreatePartGui as CreatePartGui
 
 from FreeCAD import Gui
 

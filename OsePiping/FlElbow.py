@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 
 from pipeFeatures import pypeType  # the parent class
-import elbow as elbowMod
+import Elbow as ElbowMod
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of parts
@@ -55,12 +55,12 @@ class Elbow(pypeType):
         if prop in dim_properties:
             # This function is called within __init__ too.
             # We wait for all dimension.
-            if set(elbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
+            if set(ElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
 
     @staticmethod
     def extractDimensions(obj):
-        dims = elbowMod.Dimensions()
+        dims = ElbowMod.Dimensions()
         dims.BendAngle = obj.BendAngle
         dims.H = obj.H
         dims.J = obj.J
@@ -220,7 +220,7 @@ class ElbowBuilder:
     """ Create elbow using flamingo. """
 
     def __init__(self, document):
-        self.dims = elbowMod.Dimensions()
+        self.dims = ElbowMod.Dimensions()
         self.pos = FreeCAD.Vector(0, 0, 0)  # Define default initial position.
         self.document = document
 

@@ -287,8 +287,8 @@ class CouplingFromTable:
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Coupling")
-			import flCoupling
-			builder = flCoupling.CouplingBuilder(self.document)
+			import FlCoupling
+			builder = FlCoupling.CouplingBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
 			feature.PRating = Piping.GetPressureRatingString(row)

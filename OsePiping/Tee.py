@@ -395,11 +395,11 @@ class TeeFromTable:
 
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Tee")
-			import flTee
-			builder = flTee.TeeBuilder(self.document)
+			import FlTee
+			builder = FlTee.TeeBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
-			feature.PRating = GetPressureRatingString(row)
+			feature.PRating = Piping.GetPressureRatingString(row)
 			feature.PSize = row["PSize"] # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
 			feature.PartNumber = partNumber

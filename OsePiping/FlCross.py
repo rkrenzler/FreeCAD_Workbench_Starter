@@ -7,10 +7,10 @@
 import FreeCAD, Part
 from math import *
 from pipeFeatures import pypeType #the parent class
-import cross as crossMod
+import Cross as CrossMod
 
 class Cross(pypeType):
-	def __init__(self, obj, PSize="90degBend20x10", dims=crossMod.Dimensions()):
+	def __init__(self, obj, PSize="90degBend20x10", dims=CrossMod.Dimensions()):
 		# run parent __init__ and define common attributes
 		super(Cross,self).__init__(obj)
 		obj.PType="OSE_Cross"
@@ -32,24 +32,24 @@ class Cross(pypeType):
 		obj.addProperty("App::PropertyLength","PThk1","Cross","Pipe wall thickness of the vertical part").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyString","PartNumber","Cross","Part number").PartNumber=""
 		# Make Ports read only.
-		obj.setEditorMode("Ports", 1)		
+		obj.setEditorMode("Ports", 1)
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
-		
+
 		dim_properties = ["G", "G1"] # Properties which can change port locations
 
 		if prop in dim_properties:
-			# This function is called within __init__ too. Thus we need to wait untill 
+			# This function is called within __init__ too. Thus we need to wait untill
 			# we have all dimensions attributes.
-			if set(crossMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
+			if set(CrossMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@classmethod
 	def extractDimensions(cls, obj):
-		dims = crossMod.Dimensions()
+		dims = CrossMod.Dimensions()
 		dims.G = obj.G
 		dims.G1 = obj.G1
 		dims.H = obj.H
@@ -75,7 +75,7 @@ class Cross(pypeType):
 		vert_cylinder = Part.makeCylinder(vr, dims.L1, aux["p4"])
 		outer = hor_cylinder.fuse(vert_cylinder)
 		return outer
-		
+
 	@classmethod
 	def createInnerPart(cls, obj):
 		dims = cls.extractDimensions(obj)
@@ -101,23 +101,23 @@ class Cross(pypeType):
 
 		# Combine all cylinders.
 		inner = hor_cylinder.fuse([vert_cylinder, socket_left,
-					socket_right, socket_bottom, socket_top]) 
+					socket_right, socket_bottom, socket_top])
 		return inner
 
-	@classmethod	
+	@classmethod
 	def createShape(cls, obj):
 		outer = cls.createOuterPart(obj)
 		inner = cls.createInnerPart(obj)
 		return outer.cut(inner)
 		#return outer
-		
+
 	def execute(self,obj):
 		# Create the shape of the tee.
 		shape = self.createShape(obj)
 		obj.Shape = shape
 		# Recalculate ports.
 		obj.Ports = self.getPorts(obj)
-		
+
 	def getPorts(self, obj):
 		dims = Cross.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
@@ -127,10 +127,10 @@ class Cross(pypeType):
 class CrossBuilder:
 	""" Create a cross using flamingo. """
 	def __init__(self, document):
-		self.dims = crossMod.Dimensions()
+		self.dims = CrossMod.Dimensions()
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
 		self.document = document
-		
+
 	def create(self, obj):
 		"""Create a cross. """
 		cross = Cross(obj, PSize="", dims=self.dims)
@@ -148,5 +148,5 @@ def TestPart():
 	feature = document.addObject("Part::FeaturePython","OSE-Cross")
 	builder.create(feature)
 	document.recompute()
-	
+
 #TestPart()

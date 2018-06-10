@@ -3,7 +3,7 @@
 # Date: 27 January 2018
 # Create a bushing-fitting.
 
-import bushing
+import Bushing
 import CreatePartGui
 
 
@@ -21,8 +21,8 @@ class MainDialog(CreatePartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = bushing.BushingFromTable(self.params.document, self.params.table)
+			builder = Bushing.BushingFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return CreatePartGui.GuiCheckTable(bushing.CSV_TABLE_PATH, bushing.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(Bushing.CSV_TABLE_PATH, Bushing.DIMENSIONS_USED)

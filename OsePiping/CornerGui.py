@@ -3,7 +3,7 @@
 # Date: 09 February 2018
 # Create a corner-fitting.
 
-import corner
+import Corner
 import CreatePartGui
 
 class MainDialog(CreatePartGui.BaseDialog):
@@ -21,8 +21,8 @@ class MainDialog(CreatePartGui.BaseDialog):
 		super(MainDialog, self).__init__(params)
 
 	def createNewPart(self, document, table, partName, outputType):
-			builder = corner.CornerFromTable(self.params.document, self.params.table)
+			builder = Corner.CornerFromTable(self.params.document, self.params.table)
 			return builder.create(partName, outputType)
 
 def GuiCheckTable():
-	return CreatePartGui.GuiCheckTable(corner.CSV_TABLE_PATH, corner.DIMENSIONS_USED)
+	return CreatePartGui.GuiCheckTable(Corner.CSV_TABLE_PATH, Corner.DIMENSIONS_USED)

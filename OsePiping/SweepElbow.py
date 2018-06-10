@@ -328,8 +328,8 @@ class SweepElbowFromTable:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-SweepElbow")
-            import flSweepElbow
-            builder = flSweepElbow.SweepElbowBuilder(self.document)
+            import FlSweepElbow
+            builder = FlSweepElbow.SweepElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)
             feature.PRating = Piping.GetPressureRatingString(row)

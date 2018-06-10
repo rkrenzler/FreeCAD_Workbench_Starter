@@ -291,8 +291,8 @@ class ElbowFromTable:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Elbow")
-            import flElbow
-            builder = flElbow.ElbowBuilder(self.document)
+            import FlElbow
+            builder = FlElbow.ElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)
             feature.PRating = Piping.GetPressureRatingString(row)

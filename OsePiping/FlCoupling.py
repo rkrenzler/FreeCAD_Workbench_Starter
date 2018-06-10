@@ -6,10 +6,10 @@
 import FreeCAD, Part
 import math
 from pipeFeatures import pypeType #the parent class
-import coupling as couplingMod
+import Coupling as CouplingMod
 
 class Coupling(pypeType):
-	def __init__(self, obj, PSize="", dims=couplingMod.Dimensions()):
+	def __init__(self, obj, PSize="", dims=CouplingMod.Dimensions()):
 		"""Create a coupling"""
 		# Run parent __init__ and define common attributes
 		super(Coupling, self).__init__(obj)
@@ -29,7 +29,7 @@ class Coupling(pypeType):
 		obj.addProperty("App::PropertyVectorList","Ports","Coupling","Ports relative positions.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
-		obj.addProperty("App::PropertyString","PartNumber","Coupling","Part number").PartNumber=""		
+		obj.addProperty("App::PropertyString","PartNumber","Coupling","Part number").PartNumber=""
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
@@ -37,16 +37,16 @@ class Coupling(pypeType):
 		# e.g. -> change PSize according the new alpha, PID and POD
 
 		dim_properties = [ "L", "M", "M1", "N"]
-		
+
 		if prop in dim_properties:
 			# This function is called within __init__ too.
 			# We wait for all dimension.
-			if set(couplingMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
+			if set(CouplingMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
 				obj.Ports = self.getPorts(obj)
 
 	@classmethod
 	def extractDimensions(cls, obj):
-		dims = couplingMod.Dimensions()
+		dims = CouplingMod.Dimensions()
 		dims.L = obj.L
 		dims.M = obj.M
 		dims.M1 = obj.M1
@@ -56,11 +56,11 @@ class Coupling(pypeType):
 		dims.PThk = obj.PThk
 		dims.PThk1 = obj.PThk1
 		return dims
-						
+
 	@classmethod
 	def createOuterPart(cls, obj):
 		dims = cls.extractDimensions(obj)
-		
+
 		if dims.M == dims.M1:
 			return cls.createOuterPartEqual(obj)
 		else:
@@ -76,7 +76,7 @@ class Coupling(pypeType):
 		height = dims.L
 		outer = Part.makeCylinder(radius, height,aux["p1"])
 		return outer
-		
+
 	@classmethod
 	def createOuterPartReduced(cls, obj):
 		""" Create a outer part which is cylinder+cone+cylinder."""
@@ -95,7 +95,7 @@ class Coupling(pypeType):
 		cylinder2 = Part.makeCylinder(r2, h2, aux["p5"])
 		outer = cylinder1.fuse([cone, cylinder2])
 		return outer
-		
+
 	@classmethod
 	def createInnerPart(cls, obj):
 		dims = cls.extractDimensions(obj)
@@ -105,7 +105,7 @@ class Coupling(pypeType):
 			return cls.createInnerPartEqual(obj)
 		else:
 			return cls.createInnerPartReduced(obj)
-	
+
 	@classmethod
 	def createInnerPartEqual(cls, obj):
 		""" Create the inner part from cylinders. This is when POD and P=D1 are the equal."""
@@ -121,7 +121,7 @@ class Coupling(pypeType):
 		cylinder3i = Part.makeCylinder(dims.POD/2.0, height1, aux["p3"])
 		inner = cylinder1i.fuse([cylinder2i, cylinder3i])
 		return inner
-		
+
 	@classmethod
 	def createInnerPartReduced(cls, obj):
 		""" Create a outer part which is cylinder+cone+cylinder."""
@@ -137,12 +137,12 @@ class Coupling(pypeType):
 		hc = dims.N
 		cone = Part.makeCone(r1, r2, hc, aux["p2"])
 		# Create an upper cylinder.
-		r = dims.POD1/2	
+		r = dims.POD1/2
 		h = dims.socketDepthA5()
 		cylinder2i = Part.makeCylinder(r, h, aux["p3"])
 		inner = cylinder1i.fuse([cone, cylinder2i])
 		return inner
-		
+
 	def execute(self, obj):
 		# Create the shape of the coupling.
 		inner = Coupling.createInnerPart(obj)
@@ -151,7 +151,7 @@ class Coupling(pypeType):
 		obj.Shape = shape
 		# define Ports, i.e. where the tube have to be placed
 		obj.Ports = self.getPorts(obj)
-		
+
 	def getPorts(self, obj):
 		""" Calculate coordinates of the ports. """
 		dims = self.extractDimensions(obj)
@@ -162,16 +162,16 @@ class Coupling(pypeType):
 class CouplingBuilder:
 	""" Create a coupling using flamingo. """
 	def __init__(self, document):
-		self.dims = couplingMod.Dimensions()
+		self.dims = CouplingMod.Dimensions()
 		self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
 		self.document = document
-				
+
 	def create(self, obj):
 		"""Create a couzpling.
-		 
+
 		Before call it, call
 		feature = self.document.addObject("Part::FeaturePython","OSE-Coupling")
-		"""	
+		"""
 		coupling = Coupling(obj, PSize="", dims=self.dims)
 		obj.ViewObject.Proxy = 0
 		obj.Placement.Base = self.pos
@@ -185,5 +185,5 @@ def Test():
 	feature = document.addObject("Part::FeaturePython","OSE-Coupling")
 	builder.create(feature)
 	document.recompute()
-	
+
 #Test()

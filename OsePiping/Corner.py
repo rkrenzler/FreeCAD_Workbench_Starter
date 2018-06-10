@@ -191,8 +191,8 @@ class CornerFromTable:
 
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Corner")
-			import flCorner
-			builder = flCorner.CornerBuilder(self.document)
+			import FlCorner
+			builder = FlCorner.CornerBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
 			feature.PRating = Piping.GetPressureRatingString(row)
