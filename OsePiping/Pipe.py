@@ -10,7 +10,7 @@ import FreeCAD
 import OsePipingBase
 import Piping
 
-tu = FreeCAD.Units.parseQuantity
+parseQuantity = FreeCAD.Units.parseQuantity
 
 # This is the path to the dimensions table.
 CSV_TABLE_PATH = os.path.join(OsePipingBase.TABLE_PATH, 'pipe.csv')
@@ -29,23 +29,40 @@ DIMENSIONS_USED = ["OD", "Thk"]
 RELATIVE_EPSILON = 0.1
 
 
+class Dimensions:
+    def __init__(self):
+        """ Inititialize with test dimensions."""
+        self.OD = parseQuantity("3 cm")
+        self.Thk = parseQuantity("0.5 cm")
+        self.H = parseQuantity("1 m")
+
+    def isValid(self):
+        errorMsg = ""
+        if not (self.OD > 0):
+            errorMsg = "OD (inner diameter) of the pipe must be positive. It is {} instead".format(
+                self.OD)
+        elif not (self.Thk <= self.OD / 2.0):
+            errorMsg = "Pipe thickness Thk {} is too large: larger than OD/2 {}.".format(
+                self.Thk, self.OD / 2.0)
+        elif not (self.H > 0):
+            errorMsg = "Height H={} must be positive".format(self.H)
+
+        return (len(errorMsg) == 0, errorMsg)
+
+    def ID(self):
+        return self.OD - self.Thk * 2.0
+
+
 class Pipe:
     def __init__(self, document):
         self.document = document
-        self.OD = tu("3 cm")
-        self.Thk = tu("0.5 cm")
-        self.H = tu("1 m")
+        self.dims = Dimensions()
 
     def checkDimensions(self):
-        if not (self.OD > tu("0 mm")):
-            raise Piping.UnplausibleDimensions(
-                "OD (inner diameter) of the pipe must be positive. It is %s instead" % (self.OD))
-        if not (2 * self.Thk <= self.OD):
-            raise Piping.UnplausibleDimensions(
-                "2*Thk (2*Thickness) %s must be less than or equlat to OD (outer diameter)%s " % (2 * self.Thk, self.OD))
-        if not (self.H > tu("0 mm")):
-            raise Piping.UnplausibleDimensions(
-                "Height H=%s must be positive" % self.H)
+        valid, msg = self.dims.isValid()
+        if not valid:
+            raise Piping.UnplausibleDimensions(msg)
+
 
     def create(self, convertToSolid):
         """ A pipe which is a differences of two cilinders: outer cylinder - inner cylinder.
@@ -100,8 +117,8 @@ class PipeFromTable:
             return
         if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
             pipe = Pipe(self.document)
-            pipe.OD = tu(row["OD"])
-            pipe.Thk = tu(row["Thk"])
+            pipe.OD = parseQuantity(row["OD"])
+            pipe.Thk = parseQuantity(row["Thk"])
             pipe.H = length
             part = pipe.create(outputType == Piping.OUTPUT_TYPE_SOLID)
             return part
@@ -111,8 +128,8 @@ class PipeFromTable:
                 "Part::FeaturePython", "OSE-Pipe")
             import pipeFeatures
             DN = Piping.GetDnString(row)
-            OD = tu(row["OD"])
-            Thk = tu(row["Thk"])
+            OD = parseQuantity(row["OD"])
+            Thk = parseQuantity(row["Thk"])
             part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
             feature.PRating = Piping.GetPressureRatingString(row)
             # Currently I do not know how to interprite table data as a profile.
@@ -141,5 +158,5 @@ def TestTable():
         print("Selecting row %d" % i)
         partName = table.getPartName(i)
         print("Creating part %s" % partName)
-        pipe.create(partName, tu("1m"), False)
+        pipe.create(partName, parseQuantity("1m"), False)
         document.recompute()
