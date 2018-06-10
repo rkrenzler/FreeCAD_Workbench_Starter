@@ -51,7 +51,7 @@ def removePartWithChildren(document, part):
         if part.Name not in names_to_remove:
             names_to_remove.append(part.Name)
     for name in names_to_remove:
-        print("Deleting temporary objects %s." % name)
+        #print("Deleting temporary objects %s." % name)
         document.removeObject(name)
 
 
