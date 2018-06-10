@@ -48,18 +48,20 @@ class Dimensions:
     def isValid(self):
         errorMsg = ""
         if not (self.POD > 0):
-            errorMsg = "Pipe outer diameter %s must be positive." % self.POD
+            errorMsg = "Pipe outer diameter {} must be positive.".format(
+                self.POD)
         elif not (self.POD1 > 0):
-            errorMsg = "Other pipe outer diameter %s must be positive." % self.POD
+            errorMsg = "Other pipe outer diameter {} must be positive.".format(
+                self.POD)
         elif not (self.PThk1 <= self.POD1 / 2.0):
-            errorMsg = "Pipe thickness PThk1 %s is too larg: larger than POD1/2 %s." % (
+            errorMsg = "Pipe thickness PThk1 {} is too larg: larger than POD1/2 {}.".format(
                 self.PThk1, self.POD1 / 2.0)
         elif not (self.N > 0):
-            raise Piping.UnplausibleDimensions(
-                "Length N=%s must be positive" % self.N)
+            errorMsg = "Length N={} must be positive".format(self.N)
         elif not (self.L > self.N):
-            raise Piping.UnplausibleDimensions(
-                "The length L %s must be larger than the length N %s" % (self.L, self.N))
+            errorMsg = "The length L {} must be larger than the length N {}".format(
+                self.L, self.N)
+
         return (len(errorMsg) == 0, errorMsg)
 
     def PID1(self):
