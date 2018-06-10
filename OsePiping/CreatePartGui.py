@@ -276,7 +276,7 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 		msgBox.exec_()
 		exit(1) # Error
 
-        FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s"%tablePath)
+	#FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s\n"%tablePath)
 	table = Piping.CsvTable(dimensionsUsed)
 	table.load(tablePath)
 
