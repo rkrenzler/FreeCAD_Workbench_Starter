@@ -17,3 +17,6 @@ $ git clone https://github.com/rkrenzler/ose-piping-workbench.git
 
 # Screenshots #
 ![90°-elbow dialog](doc/workbench-screenshot.png)
+
+# Troubleshooting #
+If you get an erro rmessage module ... not found, try to remove all .pyc-files in the ose-piping module. Then restart FreeCAD.
