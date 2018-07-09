@@ -3,10 +3,6 @@
 # Date: 16 December 2017
 # Create a elbow-fitting.
 
-
-import FreeCAD
-import FreeCADGui
-import pipeCmd
 import Elbow
 import CreatePartGui
 import Piping
