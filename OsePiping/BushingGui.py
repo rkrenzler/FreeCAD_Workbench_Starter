@@ -5,7 +5,7 @@
 
 import Bushing
 import CreatePartGui
-
+import Piping
 
 class MainDialog(CreatePartGui.BaseDialog):
     def __init__(self, document, table):
