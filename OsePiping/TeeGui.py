@@ -5,6 +5,7 @@
 
 import Tee
 import CreatePartGui
+import Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):
@@ -22,8 +23,10 @@ class MainDialog(CreatePartGui.BaseDialog):
 
     def createNewPart(self, document, table, partName, outputType):
         builder = Tee.TeeFromTable(self.params.document, self.params.table)
-        return builder.create(partName, outputType)
-
+        part = builder.create(partName, outputType)
+        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+            self.moveFlamingoPartToSelection(document, part)
+        return part
 
 def GuiCheckTable():
     return CreatePartGui.GuiCheckTable(Tee.CSV_TABLE_PATH, Tee.DIMENSIONS_USED)
