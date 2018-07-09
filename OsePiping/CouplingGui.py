@@ -5,6 +5,7 @@
 
 import Coupling
 import CreatePartGui
+import Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):
@@ -21,9 +22,11 @@ class MainDialog(CreatePartGui.BaseDialog):
         super(MainDialog, self).__init__(params)
 
     def createNewPart(self, document, table, partName, outputType):
-        builder = Coupling.CouplingFromTable(
-            self.params.document, self.params.table)
-        return builder.create(partName, outputType)
+        builder = Coupling.CouplingFromTable(self.params.document, self.params.table)
+        part = builder.create(partName, outputType)
+        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+            self.moveFlamingoPartToSelection(document, part)
+        return part
 
 
 def GuiCheckTable():

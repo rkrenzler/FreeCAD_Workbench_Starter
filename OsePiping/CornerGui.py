@@ -22,8 +22,7 @@ class MainDialog(CreatePartGui.BaseDialog):
         super(MainDialog, self).__init__(params)
 
     def createNewPart(self, document, table, partName, outputType):
-        builder = Corner.CornerFromTable(
-            self.params.document, self.params.table)
+        builder = Corner.CornerFromTable(self.params.document, self.params.table)
         part = builder.create(partName, outputType)
         if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             self.moveFlamingoPartToSelection(document, part)
