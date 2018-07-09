@@ -10,6 +10,7 @@ import os.path
 
 from PySide import QtCore, QtGui
 import FreeCAD
+import FreeCADGui
 
 import OsePipingBase
 import Piping
@@ -289,6 +290,22 @@ class BaseDialog(QtGui.QDialog):
                                                          None, QtGui.QApplication.UnicodeUTF8))
         self.exec_()
 
+    @staticmethod
+    def moveFlamingoPartToSelection(document, part):
+        # Check if something is selected:
+        import pipeCmd
+
+        if (len(FreeCADGui.Selection.getSelectionEx()) > 0
+                and len(FreeCADGui.Selection.getSelectionEx()[0].SubObjects) > 0):
+            obj_of_part = document.getObject(part.Name)
+            target = FreeCADGui.Selection.getSelectionEx()[0].Object
+            sub = FreeCADGui.Selection.getSelectionEx()[0].SubObjects[0]
+            try:
+                pipeCmd.placeThePype(obj_of_part, 0, target, pipeCmd.nearestPort(
+                    target, sub.CenterOfMass)[0])
+            except Exception as e:
+                FreeCAD.Console.PrintMessage(
+                    "Positioning of Flamingo parts failed: " + str(e))
 
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):
