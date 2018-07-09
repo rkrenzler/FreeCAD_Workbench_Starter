@@ -22,7 +22,10 @@ class MainDialog(CreatePartGui.BaseDialog):
 
     def createNewPart(self, document, table, partName, outputType):
         builder = Bushing.BushingFromTable(self.params.document, self.params.table)
-        return builder.create(partName, outputType)
+        part = builder.create(partName, outputType)
+        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+            self.moveFlamingoPartToSelection(document, part)
+        return part
 
 
 def GuiCheckTable():
