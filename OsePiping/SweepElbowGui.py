@@ -23,8 +23,10 @@ class MainDialog(CreatePartGui.BaseDialog):
     def createNewPart(self, document, table, partName, outputType):
         builder = SweepElbow.SweepElbowFromTable(
             self.params.document, self.params.table)
-        return builder.create(partName, outputType)
-
+        part = builder.create(partName, outputType)
+        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+            self.moveFlamingoPartToSelection(document, part)
+        return part
 
 def GuiCheckTable():
     return CreatePartGui.GuiCheckTable(SweepElbow.CSV_TABLE_PATH, SweepElbow.DIMENSIONS_USED)
