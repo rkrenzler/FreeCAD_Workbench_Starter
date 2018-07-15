@@ -5,7 +5,7 @@
 
 import FreeCAD
 import Part
-import math
+
 from pipeFeatures import pypeType  # the parent class
 import Coupling as CouplingMod
 
@@ -80,9 +80,9 @@ class Coupling(pypeType):
 
     @classmethod
     def createOuterPartEqual(cls, obj):
+        """Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
-        """ Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
         # Create complete outer cylinder.
         radius = dims.M / 2.0
         height = dims.L
@@ -91,7 +91,7 @@ class Coupling(pypeType):
 
     @classmethod
     def createOuterPartReduced(cls, obj):
-        """ Create a outer part which is cylinder+cone+cylinder."""
+        """Create a outer part which is cylinder+cone+cylinder."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         # Create socket 1.
@@ -120,7 +120,7 @@ class Coupling(pypeType):
 
     @classmethod
     def createInnerPartEqual(cls, obj):
-        """ Create the inner part from cylinders. This is when POD and P=D1 are the equal."""
+        """Create the inner part from cylinders. This is when POD and P=D1 are the equal."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         # Create lower inner cylinder.
@@ -136,7 +136,7 @@ class Coupling(pypeType):
 
     @classmethod
     def createInnerPartReduced(cls, obj):
-        """ Create a outer part which is cylinder+cone+cylinder."""
+        """Create a outer part which is cylinder+cone+cylinder."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         # Create a lower cylinder.
@@ -165,14 +165,14 @@ class Coupling(pypeType):
         obj.Ports = self.getPorts(obj)
 
     def getPorts(self, obj):
-        """ Calculate coordinates of the ports. """
+        """Calculate coordinates of the ports."""
         dims = self.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         return [aux["p2"], aux["p3"]]
 
 
 class CouplingBuilder:
-    """ Create a coupling using flamingo. """
+    """Create a coupling using flamingo."""
 
     def __init__(self, document):
         self.dims = CouplingMod.Dimensions()
@@ -191,9 +191,8 @@ class CouplingBuilder:
 
         return coupling
 
+
 # Create a test coupling.
-
-
 def Test():
     document = FreeCAD.activeDocument()
     builder = CouplingBuilder(document)
