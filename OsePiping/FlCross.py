@@ -31,6 +31,7 @@ class Cross(pypeType):
 		obj.addProperty("App::PropertyLength","PThk","Cross","Pipe wall thickness of the horizonal part").PThk=dims.PThk
 		obj.addProperty("App::PropertyLength","PThk1","Cross","Pipe wall thickness of the vertical part").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyString","PartNumber","Cross","Part number").PartNumber=""
+		obj.addProperty("App::PropertyVectorList","Ports","Cross","Ports relative positions.").Ports = self.getPorts(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
 
