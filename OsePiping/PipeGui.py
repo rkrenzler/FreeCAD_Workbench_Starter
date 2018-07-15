@@ -9,6 +9,7 @@ import CreatePartGui
 
 from PySide import QtCore, QtGui
 import FreeCAD
+import Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):
@@ -68,7 +69,10 @@ class MainDialog(CreatePartGui.BaseDialog):
     def createNewPart(self, document, table, partName, outputType):
         length = FreeCAD.Units.parseQuantity(self.lineEditLength.text())
         builder = Pipe.PipeFromTable(self.params.document, self.params.table)
-        return builder.create(partName, length, outputType)
+        part = builder.create(partName, length, outputType)
+        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+            self.moveFlamingoPartToSelection(document, part)
+        return part
 
 
 def GuiCheckTable():

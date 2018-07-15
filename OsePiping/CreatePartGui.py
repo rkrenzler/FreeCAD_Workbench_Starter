@@ -297,15 +297,31 @@ class BaseDialog(QtGui.QDialog):
 
         if (len(FreeCADGui.Selection.getSelectionEx()) > 0
                 and len(FreeCADGui.Selection.getSelectionEx()[0].SubObjects) > 0):
+            # Only pipe have ports on creation. The other fitting have can be acces only through their objself.
             obj_of_part = document.getObject(part.Name)
             target = FreeCADGui.Selection.getSelectionEx()[0].Object
             sub = FreeCADGui.Selection.getSelectionEx()[0].SubObjects[0]
+            # Check if the part has ports.
+            if obj_of_part.Ports == []:
+                FreeCAD.Console.PrintMessage(
+                    "The new part has an empty port list. Cannot move the part.\n")
+                return
             try:
-                pipeCmd.placeThePype(obj_of_part, 0, target, pipeCmd.nearestPort(
-                    target, sub.CenterOfMass)[0])
+                nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
+                if nearest_ports != []:
+                    FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
+                        nearest_ports[0]))
+                    pipeCmd.placeThePype(
+                        obj_of_part, 0, target, nearest_ports[0])
+                else:
+                    FreeCAD.Console.PrintMessage("No nearest ports found.\n")
             except Exception as e:
                 FreeCAD.Console.PrintMessage(
-                    "Positioning of Flamingo parts failed: " + str(e))
+                    "Positioning of Flamingo parts failed: {}\n".format(e))
+        else:
+            FreeCAD.Console.PrintMessage(
+                "No flamngo parts selected. Insert to the standard positon,\n")
+
 
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):

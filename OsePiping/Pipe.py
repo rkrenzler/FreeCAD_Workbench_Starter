@@ -136,7 +136,8 @@ class PipeFromTable:
             feature.Profile = ""
             if "PSize" in row.keys():
                 feature.PSize = row["PSize"]
-
+            # Workaround. Add ports before return. Otherwise the positioning is not working.
+            feature.Ports = [FreeCAD.Vector(0, 0, 0), FreeCAD.Vector(0, 0, length)]
             feature.ViewObject.Proxy = 0
             return part
 
