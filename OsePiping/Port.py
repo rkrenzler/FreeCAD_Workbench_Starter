@@ -9,10 +9,21 @@ import FreeCAD
 
 
 class AdvancedPort:
-    def __init__(self):
-        self.a = FreeCAD.Vector(0, 0, 0)
-        self.n = FreeCAD.Vector(1, 0, 0)
-        self.r = FreeCAD.Vector(0, 0, 1)
+    def __init__(self, a=None, n=None, r=None):
+        if a is None:
+            self.a = FreeCAD.Vector(0, 0, 0)
+        else:
+            self.a = a
+
+        if n is None:
+            self.n = FreeCAD.Vector(1, 0, 0)
+        else:
+            self.n = n
+            
+        if r is None:
+            self.r = FreeCAD.Vector(0, 0, 1)
+        else:
+            self.r = r
 
     def getStandardForm(self):
         """Return normalized version of the port."""

@@ -3,10 +3,13 @@
 # Date: 25 March 2018
 # Create a tee using Flamingo workbench.
 
-import FreeCAD, Part
 import math
-from pipeFeatures import pypeType #the parent class
+import FreeCAD
+import Part
+from pipeFeatures import pypeType  # the parent class
 import Tee as TeeMod
+import Port
+
 
 class Tee(pypeType):
 	def __init__(self, obj, PSize="", dims=TeeMod.Dimensions()):
@@ -16,36 +19,51 @@ class Tee(pypeType):
 		"""
 		# Run parent __init__ and define common attributes
 		super(Tee, self).__init__(obj)
-		obj.PType="OSE_Tee"
-		obj.PRating=""
-		obj.PSize=PSize # What is it for?
+		obj.PType = "OSE_Tee"
+		obj.PRating = ""
+		obj.PSize = PSize  # What is it for?
 		# Define specific attributes and set their values.
-		obj.addProperty("App::PropertyLength","G","Tee","Distnace from the center to begin of horizontal socket").G=dims.G
-		obj.addProperty("App::PropertyLength","G1","Tee","Distnace from the center to begin of vertical socket").G1=dims.G1
-		obj.addProperty("App::PropertyLength","G2","Tee","Distnace from the center to begin of horizontal socket").G2=dims.G2
-		obj.addProperty("App::PropertyLength","H","Tee","Distance between the center its horizonal end.").H=dims.H
-		obj.addProperty("App::PropertyLength","H1","Tee","Distance between the center its vertical end.").H1=dims.H1
-		obj.addProperty("App::PropertyLength","H2","Tee","Distance between the center its horizontal end.").H2=dims.H2
-		obj.addProperty("App::PropertyLength","M","Tee","Tee outside diameter of the horizontal socket.").M=dims.M
-		obj.addProperty("App::PropertyLength","M1","Tee","Tee outside diameter of the vertical socket.").M1=dims.M1
-		obj.addProperty("App::PropertyLength","M2","Tee","Tee outside diameter of the vertical socket.").M2=dims.M2
-		obj.addProperty("App::PropertyLength","POD","Tee","Tee pipe outer diameter at the horizonal socket.").POD=dims.POD
-		obj.addProperty("App::PropertyLength","POD1","Tee","Tee pipe outer diameter at the vertical socket.").POD1=dims.POD1
-		obj.addProperty("App::PropertyLength","POD2","Tee","Tee pipe outer diameter at the other horizonal socket.").POD2=dims.POD2
-		obj.addProperty("App::PropertyLength","PThk","Tee","Thickness of the pipe at the horizontal socket.").PThk=dims.PThk
-		obj.addProperty("App::PropertyLength","PThk1","Tee","Thickness of the pipe at the vertical socket.").PThk1=dims.PThk1
-		obj.addProperty("App::PropertyLength","PThk2","Tee","Thickness of the pipe at the other horizontal socket.").PThk2=dims.PThk2
-		obj.addProperty("App::PropertyVectorList","Ports","Tee","Ports relative positions.").Ports = self.getPorts(obj)
-		obj.addProperty("App::PropertyString","PartNumber","Tee","Part number").PartNumber=""
-		# Make Ports read only.
+		obj.addProperty("App::PropertyLength", "G", "Tee",
+		                "Distnace from the center to begin of horizontal socket").G = dims.G
+		obj.addProperty("App::PropertyLength", "G1", "Tee",
+		                "Distnace from the center to begin of vertical socket").G1 = dims.G1
+		obj.addProperty("App::PropertyLength", "G2", "Tee",
+		                "Distnace from the center to begin of horizontal socket").G2 = dims.G2
+		obj.addProperty("App::PropertyLength", "H", "Tee", "Distance between the center its horizonal end.").H = dims.H
+		obj.addProperty("App::PropertyLength", "H1", "Tee", "Distance between the center its vertical end.").H1 = dims.H1
+		obj.addProperty("App::PropertyLength", "H2", "Tee", "Distance between the center its horizontal end.").H2 = dims.H2
+		obj.addProperty("App::PropertyLength", "M", "Tee", "Tee outside diameter of the horizontal socket.").M = dims.M
+		obj.addProperty("App::PropertyLength", "M1", "Tee", "Tee outside diameter of the vertical socket.").M1 = dims.M1
+		obj.addProperty("App::PropertyLength", "M2", "Tee", "Tee outside diameter of the vertical socket.").M2 = dims.M2
+		obj.addProperty("App::PropertyLength", "POD", "Tee",
+		                "Tee pipe outer diameter at the horizonal socket.").POD = dims.POD
+		obj.addProperty("App::PropertyLength", "POD1", "Tee",
+		                "Tee pipe outer diameter at the vertical socket.").POD1 = dims.POD1
+		obj.addProperty("App::PropertyLength", "POD2", "Tee",
+		                "Tee pipe outer diameter at the other horizonal socket.").POD2 = dims.POD2
+		obj.addProperty("App::PropertyLength", "PThk", "Tee",
+		                "Thickness of the pipe at the horizontal socket.").PThk = dims.PThk
+		obj.addProperty("App::PropertyLength", "PThk1", "Tee",
+		                "Thickness of the pipe at the vertical socket.").PThk1 = dims.PThk1
+		obj.addProperty("App::PropertyLength", "PThk2", "Tee",
+		                "Thickness of the pipe at the other horizontal socket.").PThk2 = dims.PThk2
+		obj.addProperty("App::PropertyVectorList", "Ports", "Tee", "Ports relative positions.").Ports = self.getPorts(obj)
+		obj.addProperty("App::PropertyVectorList", "PortNormals", "Tee", "Ports normals.").Ports = self.getPortNormals(obj)
+		obj.addProperty("App::PropertyVectorList", "PortRotRefs", "Tee",
+		                "Ports rotation references.").Ports = self.getRortationReferencess(obj)
+		obj.addProperty("App::PropertyString", "PartNumber", "Tee", "Part number").PartNumber = ""
+
+		# Make Port information read only.
 		obj.setEditorMode("Ports", 1)
+		obj.setEditorMode("PortNormals", 1)
+		obj.setEditorMode("PortRotRefs", 1)
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
 		# place the code here:
 		# e.g. -> change PSize according the new alpha, PID and POD
 
-		sock_dim_properties = [ "G", "G1", "G2"] # Only this properties infules port coordinates.
+		sock_dim_properties = ["G", "G1", "G2"]  # Only this properties infules port coordinates.
 
 		if prop in sock_dim_properties:
 			# This function is called within __init__ too.
@@ -99,10 +117,10 @@ class Tee(pypeType):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 		if dims.M2 > dims.M or dims.M2 > dims.M1:
-			r = dims.M2/2.0
+			r = dims.M2 / 2.0
 			h = dims.M2
-			p = FreeCAD.Vector(-dims.M2/2.0,0,0)
-			dr = FreeCAD.Vector(1,0,0) # Direction where to rotate the cylinder
+			p = FreeCAD.Vector(-dims.M2 / 2.0, 0, 0)
+			dr = FreeCAD.Vector(1, 0, 0)  # Direction where to rotate the cylinder
 			return Part.makeCylinder(r, h, p, dr)
 		else:
 			return None
@@ -113,14 +131,14 @@ class Tee(pypeType):
 		"""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		L = dims.H+dims.H1
-		r = dims.M2/2.0
+		L = dims.H + dims.H1
+		r = dims.M2 / 2.0
 		h = dims.H2
 		vertical_outer_cylinder = Part.makeCylinder(r, h)
-		r = dims.M/2.0
+		r = dims.M / 2.0
 		h = L
-		dr = FreeCAD.Vector(1,0,0) # Put cylinder along the x-axis.
-		horizontal_outer_cylinder =  Part.makeCylinder(r, h, aux["p1"], dr)
+		dr = FreeCAD.Vector(1, 0, 0)  # Put cylinder along the x-axis.
+		horizontal_outer_cylinder = Part.makeCylinder(r, h, aux["p1"], dr)
 		outer_fusion = None
 		enh = cls.horizontalWallEnhancement(obj)
 		if enh is None:
@@ -138,23 +156,23 @@ class Tee(pypeType):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 		# Create socket 1.
-		r = dims.M/2.0
+		r = dims.M / 2.0
 		h = dims.leftSocketOuterLength()
-		dr = FreeCAD.Vector(1,0,0) # Put the cylinder along the x-ayis.
+		dr = FreeCAD.Vector(1, 0, 0)  # Put the cylinder along the x-ayis.
 		cylinder1 = Part.makeCylinder(r, h, aux["p1"], dr)
 		# Create a cone and put it at the right side of the cylinder 1.
-		r1 = dims.M/2.0
-		r2 = dims.M1/2.0
-		h = dims.G+dims.G1
-		dr = FreeCAD.Vector(1,0,0)
+		r1 = dims.M / 2.0
+		r2 = dims.M1 / 2.0
+		h = dims.G + dims.G1
+		dr = FreeCAD.Vector(1, 0, 0)
 		cone = Part.makeCone(r1, r2, h, aux["p5"], dr)
 		# Create a socket 2 and put it at the right side of the cone.
-		r = dims.M1/2.0
+		r = dims.M1 / 2.0
 		h = dims.rightSocketOuterLength()
-		dr = FreeCAD.Vector(1,0,0) # Put the cylinder along the x-ayis.
+		dr = FreeCAD.Vector(1, 0, 0)  # Put the cylinder along the x-ayis.
 		cylinder2 = Part.makeCylinder(r, h, aux["p6"], dr)
 		# Create vertical part.
-		r = dims.M2/2.0
+		r = dims.M2 / 2.0
 		h = dims.H2
 		vertical_outer_cylinder = Part.makeCylinder(r, h)
 		# Combine all four parts and, if necessary, add enhacement.
@@ -180,17 +198,17 @@ class Tee(pypeType):
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 
-		r = dims.POD/2.0
-		h = dims.H-dims.G
-		dr = FreeCAD.Vector(1,0,0) # Put cylinder along the x-axis.
+		r = dims.POD / 2.0
+		h = dims.H - dims.G
+		dr = FreeCAD.Vector(1, 0, 0)  # Put cylinder along the x-axis.
 		socket_left = Part.makeCylinder(r, h, aux["p1"], dr)
 
-		r = dims.POD1/2.0
-		h = dims.H1-dims.G1
+		r = dims.POD1 / 2.0
+		h = dims.H1 - dims.G1
 		socket_right = Part.makeCylinder(r, h, aux["p3"], dr)
 
-		r = dims.POD2/2.0
-		h = dims.H2-dims.G2
+		r = dims.POD2 / 2.0
+		h = dims.H2 - dims.G2
 		socket_top = Part.makeCylinder(r, h, aux["p4"])
 
 		return [socket_left, socket_top, socket_right]
@@ -201,43 +219,42 @@ class Tee(pypeType):
 		"""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
-		L = dims.H+dims.H1
-		r = dims.PID2()/2.0
+		L = dims.H + dims.H1
+		r = dims.PID2() / 2.0
 		h = dims.H2
 		vertical_inner_cylinder = Part.makeCylinder(r, h)
-		r = dims.PID()/2.0
+		r = dims.PID() / 2.0
 		h = L
-		dr = FreeCAD.Vector(1,0,0) # Put cylinder along the x-axis.
-		horizontal_inner_cylinder =  Part.makeCylinder(r, h, aux["p1"], dr)
-		return horizontal_inner_cylinder.fuse([vertical_inner_cylinder]+cls.createInnerSockets(obj))
+		dr = FreeCAD.Vector(1, 0, 0)  # Put cylinder along the x-axis.
+		horizontal_inner_cylinder = Part.makeCylinder(r, h, aux["p1"], dr)
+		return horizontal_inner_cylinder.fuse([vertical_inner_cylinder] + cls.createInnerSockets(obj))
 
 	@classmethod
 	def createInnerPartReducedHorizontal(cls, obj):
-		""" Create a inner part with a connic middle simmilar to createOuterPartReducedHorizontal().
-		"""
+		""" Create a inner part with a connic middle simmilar to createOuterPartReducedHorizontal()."""
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 
 		# Create cylinder 1.
-		r = dims.PID()/2.0
+		r = dims.PID() / 2.0
 		h = dims.H - dims.G
-		dr = FreeCAD.Vector(1,0,0) # Put cylinder or cone along the x-axis.
+		dr = FreeCAD.Vector(1, 0, 0)  # Put cylinder or cone along the x-axis.
 		cylinder1 = Part.makeCylinder(r, h, aux["p1"], dr)
 		# Create a cone and put it to the right of the cylinder 1.
-		r1 = dims.PID()/2.0
-		r2 = dims.PID1()/2.0
-		h = dims.G+dims.G1
+		r1 = dims.PID() / 2.0
+		r2 = dims.PID1() / 2.0
+		h = dims.G + dims.G1
 		cone = Part.makeCone(r1, r2, h, aux["p2"], dr)
 		# Create a socket 2 and put it at the right side of the cone.
-		r = dims.PID1()/2.0
+		r = dims.PID1() / 2.0
 		h = dims.H1 - dims.G1
 		cylinder2 = Part.makeCylinder(r, h, aux["p3"], dr)
 		# Create vertical part.
-		r = dims.PID2()/2.0
+		r = dims.PID2() / 2.0
 		h = dims.H2
 		vertical_cylinder = Part.makeCylinder(r, h)
 		# Combine all parts.
-		return cylinder1.fuse([cone, cylinder2, vertical_cylinder]+cls.createInnerSockets(obj))
+		return cylinder1.fuse([cone, cylinder2, vertical_cylinder] + cls.createInnerSockets(obj))
 
 	def execute(self, obj):
 		# Create the shape of the tee.
@@ -248,8 +265,8 @@ class Tee(pypeType):
 		obj.Ports = self.getPorts(obj)
 
 	@classmethod
-	def getPorts(cls, obj):
-		""" Calculate coordinates of the ports. """
+    def getPorts(cls, obj):
+        """Calculate coordinates of the ports. """
 		dims = cls.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 
@@ -257,6 +274,33 @@ class Tee(pypeType):
 		port_right = aux["p3"]
 		port_top = aux["p4"]
 		return [port_left, port_right, port_top]
+
+    @classmethod
+    def getPortNormals(cls, obj):
+		"""Calculate coordinates of the ports normals."""
+		n_left = FreeCAD.Vector(-1,0,0)
+        n_right = FreeCAD.Vector(1,0,0)
+        n_top = FreeCAD.Vector(0,0,1)
+		return [n_left, n_right, n_top]
+
+    @classmethod
+    def getRortationReferences(cls, obj):
+		r_left = FreeCAD.Vector(0,0,1)
+        r_right = FreeCAD.Vector(0,0,1)
+        r_top = FreeCAD.Vector(1,0,0)
+		return [n_left, n_right, n_top]
+
+    @classmethod
+    def getAdvancedPorts(cls, obj):
+        _as = cls.getPorts(obj)
+        ns = cls.getPortNormals(obj)
+        rs = cls.getRortationReferences(obj)
+        ret = []
+        for i in range(0, len(_as)):
+            port = Port.AdvancedPort(a=_as[i], n=ns[i], r=rs[i])
+            ret.append(port)
+
+        return ret
 
 class TeeBuilder:
 	""" Create a tee using flamingo. """
@@ -284,4 +328,4 @@ def Test():
 	builder.create(feature)
 	document.recompute()
 
-#Test()
+# Test()
