@@ -95,3 +95,27 @@ def testPorts():
     print(port2)
     print(port2.getRutation(port1))
     print(port2.getTranslation(port1))
+
+
+def supportsAdvancedPort(part):
+    """Check if the part contains advanced ports."""
+    return hasattr(part, 'PortNormals')
+
+
+def extractAdvancedPort(part):
+    """Extract advanced ports from a FeaturePython part."""
+    res = []
+    for i in range(0, len(part.Ports)):
+        port = AdvancedPort(a=part.Ports[i], n=part.PortNormals[i], r=part.PortRotRefs[i])
+        res.append(port)
+    return res
+
+def getNearestPort(ports, point):
+    d_so_far = float("inf")
+    closest_port = None
+    for port in ports:
+        d = port.a.distanceToPoint(point)
+        if d < d_so_far:
+            d_so_far = d
+            closest_port = port
+    return closest_port

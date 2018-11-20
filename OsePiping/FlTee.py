@@ -48,9 +48,9 @@ class Tee(pypeType):
         obj.addProperty("App::PropertyLength", "PThk2", "Tee",
                         "Thickness of the pipe at the other horizontal socket.").PThk2 = dims.PThk2
         obj.addProperty("App::PropertyVectorList", "Ports", "Tee", "Ports relative positions.").Ports = self.getPorts(obj)
-        obj.addProperty("App::PropertyVectorList", "PortNormals", "Tee", "Ports normals.").Ports = self.getPortNormals(obj)
+        obj.addProperty("App::PropertyVectorList", "PortNormals", "Tee", "Ports normals.").PortNormals = self.getPortNormals(obj)
         obj.addProperty("App::PropertyVectorList", "PortRotRefs", "Tee",
-                        "Ports rotation references.").Ports = self.getRortationReferences(obj)
+                        "Ports rotation references.").PortRotRefs = self.getRortationReferences(obj)
         obj.addProperty("App::PropertyString", "PartNumber", "Tee", "Part number").PartNumber = ""
 
         # Make Port information read only.

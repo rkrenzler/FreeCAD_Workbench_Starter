@@ -15,6 +15,8 @@ import FreeCADGui
 import OsePipingBase
 import Piping
 import PipingGui
+#import rpdb2
+import Port
 
 
 class DialogParams:
@@ -290,6 +292,7 @@ class BaseDialog(QtGui.QDialog):
                                                          None, QtGui.QApplication.UnicodeUTF8))
         self.exec_()
 
+
     @staticmethod
     def moveFlamingoPartToSelection(document, part):
         # Check if something is selected:
@@ -307,14 +310,33 @@ class BaseDialog(QtGui.QDialog):
                     "The new part has an empty port list. Cannot move the part.\n")
                 return
             try:
-                nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
-                if nearest_ports != []:
-                    FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
-                        nearest_ports[0]))
-                    pipeCmd.placeThePype(
-                        obj_of_part, 0, target, nearest_ports[0])
+                # Check if the new part support advancedPorts
+                if Port.supportsAdvancedPort(obj_of_part) and Port.supportsAdvancedPort(target):
+                    # Use new placement methos.
+                    #rpdb2.start_embedded_debugger("test")
+                    # Ports of the moved objects.
+                    moved_ports = Port.extractAdvancedPort(obj_of_part)
+                    # Ports of the object to whom the object will be moved.
+                    fix_ports = Port.extractAdvancedPort(target)
+                    # Find nearest pod.
+                    closest_port = Port.getNearestPort(fix_ports, sub.CenterOfMass)
+                    # Now adjust new part to closet port
+                    t = moved_ports[0].getTranslation(closest_port)
+                    rot = moved_ports[0].getRotation(closest_port)
+                    # Translate part to new place
+                    print(obj_of_part.Placement)
+                    obj_of_part.Placement.Rotation = obj_of_part.Placement.Rotation.multiply(rot)
+                    obj_of_part.Placement.Base = obj_of_part.Placement.Base.add(t)
+                    print(obj_of_part.Placement)
                 else:
-                    FreeCAD.Console.PrintMessage("No nearest ports found.\n")
+                    nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
+                    if nearest_ports != []:
+                        FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
+                            nearest_ports[0]))
+                        pipeCmd.placeThePype(
+                            obj_of_part, 0, target, nearest_ports[0])
+                    else:
+                        FreeCAD.Console.PrintMessage("No nearest ports found.\n")
             except Exception as e:
                 FreeCAD.Console.PrintMessage(
                     "Positioning of Flamingo parts failed: {}\n".format(e))
