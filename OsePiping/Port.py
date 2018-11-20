@@ -19,7 +19,7 @@ class AdvancedPort:
             self.n = FreeCAD.Vector(1, 0, 0)
         else:
             self.n = n
-            
+
         if r is None:
             self.r = FreeCAD.Vector(0, 0, 1)
         else:
@@ -49,42 +49,44 @@ class AdvancedPort:
         """Return a rotation matrix wich will rotate this port to the other port."""
         C = other.getStandardForm().C()
         invB = numpy.linalg.inv(self.getStandardForm().B())
-        A = C.dot(invgetRutationA
+        A = C.dot(invB)
+        return A
 
     def getTranslation(self, other):
         return other.a - self.a
 
     def _get_4D_matrix(self, other):
-        ret=FreeCAD.Matrix()
+        ret = FreeCAD.Matrix()
         # Set rotation submatrix.
-        A=self._getRotation3DMatrix(other)
-        ret.A11=A[0, 0]
-        ret.A12=A[0, 1]
-        ret.A13=A[0, 2]
-        ret.A21=A[1, 0]
-        ret.A22=A[1, 1]
-        ret.A23=A[1, 2]
-        ret.A31=A[2, 0]
-        ret.A32=A[2, 1]
-        ret.A33=A[2, 2]
+        A = self._getRotation3DMatrix(other)
+        ret.A11 = A[0, 0]
+        ret.A12 = A[0, 1]
+        ret.A13 = A[0, 2]
+        ret.A21 = A[1, 0]
+        ret.A22 = A[1, 1]
+        ret.A23 = A[1, 2]
+        ret.A31 = A[2, 0]
+        ret.A32 = A[2, 1]
+        ret.A33 = A[2, 2]
         # Add tragetRutationhe 4-th column of ret.
-        t=self.getTranslation(other)
-        ret.A14=t.x
-        ret.A24=t.y
-        ret.A34=t.z
+        t = self.getTranslation(other)
+        ret.A14 = t.x
+        ret.A24 = t.y
+        ret.A34 = t.z
 
         return ret
 
     def getRotation(self, other):
         """Get rotation, to orientate this port to the other."""
-        m=self._get_4D_matrix(other)
+        m = self._get_4D_matrix(other)
         return FreeCAD.Rotation(m)
 
+
 def testPorts():
-    port1=AdvancedPort()
-    port2=AdvancedPort()
-    port2.va=FreeCAD.Vector(4, 4, 4)
-    port2.vn=FreeCAD.Vector(1, 1, 1)
+    port1 = AdvancedPort()
+    port2 = AdvancedPort()
+    port2.va = FreeCAD.Vector(4, 4, 4)
+    port2.vn = FreeCAD.Vector(1, 1, 1)
 
     print(port1)
     print(port1.getRutation(port1))
