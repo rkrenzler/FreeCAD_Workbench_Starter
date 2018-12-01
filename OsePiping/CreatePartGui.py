@@ -299,11 +299,12 @@ class BaseDialog(QtGui.QDialog):
         import pipeCmd
 
         if (len(FreeCADGui.Selection.getSelectionEx()) > 0
-                and len(FreeCADGui.Selection.getSelectionEx()[0].SubObjects) > 0):
+                and len(FreeCADGui.Selection.getSelectionEx()[-1].SubObjects) > 0):
             # Only a pipe has ports on creation. The other fitting can be accessed only through their objects.
             obj_of_part = document.getObject(part.Name)
-            target = FreeCADGui.Selection.getSelectionEx()[0].Object
-            sub = FreeCADGui.Selection.getSelectionEx()[0].SubObjects[0]
+            # Get last selection
+            target = FreeCADGui.Selection.getSelectionEx()[-1].Object
+            sub = FreeCADGui.Selection.getSelectionEx()[-1].SubObjects[-1]
             # Check if the part has ports.
             if obj_of_part.Ports == []:
                 FreeCAD.Console.PrintMessage(
@@ -311,10 +312,12 @@ class BaseDialog(QtGui.QDialog):
                 return
             try:
                 # Check if the new part support advancedPorts
+                #sel = FreeCADGui.Selection.getSelectionEx()
+                #rpdb2.start_embedded_debugger("test")
+
                 if Port.supportsAdvancedPort(obj_of_part) and Port.supportsAdvancedPort(target):
                     # Use new placement methos.
                     # Ports of the moved objects.
-                    rpdb2.start_embedded_debugger("test")
 
                     moved_ports = Port.extractAdvancedPorts(obj_of_part)
                     # Ports of the object to whom the object will be moved.

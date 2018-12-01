@@ -69,10 +69,17 @@ def testPorts():
 
 def supportsAdvancedPort(part):
     """Check if the part contains advanced ports."""
-    return hasattr(part, "PortRotationAngles")
+    return hasattr(part, "PortRotationAngles") or part.PType == u"Pipe"
 
 
-def extractAdvancedPorts(part):
+def _guessPipeAdvancedPorts(part):
+    """Return port advanced port of a vertical streight flamingo pipe."""
+    port_bottom = AdvancedPort(base=FreeCAD.Vector(part.Ports[0]), rotation=FreeCAD.Rotation(0, 90, 0))
+    port_top = AdvancedPort(base=FreeCAD.Vector(part.Ports[1]), rotation=FreeCAD.Rotation(0, -90, 0))
+    return [port_bottom, port_top]
+
+
+def _extractAdvancedPorts(part):
     """Extract advanced ports from a FeaturePython part."""
     res = []
     for i in range(0, len(part.Ports)):
@@ -81,6 +88,13 @@ def extractAdvancedPorts(part):
         port = AdvancedPort(base=FreeCAD.Vector(part.Ports[i]), rotation=rotation)
         res.append(port)
     return res
+
+
+def extractAdvancedPorts(part):
+    if part.PType == u"Pipe":
+        return _guessPipeAdvancedPorts(part)
+    else:
+        return _extractAdvancedPorts(part)
 
 
 def getNearestPort(part_placement, ports, point):
