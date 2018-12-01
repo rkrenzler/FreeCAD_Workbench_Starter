@@ -48,15 +48,12 @@ class Tee(pypeType):
         obj.addProperty("App::PropertyLength", "PThk2", "Tee",
                         "Thickness of the pipe at the other horizontal socket.").PThk2 = dims.PThk2
         obj.addProperty("App::PropertyVectorList", "Ports", "Tee", "Ports relative positions.").Ports = self.getPorts(obj)
-        obj.addProperty("App::PropertyVectorList", "PortNormals", "Tee", "Ports normals.").PortNormals = self.getPortNormals(obj)
-        obj.addProperty("App::PropertyVectorList", "PortRotRefs", "Tee",
-                        "Ports rotation references.").PortRotRefs = self.getRortationReferences(obj)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Tee", "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
         obj.addProperty("App::PropertyString", "PartNumber", "Tee", "Part number").PartNumber = ""
 
         # Make Port information read only.
         obj.setEditorMode("Ports", 1)
-        obj.setEditorMode("PortNormals", 1)
-        obj.setEditorMode("PortRotRefs", 1)
+        obj.setEditorMode("PortRotationAngles", 1)
 
     def onChanged(self, obj, prop):
         # if you aim to do something when an attribute is changed
@@ -275,31 +272,18 @@ class Tee(pypeType):
         return [port_left, port_right, port_top]
 
     @classmethod
-    def getPortNormals(cls, obj):
-        """Calculate coordinates of the ports normals."""
-        n_left = FreeCAD.Vector(-1,0,0)
-        n_right = FreeCAD.Vector(1,0,0)
-        n_top = FreeCAD.Vector(0,0,1)
+    def getPortRotationAngles(cls, obj):
+        """Calculate coordinates of the ports rotation and return them as vectorsself.
+
+        x = Yaw
+        y = Pitch
+        z = Roll
+        """
+        n_left = FreeCAD.Vector(180, 0, 180)
+        n_right = FreeCAD.Vector(0, 0, 0)
+        n_top = FreeCAD.Vector(0, -90, 0)
         return [n_left, n_right, n_top]
 
-    @classmethod
-    def getRortationReferences(cls, obj):
-        r_left = FreeCAD.Vector(0,0,1)
-        r_right = FreeCAD.Vector(0,0,1)
-        r_top = FreeCAD.Vector(1,0,0)
-        return [r_left, r_right, r_top]
-
-    @classmethod
-    def getAdvancedPorts(cls, obj):
-        _as = cls.getPorts(obj)
-        ns = cls.getPortNormals(obj)
-        rs = cls.getRortationReferences(obj)
-        ret = []
-        for i in range(0, len(_as)):
-            port = Port.AdvancedPort(a=_as[i], n=ns[i], r=rs[i])
-            ret.append(port)
-
-        return ret
 
 class TeeBuilder:
     """ Create a tee using flamingo. """

@@ -9,113 +9,90 @@ import FreeCAD
 
 
 class AdvancedPort:
-    def __init__(self, a=None, n=None, r=None):
-        if a is None:
-            self.a = FreeCAD.Vector(0, 0, 0)
-        else:
-            self.a = a
+    def __init__(self, base=None, rotation=None):
 
-        if n is None:
-            self.n = FreeCAD.Vector(1, 0, 0)
-        else:
-            self.n = n
+        if base is None:
+            base = FreeCAD.Vector(0, 0, 0)
 
-        if r is None:
-            self.r = FreeCAD.Vector(0, 0, 1)
-        else:
-            self.r = r
+        if rotation is None:
+            rotation = FreeCAD.Rotation(0, 0, 0)
 
-    def getStandardForm(self):
-        """Return normalized version of the port."""
-        ret = copy.copy(self)
-        ret.n.normalize()
-        ret.r.normalize()
-        return ret
+        self.placement = FreeCAD.Placement(base, rotation)
 
-    def B(self):
-        """Return matrix B embedded in tree dimensinal matrix."""
-        b = self.n.cross(self.r)
-        # Create a matrix (n,r,b)
-        ret = numpy.array([list(self.n), list(self.r), list(b)]).transpose()
-        return ret
+    def getNormal(self):
+        return self.placement.Rotation.multVec(FreeCAD.Vector(1, 0, 0))
 
-    def C(self):
-        """Return Create a matrix (-n,r,-b)."""
-        b = self.n.cross(self.r)
-        ret = numpy.array([list(-self.n), list(self.r), list(-b)]).transpose()
-        return ret
+    def getAngleReference(self):
+        return self.placement.Rotation.multVec(FreeCAD.Vector(0, 1, 0))
 
-    def _getRotation3DMatrix(self, other):
-        """Return a rotation matrix wich will rotate this port to the other port."""
-        C = other.getStandardForm().C()
-        invB = numpy.linalg.inv(self.getStandardForm().B())
-        A = C.dot(invB)
-        return A
+    def getPartRotation(self, other_placement, other_port):
+        """Return a rotation matrix wich will rotate this port to the other port.
 
-    def getTranslation(self, other):
-        return other.a - self.a
+        param other_part_rot: Rotation of the other pArt.
+        param other_port: other pOrt.
+        """
+        # Rotat itself back, such that normal points to x axis and angle reference
+        # r points to y axis.
+        A_inv = self.placement.Rotation.inverted()
+        # Rotate the port such that the x axis shows back, but the angle reference
+        # coinsides with previous one.
+        A_r = FreeCAD.Rotation(180, 0, 180)
+        other_rot = other_placement.Rotation.multiply(other_port.placement.Rotation)
+        return A_inv.multiply(A_r).multiply(other_rot)
 
-    def _get_4D_matrix(self, other):
-        ret = FreeCAD.Matrix()
-        # Set rotation submatrix.
-        A = self._getRotation3DMatrix(other)
-        ret.A11 = A[0, 0]
-        ret.A12 = A[0, 1]
-        ret.A13 = A[0, 2]
-        ret.A21 = A[1, 0]
-        ret.A22 = A[1, 1]
-        ret.A23 = A[1, 2]
-        ret.A31 = A[2, 0]
-        ret.A32 = A[2, 1]
-        ret.A33 = A[2, 2]
-        # Add tragetRutationhe 4-th column of ret.
-        t = self.getTranslation(other)
-        ret.A14 = t.x
-        ret.A24 = t.y
-        ret.A34 = t.z
+    def getPartBase(self, other_placement, other_port):
+        # Check find first the global bosition of the other portself.
+        other_g_base = other_placement.Base + other_placement.Rotation.multVec(other_port.placement.Base)
+        # Get new rotation.
+        B = self.getPartRotation(other_placement, other_port)
+        # Get new port positon taking in account the adjusting rotation.
+        adjusted_base = B.multVec(self.placement.Base)
+        return other_g_base - adjusted_base
 
-        return ret
-
-    def getRotation(self, other):
-        """Get rotation, to orientate this port to the other."""
-        m = self._get_4D_matrix(other)
-        return FreeCAD.Rotation(m)
+    def getPartPlacement(self, other_placement, other_port):
+        """Return new part placment adjusted to the port of the other part."""
+        return FreeCAD.Placement(self.getPartBase(other_placement, other_port=other_port),
+                                 self.getPartRotation(other_placement, other_port=other_port))
 
 
 def testPorts():
-    port1 = AdvancedPort()
-    port2 = AdvancedPort()
-    port2.va = FreeCAD.Vector(4, 4, 4)
-    port2.vn = FreeCAD.Vector(1, 1, 1)
+    port1 = AdvancedPort(FreeCAD.Vector(0, 0, 2), FreeCAD.Rotation(0, -90, 0))  # Port 0 in a tee.
+    port2 = AdvancedPort(FreeCAD.Vector(-2, 0, 0), FreeCAD.Rotation(180, 0, 180))  # Port 2 in a tee.
+    part_placement = FreeCAD.Placement()
+    #part_placement = FreeCAD.Placement(FreeCAD.Vector(0, 1, 1), FreeCAD.Rotation(0, 0, 0))
 
-    print(port1)
-    print(port1.getRutation(port1))
-    print(port1.getTranslation(port1))
+    print(port1.placement)
+    print(port2.placement)
 
-    print(port2)
-    print(port2.getRutation(port1))
-    print(port2.getTranslation(port1))
+    print(port2.getPartPlacement(part_placement, port1))
 
 
 def supportsAdvancedPort(part):
     """Check if the part contains advanced ports."""
-    return hasattr(part, 'PortNormals')
+    return hasattr(part, "PortRotationAngles")
 
 
-def extractAdvancedPort(part):
+def extractAdvancedPorts(part):
     """Extract advanced ports from a FeaturePython part."""
     res = []
     for i in range(0, len(part.Ports)):
-        port = AdvancedPort(a=part.Ports[i], n=part.PortNormals[i], r=part.PortRotRefs[i])
+        rotation_angles = part.PortRotationAngles[i]
+        rotation = FreeCAD.Rotation(rotation_angles.x, rotation_angles.y, rotation_angles.z)
+        port = AdvancedPort(base=FreeCAD.Vector(part.Ports[i]), rotation=rotation)
         res.append(port)
     return res
 
-def getNearestPort(ports, point):
+
+def getNearestPort(part_placement, ports, point):
     d_so_far = float("inf")
     closest_port = None
     for port in ports:
-        d = port.a.distanceToPoint(point)
+        global_pos = part_placement.Base + part_placement.Rotation.multVec(port.placement.Base)
+        d = global_pos.distanceToPoint(point)
         if d < d_so_far:
             d_so_far = d
             closest_port = port
     return closest_port
+
+
+#testPorts()

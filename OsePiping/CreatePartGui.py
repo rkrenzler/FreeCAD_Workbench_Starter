@@ -15,7 +15,7 @@ import FreeCADGui
 import OsePipingBase
 import Piping
 import PipingGui
-#import rpdb2
+import rpdb2
 import Port
 
 
@@ -300,7 +300,7 @@ class BaseDialog(QtGui.QDialog):
 
         if (len(FreeCADGui.Selection.getSelectionEx()) > 0
                 and len(FreeCADGui.Selection.getSelectionEx()[0].SubObjects) > 0):
-            # Only pipe have ports on creation. The other fitting have can be acces only through their objself.
+            # Only a pipe has ports on creation. The other fitting can be accessed only through their objects.
             obj_of_part = document.getObject(part.Name)
             target = FreeCADGui.Selection.getSelectionEx()[0].Object
             sub = FreeCADGui.Selection.getSelectionEx()[0].SubObjects[0]
@@ -313,20 +313,19 @@ class BaseDialog(QtGui.QDialog):
                 # Check if the new part support advancedPorts
                 if Port.supportsAdvancedPort(obj_of_part) and Port.supportsAdvancedPort(target):
                     # Use new placement methos.
-                    #rpdb2.start_embedded_debugger("test")
                     # Ports of the moved objects.
-                    moved_ports = Port.extractAdvancedPort(obj_of_part)
+                    rpdb2.start_embedded_debugger("test")
+
+                    moved_ports = Port.extractAdvancedPorts(obj_of_part)
                     # Ports of the object to whom the object will be moved.
-                    fix_ports = Port.extractAdvancedPort(target)
+                    fix_ports = Port.extractAdvancedPorts(target)
+
                     # Find nearest pod.
-                    closest_port = Port.getNearestPort(fix_ports, sub.CenterOfMass)
+                    closest_port = Port.getNearestPort(target.Placement, fix_ports, sub.CenterOfMass)
+
                     # Now adjust new part to closet port
-                    t = moved_ports[0].getTranslation(closest_port)
-                    rot = moved_ports[0].getRotation(closest_port)
-                    # Translate part to new place
                     print(obj_of_part.Placement)
-                    obj_of_part.Placement.Rotation = obj_of_part.Placement.Rotation.multiply(rot)
-                    obj_of_part.Placement.Base = obj_of_part.Placement.Base.add(t)
+                    obj_of_part.Placement = moved_ports[0].getPartPlacement(target.Placement, closest_port)
                     print(obj_of_part.Placement)
                 else:
                     nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
