@@ -32,8 +32,11 @@ class Cross(pypeType):
 		obj.addProperty("App::PropertyLength","PThk1","Cross","Pipe wall thickness of the vertical part").PThk1=dims.PThk1
 		obj.addProperty("App::PropertyString","PartNumber","Cross","Part number").PartNumber=""
 		obj.addProperty("App::PropertyVectorList","Ports","Cross","Ports relative positions.").Ports = self.getPorts(obj)
+		obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Cross",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
 		# Make Ports read only.
 		obj.setEditorMode("Ports", 1)
+		obj.setEditorMode("PortRotationAngles", 1)
 
 	def onChanged(self, obj, prop):
 		# if you aim to do something when an attribute is changed
@@ -123,6 +126,20 @@ class Cross(pypeType):
 		dims = Cross.extractDimensions(obj)
 		aux = dims.calculateAuxiliararyPoints()
 		return [aux["p2"], aux["p3"], aux["p5"], aux["p6"]]
+
+	@classmethod
+	def getPortRotationAngles(cls, obj):
+		"""Calculate coordinates of the ports rotation and return them as vectorsself.
+
+		x = Yaw
+		y = Pitch
+		z = Roll
+		"""
+		left = FreeCAD.Vector(180, 0, 180)
+		right = FreeCAD.Vector(0, 0, 0)
+		bottom = FreeCAD.Vector(0, 90, 0)
+		top = FreeCAD.Vector(0, -90, 0)
+		return [left, right, bottom, top]
 
 
 class CrossBuilder:
