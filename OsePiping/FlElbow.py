@@ -94,10 +94,10 @@ class Elbow(pypeType):
         base = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
 
         # Add trajectory
-        line1 = Part.makeLine( aux["p5"], aux["p2"])
+        line1 = Part.makeLine(aux["p5"], aux["p2"])
         arc = Part.makeCircle(
-            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha/2, 225 + alpha/2)
-        line2 = Part.makeLine( aux["p4"], aux["p6"])
+            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha / 2, 225 + alpha / 2)
+        line2 = Part.makeLine(aux["p4"], aux["p6"])
 
         trajectory = Part.Shape([line1, arc, line2])
         # Show trajectory for debugging.
@@ -106,8 +106,8 @@ class Elbow(pypeType):
         # Add a cap (circle, at the other end of the bent cylinder).
         cap = Part.makeCircle(rCirc, aux["p5"], aux["p5"])
         # Sweep the circle along the trajectory.
-        sweep = Part.makeSweepSurface(trajectory, base) # Does not work
-        sweep = Part.makeSweepSurface(W, base) # Does not work.
+        sweep = Part.makeSweepSurface(trajectory, base)  # Does not work
+        sweep = Part.makeSweepSurface(W, base)  # Does not work.
         # The sweep is only a 2D service consisting of walls only.
         # Add circles on both ends of this wall.
         end1 = Part.Face(Part.Wire(base))
@@ -138,7 +138,7 @@ class Elbow(pypeType):
 
         # Add trajectory
         trajectory = Part.makeCircle(
-            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha/2, 225 + alpha/2)
+            rBend, aux["p3"], FreeCAD.Vector(0, 0, 1), 225 - alpha / 2, 225 + alpha / 2)
         # Show trajectory for debugging.
         # W = W1.fuse([trajectory.Edges])
         # Part.Show(W)
@@ -181,7 +181,7 @@ class Elbow(pypeType):
         # Create a channel along the z axis. It is longer then necessaryself.
         # But it possible can prevent problems with boolean operations.
         h = float(dims.H)
-        chan1 = Part.makeCylinder(r, h, aux["p2"],aux["p2"])
+        chan1 = Part.makeCylinder(r, h, aux["p2"], aux["p2"])
         # Create a channel along the bent part.
         chan2 = Part.makeCylinder(r, h, aux["p4"], aux["p4"])
         # Create corresponding socktes.
@@ -243,4 +243,4 @@ def TestElbow():
     builder.create(feature)
     document.recompute()
 
-#TestElbow()
+# TestElbow()
