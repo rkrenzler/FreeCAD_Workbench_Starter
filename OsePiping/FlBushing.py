@@ -31,10 +31,13 @@ class Bushing(pypeType):
                         "Small pipe thickness.").PThk1 = dims.PThk1
         obj.addProperty("App::PropertyVectorList", "Ports", "Bushing",
                         "Ports relative positions.").Ports = self.getPorts(obj)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Bushing",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
         obj.addProperty("App::PropertyString", "PartNumber",
                         "Bushing", "Part number").PartNumber = ""
         # Make Ports read only.
         obj.setEditorMode("Ports", 1)
+        obj.setEditorMode("PortRotationAngles", 1)
 
     def onChanged(self, obj, prop):
         # Attributes changed, adjust the rest.
@@ -118,6 +121,18 @@ class Bushing(pypeType):
         # For the bottom port use p3 too. Because there is no a1 dimension in my specification.
         return[aux["p3"], aux["p3"]]
 
+    @classmethod
+    def getPortRotationAngles(cls, obj):
+        """Calculate coordinates of the ports rotation and return them as vectorsself.
+
+        x = Yaw
+        y = Pitch
+        z = Roll
+        """
+        outer = FreeCAD.Vector(0, 90, 0)
+        inner = FreeCAD.Vector(0, -90, 0)
+
+        return [outer, inner]
 
 class BushingBuilder:
     """ Create a bushing using flamingo. """
