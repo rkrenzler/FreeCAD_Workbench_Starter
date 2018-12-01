@@ -29,12 +29,18 @@ class Tee(pypeType):
                         "Distnace from the center to begin of vertical socket").G1 = dims.G1
         obj.addProperty("App::PropertyLength", "G2", "Tee",
                         "Distnace from the center to begin of horizontal socket").G2 = dims.G2
-        obj.addProperty("App::PropertyLength", "H", "Tee", "Distance between the center its horizonal end.").H = dims.H
-        obj.addProperty("App::PropertyLength", "H1", "Tee", "Distance between the center its vertical end.").H1 = dims.H1
-        obj.addProperty("App::PropertyLength", "H2", "Tee", "Distance between the center its horizontal end.").H2 = dims.H2
-        obj.addProperty("App::PropertyLength", "M", "Tee", "Tee outside diameter of the horizontal socket.").M = dims.M
-        obj.addProperty("App::PropertyLength", "M1", "Tee", "Tee outside diameter of the vertical socket.").M1 = dims.M1
-        obj.addProperty("App::PropertyLength", "M2", "Tee", "Tee outside diameter of the vertical socket.").M2 = dims.M2
+        obj.addProperty("App::PropertyLength", "H", "Tee",
+                        "Distance between the center its horizonal end.").H = dims.H
+        obj.addProperty("App::PropertyLength", "H1", "Tee",
+                        "Distance between the center its vertical end.").H1 = dims.H1
+        obj.addProperty("App::PropertyLength", "H2", "Tee",
+                        "Distance between the center its horizontal end.").H2 = dims.H2
+        obj.addProperty("App::PropertyLength", "M", "Tee",
+                        "Tee outside diameter of the horizontal socket.").M = dims.M
+        obj.addProperty("App::PropertyLength", "M1", "Tee",
+                        "Tee outside diameter of the vertical socket.").M1 = dims.M1
+        obj.addProperty("App::PropertyLength", "M2", "Tee",
+                        "Tee outside diameter of the vertical socket.").M2 = dims.M2
         obj.addProperty("App::PropertyLength", "POD", "Tee",
                         "Tee pipe outer diameter at the horizonal socket.").POD = dims.POD
         obj.addProperty("App::PropertyLength", "POD1", "Tee",
@@ -47,9 +53,12 @@ class Tee(pypeType):
                         "Thickness of the pipe at the vertical socket.").PThk1 = dims.PThk1
         obj.addProperty("App::PropertyLength", "PThk2", "Tee",
                         "Thickness of the pipe at the other horizontal socket.").PThk2 = dims.PThk2
-        obj.addProperty("App::PropertyVectorList", "Ports", "Tee", "Ports relative positions.").Ports = self.getPorts(obj)
-        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Tee", "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
-        obj.addProperty("App::PropertyString", "PartNumber", "Tee", "Part number").PartNumber = ""
+        obj.addProperty("App::PropertyVectorList", "Ports", "Tee",
+                        "Ports relative positions.").Ports = self.getPorts(obj)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Tee",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
+        obj.addProperty("App::PropertyString", "PartNumber",
+                        "Tee", "Part number").PartNumber = ""
 
         # Make Port information read only.
         obj.setEditorMode("Ports", 1)
@@ -60,7 +69,8 @@ class Tee(pypeType):
         # place the code here:
         # e.g. -> change PSize according the new alpha, PID and POD
 
-        sock_dim_properties = ["G", "G1", "G2"]  # Only this properties infules port coordinates.
+        # Only this properties infules port coordinates.
+        sock_dim_properties = ["G", "G1", "G2"]
 
         if prop in sock_dim_properties:
             # This function is called within __init__ too.
@@ -117,7 +127,8 @@ class Tee(pypeType):
             r = dims.M2 / 2.0
             h = dims.M2
             p = FreeCAD.Vector(-dims.M2 / 2.0, 0, 0)
-            dr = FreeCAD.Vector(1, 0, 0)  # Direction where to rotate the cylinder
+            # Direction where to rotate the cylinder
+            dr = FreeCAD.Vector(1, 0, 0)
             return Part.makeCylinder(r, h, p, dr)
         else:
             return None
@@ -139,9 +150,11 @@ class Tee(pypeType):
         outer_fusion = None
         enh = cls.horizontalWallEnhancement(obj)
         if enh is None:
-                outer_fusion = horizontal_outer_cylinder.fuse([vertical_outer_cylinder])
+            outer_fusion = horizontal_outer_cylinder.fuse(
+                [vertical_outer_cylinder])
         else:
-                outer_fusion = horizontal_outer_cylinder.fuse([vertical_outer_cylinder, enh])
+            outer_fusion = horizontal_outer_cylinder.fuse(
+                [vertical_outer_cylinder, enh])
 
         return outer_fusion
 
@@ -176,9 +189,11 @@ class Tee(pypeType):
         enh = cls.horizontalWallEnhancement(obj)
         outer_fusion = None
         if enh is None:
-                outer_fusion = cylinder1.fuse([cone, cylinder2, vertical_outer_cylinder])
+            outer_fusion = cylinder1.fuse(
+                [cone, cylinder2, vertical_outer_cylinder])
         else:
-                outer_fusion = cylinder1.fuse([cone, cylinder2, vertical_outer_cylinder, enh])
+            outer_fusion = cylinder1.fuse(
+                [cone, cylinder2, vertical_outer_cylinder, enh])
 
         return outer_fusion
 
@@ -279,16 +294,17 @@ class Tee(pypeType):
         y = Pitch
         z = Roll
         """
-        n_left = FreeCAD.Vector(180, 0, 180)
-        n_right = FreeCAD.Vector(0, 0, 0)
-        n_top = FreeCAD.Vector(0, -90, 0)
-        return [n_left, n_right, n_top]
+        left = FreeCAD.Vector(180, 0, 180)
+        right = FreeCAD.Vector(0, 0, 0)
+        top = FreeCAD.Vector(0, -90, 0)
+        return [left, right, top]
 
 
 class TeeBuilder:
     """ Create a tee using flamingo. """
+
     def __init__(self, document):
-        self.pos = FreeCAD.Vector(0,0,0) # Define default initial position.
+        self.pos = FreeCAD.Vector(0, 0, 0)  # Define default initial position.
         self.dims = TeeMod.Dimensions()
         self.document = document
 
@@ -304,10 +320,12 @@ class TeeBuilder:
         return tee
 
 # Create a test tee.
+
+
 def Test():
     document = FreeCAD.activeDocument()
     builder = TeeBuilder(document)
-    feature = document.addObject("Part::FeaturePython","OSE-Tee")
+    feature = document.addObject("Part::FeaturePython", "OSE-Tee")
     builder.create(feature)
     document.recompute()
 
