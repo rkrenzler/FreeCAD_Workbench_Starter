@@ -327,9 +327,9 @@ class BaseDialog(QtGui.QDialog):
                     closest_port = Port.getNearestPort(target.Placement, fix_ports, sub.CenterOfMass)
 
                     # Now adjust new part to closet port
-                    print(obj_of_part.Placement)
+                    # print(obj_of_part.Placement)
                     obj_of_part.Placement = moved_ports[0].getPartPlacement(target.Placement, closest_port)
-                    print(obj_of_part.Placement)
+                    # print(obj_of_part.Placement)
                 else:
                     nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
                     if nearest_ports != []:

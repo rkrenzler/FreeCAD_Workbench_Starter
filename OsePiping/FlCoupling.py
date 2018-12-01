@@ -38,10 +38,13 @@ class Coupling(pypeType):
                         "Thickness of the pipe at the socket 2.").PThk1 = dims.PThk1
         obj.addProperty("App::PropertyVectorList", "Ports", "Coupling",
                         "Ports relative positions.").Ports = self.getPorts(obj)
-        # Make Ports read only.
-        obj.setEditorMode("Ports", 1)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Coupling",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
         obj.addProperty("App::PropertyString", "PartNumber",
                         "Coupling", "Part number").PartNumber = ""
+        # Make Ports read only.
+        obj.setEditorMode("Ports", 1)
+        obj.setEditorMode("PortRotationAngles", 1)
 
     def onChanged(self, obj, prop):
         # if you aim to do something when an attribute is changed
@@ -169,6 +172,19 @@ class Coupling(pypeType):
         dims = self.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         return [aux["p2"], aux["p3"]]
+
+    @classmethod
+    def getPortRotationAngles(cls, obj):
+        """Calculate coordinates of the ports rotation and return them as vectorsself.
+
+        x = Yaw
+        y = Pitch
+        z = Roll
+        """
+        bottom = FreeCAD.Vector(0, 90, 0)
+        top = FreeCAD.Vector(0, -90, 0)
+
+        return [bottom, top]
 
 
 class CouplingBuilder:
