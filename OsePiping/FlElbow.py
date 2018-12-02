@@ -40,11 +40,13 @@ class Elbow(pypeType):
                         "Distnace from the center to begin of innerpart of the socket").J = J
         obj.addProperty("App::PropertyVectorList", "Ports", "Elbow",
                         "Ports relative position.").Ports = self.getPorts(obj)
-        # Make Ports read only.
-        obj.setEditorMode("Ports", 1)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Elbow",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
         obj.addProperty("App::PropertyString", "PartNumber",
                         "Elbow", "Part number").PartNumber = ""
-
+        # Make Ports read only.
+        obj.setEditorMode("Ports", 1)
+        obj.setEditorMode("PortRotationAngles", 1)
     def onChanged(self, obj, prop):
         # if you aim to do something when an attribute is changed
         # place the code here:
@@ -215,6 +217,18 @@ class Elbow(pypeType):
 #	 	FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
         return [aux["p5"], aux["p6"]]
 
+    def getPortRotationAngles(self, obj):
+        """Calculate coordinates of the ports rotation and return them as vectorsself.
+
+        x = Yaw
+        y = Pitch
+        z = Roll
+        """
+        dims = Elbow.extractDimensions(obj)
+        half = dims.BendAngle/2
+        end0 = FreeCAD.Vector(45-half.Value, 0, 0)
+        end1 = FreeCAD.Vector(45+half.Value, 0, 0)
+        return [end0, end1]
 
 class ElbowBuilder:
     """ Create elbow using flamingo. """
