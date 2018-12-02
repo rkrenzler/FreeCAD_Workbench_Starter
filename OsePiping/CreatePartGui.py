@@ -4,8 +4,6 @@
 # Create a part with dimensions stored in a table.
 # Use the BaseDialog to derive other
 
-import collections  # Named touple
-import math
 import os.path
 
 from PySide import QtCore, QtGui
