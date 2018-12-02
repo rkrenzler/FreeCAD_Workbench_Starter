@@ -292,7 +292,6 @@ class BaseDialog(QtGui.QDialog):
                                                          None, QtGui.QApplication.UnicodeUTF8))
         self.exec_()
 
-
     @staticmethod
     def moveFlamingoPartToSelection(document, part):
         # Check if something is selected:
@@ -324,22 +323,27 @@ class BaseDialog(QtGui.QDialog):
                     fix_ports = Port.extractAdvancedPorts(target)
 
                     # Find nearest pod.
-                    closest_port = Port.getNearestPort(target.Placement, fix_ports, sub.CenterOfMass)
+                    closest_port = Port.getNearestPort(
+                        target.Placement, fix_ports, sub.CenterOfMass)
 
                     # Now adjust new part to closet port
                     # print(obj_of_part.Placement)
-                    obj_of_part.Placement = moved_ports[0].getPartPlacement(target.Placement, closest_port)
+                    obj_of_part.Placement = moved_ports[0].getPartPlacement(
+                        target.Placement, closest_port)
                     # print(obj_of_part.Placement)
                 else:
-                    FreeCAD.Console.PrintWarning("Not all parts are OSE Fittings. I will try to use Flamingo for positioning.\n")
-                    nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
+                    FreeCAD.Console.PrintWarning(
+                        "Not all parts are OSE Fittings. I will try to use Flamingo for positioning.\n")
+                    nearest_ports = pipeCmd.nearestPort(
+                        target, sub.CenterOfMass)
                     if nearest_ports != []:
                         FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
                             nearest_ports[0]))
                         pipeCmd.placeThePype(
                             obj_of_part, 0, target, nearest_ports[0])
                     else:
-                        FreeCAD.Console.PrintMessage("No nearest ports found.\n")
+                        FreeCAD.Console.PrintMessage(
+                            "No nearest ports found.\n")
             except Exception as e:
                 FreeCAD.Console.PrintMessage(
                     "Positioning of Flamingo parts failed: {}\n".format(e))
