@@ -79,7 +79,13 @@ def testPorts():
 
 def supportsAdvancedPort(part):
     """Check if the part contains advanced ports."""
-    return hasattr(part, "PortRotationAngles") or part.PType == u"Pipe"
+    if part is None:
+        return False
+    if hasattr(part, "PortRotationAngles"):
+        return True  # This is an OSE-fitting.
+    if hasattr(part, "PType") and part.PType == u"Pipe":
+        return True  # This is a Flamingo pipe.
+    return False  # This is something else.
 
 
 def _guessPipeAdvancedPorts(part):
