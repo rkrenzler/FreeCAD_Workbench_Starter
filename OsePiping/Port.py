@@ -30,15 +30,25 @@ class AdvancedPort:
 
         param other_part_rot: Rotation of the other pArt.
         param other_port: other pOrt.
+
         """
+        # Note: Multiplication of rotation matrices is commutative!
+        # Apply operations from right to left.
         # Rotat itself back, such that normal points to x axis and angle reference
         # r points to y axis.
         A_inv = self.placement.Rotation.inverted()
+        print("A_inv " + str(A_inv.toEuler()))
         # Rotate the port such that the x axis shows back, but the angle reference
         # coinsides with previous one.
-        A_r = FreeCAD.Rotation(180, 0, 180)
-        other_rot = other_placement.Rotation.multiply(other_port.placement.Rotation)
-        return A_inv.multiply(A_r).multiply(other_rot)
+        A_r = FreeCAD.Rotation(0, 180, 0)
+        #print("A_r " + str(A_r.toEuler()))
+        A = other_port.placement.Rotation
+        #print("A " + str(A.toEuler()))
+        R = other_placement.Rotation
+        #print("R " + str(R.toEuler()))
+        B = R.multiply(A.multiply(A_r.multiply(A_inv)))
+        #print("B " + str(B.toEuler()))
+        return B
 
     def getPartBase(self, other_placement, other_port):
         # Check find first the global bosition of the other portself.
