@@ -5,6 +5,7 @@
 
 import SweepElbow
 import CreatePartGui
+import Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):
