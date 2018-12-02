@@ -15,7 +15,7 @@ import FreeCADGui
 import OsePipingBase
 import Piping
 import PipingGui
-import rpdb2
+#import rpdb2
 import Port
 
 
@@ -312,8 +312,8 @@ class BaseDialog(QtGui.QDialog):
                 return
             try:
                 # Check if the new part support advancedPorts
-                #sel = FreeCADGui.Selection.getSelectionEx()
-                #rpdb2.start_embedded_debugger("test")
+                # sel = FreeCADGui.Selection.getSelectionEx()
+                # rpdb2.start_embedded_debugger("test")
 
                 if Port.supportsAdvancedPort(obj_of_part) and Port.supportsAdvancedPort(target):
                     # Use new placement methos.
@@ -331,6 +331,7 @@ class BaseDialog(QtGui.QDialog):
                     obj_of_part.Placement = moved_ports[0].getPartPlacement(target.Placement, closest_port)
                     # print(obj_of_part.Placement)
                 else:
+                    FreeCAD.Console.PrintWarning("Not all parts are OSE Fittings. I will try to use Flamingo for positioning.\n")
                     nearest_ports = pipeCmd.nearestPort(target, sub.CenterOfMass)
                     if nearest_ports != []:
                         FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
