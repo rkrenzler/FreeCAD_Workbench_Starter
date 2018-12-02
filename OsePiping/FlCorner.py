@@ -31,10 +31,13 @@ class Corner(pypeType):
                         "Thickness of the pipe.").PThk = dims.PThk
         obj.addProperty("App::PropertyVectorList", "Ports", "Corner",
                         "Ports relative positions.").Ports = self.getPorts(obj)
+        obj.addProperty("App::PropertyVectorList", "PortRotationAngles", "Corner",
+                        "Ports rotation angles.").PortRotationAngles = self.getPortRotationAngles(obj)
         obj.addProperty("App::PropertyString", "PartNumber",
                         "Corner", "Part number").PartNumber = ""
         # Make Ports read only.
         obj.setEditorMode("Ports", 1)
+        obj.setEditorMode("PortRotationAngles", 1)
 
     def onChanged(self, obj, prop):
         # if you aim to do something when an attribute is changed
@@ -112,6 +115,18 @@ class Corner(pypeType):
         aux = dims.calculateAuxiliararyPoints()
         return [aux["p1"], aux["p2"], aux["p3"]]  # x, y, z.
 
+    @classmethod
+    def getPortRotationAngles(cls, obj):
+        """Calculate coordinates of the ports rotation and return them as vectorsself.
+
+        x = Yaw
+        y = Pitch
+        z = Roll
+        """
+        x = FreeCAD.Vector(0, 0, 0)
+        y = FreeCAD.Vector(90, 0, 0)
+        z = FreeCAD.Vector(0, -90, 0)
+        return [x, y, z]
 
 class CornerBuilder:
     """ Create a corner using flamingo. """
