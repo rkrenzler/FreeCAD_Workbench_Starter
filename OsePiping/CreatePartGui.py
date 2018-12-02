@@ -58,6 +58,12 @@ class BaseDialog(QtGui.QDialog):
         except Exception as e:
             print("Could not restore old user input!")
             print(e)
+        try:
+            self.restoreWindowGeometry()
+        except Exception as e:
+            print("Could not restore old window geometry")
+            print(e)
+#            pass # Do nothing
         self.show()
 
 # The following lines are from QtDesigner .ui-file processed by pyside-uic
@@ -196,6 +202,8 @@ class BaseDialog(QtGui.QDialog):
                 self.params.document.recompute()
                 # Save user input for the next dialog call.
                 self.saveInput()
+                # Save window Geometry
+                self.saveWindowGeometry()
                 # Call parent class.
                 super(BaseDialog, self).accept()
 
@@ -222,6 +230,17 @@ class BaseDialog(QtGui.QDialog):
 
     def saveAdditionalData(self, settings):
         pass
+
+    def saveWindowGeometry(self):
+        settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
+        settings.setValue("Window/Geometry", self.saveGeometry())
+        settings.sync()
+
+    def restoreWindowGeometry(self):
+        settings = QtCore.QSettings(BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
+        geometry = settings.value("Window/Geometry", None)
+        if geometry is not None:
+            self.restoreGeometry(geometry)
 
     def saveInput(self):
         """Store user input for the next run."""
