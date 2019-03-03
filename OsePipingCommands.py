@@ -51,10 +51,10 @@ class OsePiping_PipeClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = PipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        table = PipeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
  #       FreeCAD.Console.PrintMessage("Showing pipe UI.")
-	form = PipeGui.MainDialog(doc, table)
-	form.exec_()
+        form = PipeGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -75,10 +75,10 @@ class OsePiping_CouplingClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = CouplingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#        FreeCAD.Console.PrintMessage("Showing outer coupling UI.")
-	form = CouplingGui.MainDialog(doc, table)
-	form.exec_()
+        table = CouplingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        #       FreeCAD.Console.PrintMessage("Showing outer coupling UI.")
+        form = CouplingGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -99,10 +99,10 @@ class OsePiping_BushingClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = BushingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-#        FreeCAD.Console.PrintMessage("Showing outer bushing UI.")
-	form = BushingGui.MainDialog(doc, table)
-	form.exec_()
+        table = BushingGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        #        FreeCAD.Console.PrintMessage("Showing outer bushing UI.")
+        form = BushingGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -122,10 +122,10 @@ class OsePiping_ElbowClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = ElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        table = ElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer elbow UI.")
-	form = ElbowGui.MainDialog(doc, table)
-	form.exec_()
+        form = ElbowGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -145,9 +145,9 @@ class OsePiping_SweepElbowClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = SweepElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
-	form = SweepElbowGui.MainDialog(doc, table)
-	form.exec_()
+        table = SweepElbowGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        form = SweepElbowGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -167,10 +167,10 @@ class OsePiping_TeeClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = TeeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        table = TeeGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer tee UI.")
-	form = TeeGui.MainDialog(doc, table)
-	form.exec_()
+        form = TeeGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -191,10 +191,10 @@ class OsePiping_CornerClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = CornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        table = CornerGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
-	form = CornerGui.MainDialog(doc, table)
-	form.showForCreation()
+        form = CornerGui.MainDialog(doc, table)
+        form.showForCreation()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
@@ -213,10 +213,10 @@ class OsePiping_CrossClass():
         if Gui.ActiveDocument == None:
             FreeCAD.newDocument()
         doc=FreeCAD.activeDocument()
-	table = CrossGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
+        table = CrossGui.GuiCheckTable() # Open a CSV file, check its content, and return it as a CsvTable object.
 #        FreeCAD.Console.PrintMessage("Showing outer corner UI.")
-	form = CrossGui.MainDialog(doc, table)
-	form.exec_()
+        form = CrossGui.MainDialog(doc, table)
+        form.exec_()
 
     def IsActive(self):
         """Here you can define if the command must be active or not (greyed) if certain conditions
