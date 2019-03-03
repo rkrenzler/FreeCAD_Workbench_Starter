@@ -24,7 +24,6 @@
 # ***************************************************************************
 
 import FreeCAD
-import Part
 import OsePipingBase
 import OsePiping.CouplingGui as CouplingGui
 import OsePiping.PipeGui as PipeGui
@@ -34,7 +33,6 @@ import OsePiping.CornerGui as CornerGui
 import OsePiping.ElbowGui as ElbowGui
 import OsePiping.CrossGui as CrossGui
 import OsePiping.SweepElbowGui as SweepElbowGui
-import OsePiping.CreatePartGui as CreatePartGui
 
 from FreeCAD import Gui
 
@@ -74,7 +72,7 @@ class OsePiping_CouplingClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -99,7 +97,7 @@ class OsePiping_BushingClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -124,7 +122,7 @@ class OsePiping_ElbowClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -149,7 +147,7 @@ class OsePiping_SweepElbowClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -173,7 +171,7 @@ class OsePiping_TeeClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -198,7 +196,7 @@ class OsePiping_CornerClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
@@ -222,7 +220,7 @@ class OsePiping_CrossClass():
 
     def Activated(self):
         "Do something here when button is clicked"
-        if Gui.ActiveDocument == None:
+        if Gui.ActiveDocument is None:
             FreeCAD.newDocument()
         doc = FreeCAD.activeDocument()
         # Open a CSV file, check its content, and return it as a CsvTable object.
