@@ -3,8 +3,6 @@
 # Date: 20 November 2018
 # Advanced Ports. Ports with normal vector and rotation references.
 
-import copy
-import numpy
 import FreeCAD
 
 
@@ -52,7 +50,8 @@ class AdvancedPort:
 
     def getPartBase(self, other_placement, other_port):
         # Check find first the global bosition of the other portself.
-        other_g_base = other_placement.Base + other_placement.Rotation.multVec(other_port.placement.Base)
+        other_g_base = other_placement.Base + \
+            other_placement.Rotation.multVec(other_port.placement.Base)
         # Get new rotation.
         B = self.getPartRotation(other_placement, other_port)
         # Get new port positon taking in account the adjusting rotation.
@@ -66,8 +65,11 @@ class AdvancedPort:
 
 
 def testPorts():
-    port1 = AdvancedPort(FreeCAD.Vector(0, 0, 2), FreeCAD.Rotation(0, -90, 0))  # Port 0 in a tee.
-    port2 = AdvancedPort(FreeCAD.Vector(-2, 0, 0), FreeCAD.Rotation(180, 0, 180))  # Port 2 in a tee.
+    # Port 0 in a tee.
+    port1 = AdvancedPort(FreeCAD.Vector(0, 0, 2), FreeCAD.Rotation(0, -90, 0))
+    # Port 2 in a tee.
+    port2 = AdvancedPort(FreeCAD.Vector(-2, 0, 0),
+                         FreeCAD.Rotation(180, 0, 180))
     part_placement = FreeCAD.Placement()
     #part_placement = FreeCAD.Placement(FreeCAD.Vector(0, 1, 1), FreeCAD.Rotation(0, 0, 0))
 
@@ -90,8 +92,10 @@ def supportsAdvancedPort(part):
 
 def _guessPipeAdvancedPorts(part):
     """Return port advanced port of a vertical streight flamingo pipe."""
-    port_bottom = AdvancedPort(base=FreeCAD.Vector(part.Ports[0]), rotation=FreeCAD.Rotation(0, 90, 0))
-    port_top = AdvancedPort(base=FreeCAD.Vector(part.Ports[1]), rotation=FreeCAD.Rotation(0, -90, 0))
+    port_bottom = AdvancedPort(base=FreeCAD.Vector(
+        part.Ports[0]), rotation=FreeCAD.Rotation(0, 90, 0))
+    port_top = AdvancedPort(base=FreeCAD.Vector(
+        part.Ports[1]), rotation=FreeCAD.Rotation(0, -90, 0))
     return [port_bottom, port_top]
 
 
@@ -100,8 +104,10 @@ def _extractAdvancedPorts(part):
     res = []
     for i in range(0, len(part.Ports)):
         rotation_angles = part.PortRotationAngles[i]
-        rotation = FreeCAD.Rotation(rotation_angles.x, rotation_angles.y, rotation_angles.z)
-        port = AdvancedPort(base=FreeCAD.Vector(part.Ports[i]), rotation=rotation)
+        rotation = FreeCAD.Rotation(
+            rotation_angles.x, rotation_angles.y, rotation_angles.z)
+        port = AdvancedPort(base=FreeCAD.Vector(
+            part.Ports[i]), rotation=rotation)
         res.append(port)
     return res
 
@@ -117,7 +123,8 @@ def getNearestPort(part_placement, ports, point):
     d_so_far = float("inf")
     closest_port = None
     for port in ports:
-        global_pos = part_placement.Base + part_placement.Rotation.multVec(port.placement.Base)
+        global_pos = part_placement.Base + \
+            part_placement.Rotation.multVec(port.placement.Base)
         d = global_pos.distanceToPoint(point)
         if d < d_so_far:
             d_so_far = d
