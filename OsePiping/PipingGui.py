@@ -3,7 +3,20 @@
 # Date: 20 February 2018
 # General classes for piping dialogs
 
-from PySide import QtCore
+from PySide import QtCore, QtGui
+
+
+def UnicodeUTF8():
+    """Return UnicodeUTF8 if it is defined or 0 otherwise.
+
+    The old FreeCAD code for Qt4 uses enum QtGui.QApplication.UnicodeUTF8
+    but it is not defined for new Qt5. With Qt5 we must to use 0 instead.
+    """
+
+    if hasattr(QtGui.QApplication, "UnicodeUTF8"):
+        QtGui.QApplication.UnicodeUTF8
+    else:
+        return 0
 
 
 class PartTableModel(QtCore.QAbstractTableModel):

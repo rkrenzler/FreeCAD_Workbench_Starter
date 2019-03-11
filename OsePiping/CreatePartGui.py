@@ -137,17 +137,17 @@ class BaseDialog(QtGui.QDialog):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate(
-            "Dialog", self.params.dialogTitle, None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", self.params.dialogTitle, None, PipingGui.UnicodeUTF8()))
         self.groupBox.setTitle(QtGui.QApplication.translate(
-            "Dialog", "Output type:", None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", "Output type:", None, PipingGui.UnicodeUTF8()))
         self.radioButtonSolid.setText(QtGui.QApplication.translate(
-            "Dialog", "Solid", None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", "Solid", None, PipingGui.UnicodeUTF8()))
         self.radioButtonFlamingo.setText(QtGui.QApplication.translate(
-            "Dialog", "Flamingo", None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", "Flamingo", None, PipingGui.UnicodeUTF8()))
         self.radioButtonParts.setText(QtGui.QApplication.translate(
-            "Dialog", "Parts", None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", "Parts", None, PipingGui.UnicodeUTF8()))
         self.labelExplanation.setText(QtGui.QApplication.translate(
-            "Dialog", self.params.explanationText, None, QtGui.QApplication.UnicodeUTF8))
+            "Dialog", self.params.explanationText, None, PipingGui.UnicodeUTF8()))
 
     def initTable(self):
         # Read table data from CSV
@@ -296,7 +296,7 @@ class BaseDialog(QtGui.QDialog):
         # If required select
         self.params.selectionMode = True
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.selectionDialogTitle,
-                                                         None, QtGui.QApplication.UnicodeUTF8))
+                                                         None, PipingGui.UnicodeUTF8()))
         self.selectedPart = None
         if partName is not None:
             self.selectPartByName(partName)
@@ -306,7 +306,7 @@ class BaseDialog(QtGui.QDialog):
     def showForCreation(self):
         self.params.selectionMode = False
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
-                                                         None, QtGui.QApplication.UnicodeUTF8))
+                                                         None, PipingGui.UnicodeUTF8()))
         self.exec_()
 
     @staticmethod
