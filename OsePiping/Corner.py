@@ -11,7 +11,7 @@ import FreeCAD
 import Part
 
 import OsePipingBase
-import Piping
+import OsePiping.Piping as Piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 

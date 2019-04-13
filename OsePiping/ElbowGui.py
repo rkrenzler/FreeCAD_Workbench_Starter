@@ -3,9 +3,9 @@
 # Date: 16 December 2017
 # Create a elbow-fitting.
 
-import Elbow
-import CreatePartGui
-import Piping
+import OsePiping.Elbow as Elbow
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):

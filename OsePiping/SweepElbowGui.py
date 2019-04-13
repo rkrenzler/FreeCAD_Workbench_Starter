@@ -3,9 +3,9 @@
 # Date: 30 March February 2018
 # Create a sweepElbow-fitting.
 
-import SweepElbow
-import CreatePartGui
-import Piping
+import OsePiping.SweepElbow as SweepElbow
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):

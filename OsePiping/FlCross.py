@@ -8,7 +8,7 @@ import FreeCAD
 import Part
 from math import *
 from pipeFeatures import pypeType  # the parent class
-import Cross as CrossMod
+import OsePiping.Cross as CrossMod
 
 
 class Cross(pypeType):

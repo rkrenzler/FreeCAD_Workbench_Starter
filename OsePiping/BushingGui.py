@@ -3,9 +3,10 @@
 # Date: 27 January 2018
 # Create a bushing-fitting.
 
-import Bushing
-import CreatePartGui
-import Piping
+import OsePiping.Bushing as Bushing
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
+
 
 class MainDialog(CreatePartGui.BaseDialog):
     def __init__(self, document, table):

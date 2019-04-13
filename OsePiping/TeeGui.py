@@ -3,9 +3,9 @@
 # Date: 06 February 2018
 # Create a tee-fitting.
 
-import Tee
-import CreatePartGui
-import Piping
+import OsePiping.Tee as Tee
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):

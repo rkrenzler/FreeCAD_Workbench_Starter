@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 import math
 from pipeFeatures import pypeType  # the parent class
-import Corner as CornerMod
+import OsePiping.Corner as CornerMod
 
 
 class Corner(pypeType):

@@ -12,7 +12,8 @@ import FreeCAD
 import Part
 
 import OsePipingBase
-import Piping
+import OsePiping.Piping as Piping
+
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
@@ -393,7 +394,7 @@ class TeeFromTable:
 			feature.PSize = row["PSize"] # What to do for multiple sizes?
 			feature.ViewObject.Proxy = 0
 			feature.PartNumber = partNumber
-   			return part
+			return part
 
 
 # Test macros.

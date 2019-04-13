@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 
 from pipeFeatures import pypeType  # the parent class
-import Elbow as ElbowMod
+import OsePiping.Elbow as ElbowMod
 
 
 # The value RELATIVE_EPSILON is used to slightly change the size of parts

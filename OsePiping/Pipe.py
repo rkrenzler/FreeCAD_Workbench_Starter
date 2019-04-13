@@ -8,7 +8,8 @@ import os.path
 import FreeCAD
 
 import OsePipingBase
-import Piping
+import OsePiping.Piping as Piping
+
 
 parseQuantity = FreeCAD.Units.parseQuantity
 

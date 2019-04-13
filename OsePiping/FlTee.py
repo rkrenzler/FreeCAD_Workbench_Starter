@@ -7,8 +7,8 @@ import math
 import FreeCAD
 import Part
 from pipeFeatures import pypeType  # the parent class
-import Tee as TeeMod
-import Port
+import OsePiping.Tee as TeeMod
+import OsePiping.Port as Port
 
 
 class Tee(pypeType):

@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 import math
 from pipeFeatures import pypeType  # the parent class
-import Bushing as BushingMod
+import OsePiping.Bushing as BushingMod
 
 
 class Bushing(pypeType):

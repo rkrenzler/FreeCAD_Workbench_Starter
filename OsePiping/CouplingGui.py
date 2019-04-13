@@ -3,9 +3,9 @@
 # Date: 20 Januar December 2018
 # Create a coupling fitting using a gui.
 
-import Coupling
-import CreatePartGui
-import Piping
+import OsePiping.Coupling as Coupling
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):

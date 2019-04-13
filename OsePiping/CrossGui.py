@@ -6,9 +6,9 @@
 import math
 import os.path
 
-import Cross
-import CreatePartGui
-import Piping
+import OsePiping.Cross as Cross
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
 
 
 class MainDialog(CreatePartGui.BaseDialog):

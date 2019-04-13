@@ -10,7 +10,7 @@ import FreeCAD
 import Part
 
 import OsePipingBase
-import Piping
+import OsePiping.Piping as Piping
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
@@ -239,7 +239,7 @@ class CrossFromTable:
 		elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
 			# See Code in pipeCmd.makePipe in the Flamingo workbench.
 			feature = self.document.addObject("Part::FeaturePython", "OSE-Cross")
-			import FlCross
+			import OsePiping.FlCross as FlCross
 			builder = FlCross.CrossBuilder(self.document)
 			builder.dims = dims
 			part = builder.create(feature)
@@ -248,7 +248,7 @@ class CrossFromTable:
 			feature.ViewObject.Proxy = 0
 			#feature.Label = partName # Part name must be unique, that is qhy use partNumber instead.
 			feature.PartNumber = partNumber
-    			return part
+			return part
 
 # Test macros.
 def TestCross():

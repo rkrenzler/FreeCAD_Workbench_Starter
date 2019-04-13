@@ -3,9 +3,10 @@
 # Date: 09 February 2018
 # Create a corner-fitting.
 
-import Corner
-import CreatePartGui
-import Piping
+import OsePiping.Corner as Corner
+import OsePiping.CreatePartGui as CreatePartGui
+import OsePiping.Piping as Piping
+
 
 class MainDialog(CreatePartGui.BaseDialog):
     def __init__(self, document, table):

@@ -7,7 +7,7 @@ import FreeCAD
 import Part
 
 from pipeFeatures import pypeType  # the parent class
-import Coupling as CouplingMod
+import OsePiping.Coupling as CouplingMod
 
 
 class Coupling(pypeType):

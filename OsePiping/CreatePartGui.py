@@ -11,10 +11,10 @@ import FreeCAD
 import FreeCADGui
 
 import OsePipingBase
-import Piping
-import PipingGui
+import OsePiping.Piping as Piping
+import OsePiping.PipingGui as PipingGui
 #import rpdb2
-import Port
+import OsePiping.Port as Port
 
 
 class DialogParams:
