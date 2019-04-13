@@ -16,7 +16,11 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.dialogTitle = "Create Bushing"
         params.fittingType = "Bushing"
         params.dimensionsPixmap = "bushing-dimensions.png"
-        params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: L, N, POD, POD1 and PThk1. All other dimensions are used for inromation.</p></body></html>"
+        params.explanationText = """<html><head/><body><p>
+To construct a part, only these dimensions are used:
+L, N, POD, POD1 and PThk1.
+All other dimensions are used for inromation.
+</p></body></html>"""
         params.settingsName = "bushing user input"
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)

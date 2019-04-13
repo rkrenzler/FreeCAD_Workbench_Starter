@@ -5,7 +5,6 @@
 
 import FreeCAD
 import Part
-import math
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Corner as CornerMod
 
@@ -110,7 +109,7 @@ class Corner(pypeType):
         obj.Ports = self.getPorts(obj)
 
     def getPorts(self, obj):
-        """ Calculate coordinates of the ports. """
+        """Calculate coordinates of the ports."""
         dims = self.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         return [aux["p1"], aux["p2"], aux["p3"]]  # x, y, z.
@@ -128,8 +127,9 @@ class Corner(pypeType):
         z = FreeCAD.Vector(0, -90, 0)
         return [x, y, z]
 
+
 class CornerBuilder:
-    """ Create a corner using flamingo. """
+    """Create a corner using flamingo."""
 
     def __init__(self, document):
         self.dims = CornerMod.Dimensions()

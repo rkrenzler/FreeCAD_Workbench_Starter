@@ -3,9 +3,6 @@
 # Date: 27 Januar 2018
 # Create a cross-fitting.
 
-import math
-import os.path
-
 import OsePiping.Cross as Cross
 import OsePiping.CreatePartGui as CreatePartGui
 import OsePiping.Piping as Piping
@@ -19,7 +16,12 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.dialogTitle = "Create Cross"
         params.fittingType = "Cross"
         params.dimensionsPixmap = "cross-dimensions.png"
-        params.explanationText = "<html><head/><body><p>To construct an cross only these dimensions are used: G, G1, H, H1, L, L1, M, M1, POD, POD1, PThk, Pthk1. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
+        params.explanationText = """<html><head/><body><p>
+To construct an cross only these dimensions are used:
+G, G1, H, H1, L, L1, M, M1, POD, POD1, PThk, Pthk1.
+In Additinon, Flamingo uses the Schedule dimension if it is present in the table.
+All other dimensions are used for inromation only.
+</p></body></html>"""
         params.settingsName = "cross user input"
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)

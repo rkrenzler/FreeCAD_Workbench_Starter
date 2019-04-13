@@ -3,7 +3,6 @@
 # Date: 04 February 2018
 # Create a pipe.
 
-
 from PySide import QtCore, QtGui
 import FreeCAD
 import OsePiping.Pipe as Pipe
@@ -19,7 +18,11 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.dialogTitle = "Create Pipe"
         params.fittingType = "Pipe"
         params.dimensionsPixmap = "pipe-dimensions.png"
-        params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: OD, Thk and the pipe height (length). Flamingo also uses Schedule and DN if they are present in the table. All other dimensions are used for inromation.</p></body></html>"
+        params.explanationText = """<html><head/><body><p>
+To construct a part, only these dimensions are used:
+OD, Thk and the pipe height (length).
+Flamingo also uses Schedule and DN if they are present in the table. All other dimensions are used for inromation.
+</p></body></html>"""
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)
 

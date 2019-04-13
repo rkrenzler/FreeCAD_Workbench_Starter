@@ -3,12 +3,10 @@
 # Date: 25 March 2018
 # Create a tee using Flamingo workbench.
 
-import math
 import FreeCAD
 import Part
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Tee as TeeMod
-import OsePiping.Port as Port
 
 
 class Tee(pypeType):
@@ -112,17 +110,16 @@ class Tee(pypeType):
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         """ Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
-
+        raise NotImplementedError("createOuterPartEqual not implemented.")
         return outer
 
     @classmethod
     def horizontalWallEnhancement(cls, obj):
-        """ If the diameter of the vertical part is larger than the diamter of the horizontal part,
-        add an additional cylinder to the outer part in the middle.
+        """Enchance wall, if the diameter of the vertical part is larger than the diamter of the horizontal partself.
 
+        Add an additional cylinder to the outer part in the middle.
         """
         dims = cls.extractDimensions(obj)
-        aux = dims.calculateAuxiliararyPoints()
         if dims.M2 > dims.M or dims.M2 > dims.M1:
             r = dims.M2 / 2.0
             h = dims.M2
@@ -135,8 +132,7 @@ class Tee(pypeType):
 
     @classmethod
     def createOuterPartEqualHorizontal(cls, obj):
-        """ Create an outer part, where the left and the right outer dimensions M and M1 are equal.
-        """
+        """Create an outer part, where the left and the right outer dimensions M and M1 are equal."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         L = dims.H + dims.H1
@@ -160,7 +156,8 @@ class Tee(pypeType):
 
     @classmethod
     def createOuterPartReducedHorizontal(cls, obj):
-        """ Create a outer part which is cylinder+cone+cylinder+vertical cylinder.
+        """Create a outer part which is cylinder+cone+cylinder+vertical cylinder.
+
         Also add an additional enhancement if the vertical part has too large diameter.
         """
         dims = cls.extractDimensions(obj)
@@ -301,7 +298,7 @@ class Tee(pypeType):
 
 
 class TeeBuilder:
-    """ Create a tee using flamingo. """
+    """Create a tee using flamingo."""
 
     def __init__(self, document):
         self.pos = FreeCAD.Vector(0, 0, 0)  # Define default initial position.

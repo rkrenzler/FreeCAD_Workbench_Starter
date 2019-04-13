@@ -3,13 +3,8 @@
 # Date: 09 February 2018
 # Create a corner-fitting.
 
-import math
-import csv
 import os.path
-
 import FreeCAD
-import Part
-
 import OsePipingBase
 import OsePiping.Piping as Piping
 
@@ -51,13 +46,13 @@ class Dimensions:
 
         return (len(errorMsg) == 0, errorMsg)
 
-
     def PID(self):
         return self.POD - 2 * self.PThk
 
     def calculateAuxiliararyPoints(self):
         """Calculate auxiliarary points which are used to build a corner from cylinders.
-        See documentation picture corner-cacluations.png
+
+        See documentation picture corner-cacluations.png.
         """
         result = {}
         result["p1"] = FreeCAD.Vector(self.G, 0, 0)
@@ -157,9 +152,8 @@ class CornerFromTable:
 
     @classmethod
     def getPThk(cls, row):
-        """ For compatibility results, if there is no "PThk" dimension, calculate it
-        from "PID" and "POD" """
-        if not "PThk" in row.keys():
+        """For compatibility results, if there is no "PThk" dimension, calculate it from "PID" and "POD"."""
+        if "PThk" not in row.keys():
             return (parseQuantity(row["POD"]) - parseQuantity(row["PID"])) / 2.0
         else:
             return parseQuantity(row["PThk"])

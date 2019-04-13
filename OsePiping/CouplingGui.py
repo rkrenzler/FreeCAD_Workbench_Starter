@@ -16,7 +16,12 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.dialogTitle = "Create Coupling"
         params.fittingType = "Coupling"
         params.dimensionsPixmap = "coupling-dimensions.png"
-        params.explanationText = "<html><head/><body><p>To construct a coupling we use these dimensions, elbow only these dimensions are used: alpha, L, N,  M, M1, POD, POD1, PThk, and PThk1. In Additinon, Flamingo uses the Schedule dimension if it is present in the table. All other dimensions are used for inromation only. </p></body></html>"
+        params.explanationText = """<html><head/><body><p>
+To construct a coupling we use these dimensions, elbow only these dimensions are used:
+alpha, L, N,  M, M1, POD, POD1, PThk, and PThk1.
+In Additinon, Flamingo uses the Schedule dimension if it is present in the table.
+All other dimensions are used for inromation only.
+</p></body></html>"""
         params.settingsName = "coupling user input"
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)

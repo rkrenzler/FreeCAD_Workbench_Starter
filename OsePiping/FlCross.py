@@ -6,7 +6,6 @@
 
 import FreeCAD
 import Part
-from math import *
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Cross as CrossMod
 
@@ -164,7 +163,7 @@ class Cross(pypeType):
 
 
 class CrossBuilder:
-    """ Create a cross using flamingo. """
+    """Create a cross using flamingo."""
 
     def __init__(self, document):
         self.dims = CrossMod.Dimensions()
@@ -172,11 +171,11 @@ class CrossBuilder:
         self.document = document
 
     def create(self, obj):
-        """Create a cross. """
+        """Create a cross."""
         cross = Cross(obj, PSize="", dims=self.dims)
         obj.ViewObject.Proxy = 0
         obj.Placement.Base = self.pos
-        #rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
+        # rot=FreeCAD.Rotation(FreeCAD.Vector(0,0,1), self.Z)
         # obj.Placement.Rotation=rot.multiply(obj.Placement.Rotation)
         # feature.ViewObject.Transparency=70
         return cross

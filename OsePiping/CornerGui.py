@@ -17,7 +17,11 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.selectionDialogTitle = "Select corner"
         params.fittingType = "Corner"
         params.dimensionsPixmap = "corner-dimensions.png"
-        params.explanationText = "<html><head/><body><p>To construct a part, only these dimensions are used: G, H, M, POD and PThk. All other dimensions are used for inromation.</p></body></html>"
+        params.explanationText = """<html><head/><body><p>
+To construct a part, only these dimensions are used:
+G, H, M, POD and PThk.
+All other dimensions are used for inromation.
+</p></body></html>"""
         params.settingsName = "corner user input"
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)

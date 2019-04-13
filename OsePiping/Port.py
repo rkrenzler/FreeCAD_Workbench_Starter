@@ -39,13 +39,13 @@ class AdvancedPort:
         # Rotate the port such that the x axis shows back, but the angle reference
         # coinsides with previous one.
         A_r = FreeCAD.Rotation(0, 180, 0)
-        #print("A_r " + str(A_r.toEuler()))
+        # print("A_r " + str(A_r.toEuler()))
         A = other_port.placement.Rotation
-        #print("A " + str(A.toEuler()))
+        # print("A " + str(A.toEuler()))
         R = other_placement.Rotation
-        #print("R " + str(R.toEuler()))
+        # print("R " + str(R.toEuler()))
         B = R.multiply(A.multiply(A_r.multiply(A_inv)))
-        #print("B " + str(B.toEuler()))
+        # print("B " + str(B.toEuler()))
         return B
 
     def getPartBase(self, other_placement, other_port):
@@ -71,7 +71,7 @@ def testPorts():
     port2 = AdvancedPort(FreeCAD.Vector(-2, 0, 0),
                          FreeCAD.Rotation(180, 0, 180))
     part_placement = FreeCAD.Placement()
-    #part_placement = FreeCAD.Placement(FreeCAD.Vector(0, 1, 1), FreeCAD.Rotation(0, 0, 0))
+    # part_placement = FreeCAD.Placement(FreeCAD.Vector(0, 1, 1), FreeCAD.Rotation(0, 0, 0))
 
     print(port1.placement)
     print(port2.placement)
@@ -132,4 +132,4 @@ def getNearestPort(part_placement, ports, point):
     return closest_port
 
 
-#testPorts()
+# testPorts()

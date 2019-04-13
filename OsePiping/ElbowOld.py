@@ -3,13 +3,13 @@
 # Date: 16 December 2017
 # Create a elbow-fitting.
 # This version of the elbow make it in the X-Y-Plane
+
 import math
 import os.path
-
 import FreeCAD
-
 import OSEBasePiping
-import OsePiping.piping as piping
+import OsePiping.Piping as Piping
+
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
@@ -47,10 +47,9 @@ class Dimensions:
         return (len(errorMsg) == 0, errorMsg)
 
     def calculateAuxiliararyPoints(self):
-        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2)
-        and the distannce J.
+        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2) and the distannce J.
 
-        See documentation picture elbow-cacluations.png
+        See documentation picture elbow-cacluations.png.
         """
         rBend = self.M / 2.0
         alpha = float(self.BendAngle.getValueAs("deg"))
@@ -85,16 +84,16 @@ class Elbow:
     def checkDimensions(self):
         valid, msg = self.dims.isValid()
         if not valid:
-            raise UnplausibleDimensions(msg)
+            raise Piping.UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc):
-        """ Create alpha° bent cylinder in x-z plane with radius r.
+        """Create alpha° bent cylinder in x-z plane with radius r.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
         :param rBend: Distance from the bend center to the origin (0,0,0).
 
-        See documentation picture elbow-cacluations.png
+        See documentation picture elbow-cacluations.png.
         """
         # Convert alpha to degree value
         aux = self.dims.calculateAuxiliararyPoints()
@@ -187,7 +186,7 @@ class Elbow:
         group = self.document.addObject(
             "App::DocumentObjectGroup", "elbow group")
         # ----------------------- Test code ---------------
-        #self.createBentCylinder(self.document, group, self.M/2, self.M/2, self.alpha)
+        # self.createBentCylinder(self.document, group, self.M/2, self.M/2, self.alpha)
         outer = self.createOuterPart(group)
         inner = self.createInnerPart(group)
         elbow = self.document.addObject("Part::Cut", "Elbow")
@@ -201,9 +200,9 @@ class Elbow:
             # exception.
             self.document.recompute()
             # Now convert all parts to solid, and remove intermediate data.
-            solid = piping.toSolid(self.document, elbow, "elbow (solid)")
+            solid = Piping.toSolid(self.document, elbow, "elbow (solid)")
             # Remove previous (intermediate parts).
-            parts = piping.nestedObjects(group)
+            parts = Piping.nestedObjects(group)
             # Document.removeObjects can remove multple objects, when we use
             # parts directly. To prevent exceptions with deleted objects,
             # use the name list instead.
@@ -227,8 +226,7 @@ class ElbowFromTable:
 
     @classmethod
     def getPThk(cls, row):
-        """ For compatibility results, if there is no "PThk" dimension, calculate it
-        from "PID" and "POD" """
+        """For compatibility results, if there is no "PThk" dimension, calculate from "PID" and "POD"."""
         if "PThk" not in row.keys():
             return (parseQuantity(row["POD"]) - parseQuantity(row["PID"])) / 2.0
         else:
@@ -255,13 +253,13 @@ class ElbowFromTable:
         dims.POD = parseQuantity(row["POD"])
         dims.PThk = self.getPThk(row)
 
-        if outputType == piping.OUTPUT_TYPE_PARTS or outputType == piping.OUTPUT_TYPE_SOLID:
+        if outputType == Piping.OUTPUT_TYPE_PARTS or outputType == Piping.OUTPUT_TYPE_SOLID:
             elbow = Elbow(self.document)
             elbow.dims = dims
-            part = elbow.create(outputType == piping.OUTPUT_TYPE_SOLID)
+            part = elbow.create(outputType == Piping.OUTPUT_TYPE_SOLID)
             part.Label = "OSE-Elbow"
             return part
-        elif outputType == piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Elbow")
@@ -269,7 +267,7 @@ class ElbowFromTable:
             builder = flElbow.ElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)
-            feature.PRating = piping.GetPressureRatingString(row)
+            feature.PRating = Piping.GetPressureRatingString(row)
             feature.PSize = self.getPSize(row)
             feature.ViewObject.Proxy = 0
             feature.PartNumber = partNumber
@@ -286,14 +284,14 @@ def TestElbow():
 
 def TestTable():
     document = FreeCAD.activeDocument()
-    table = piping.CsvTable(DIMENSIONS_USED)
+    table = Piping.CsvTable(DIMENSIONS_USED)
     table.load(CSV_TABLE_PATH)
     builder = ElbowFromTable(document, table)
     for i in range(0, len(table.data)):
         print("Selecting row %d" % i)
         partNumber = table.getPartKey(i)
         print("Creating part %s" % partNumber)
-        builder.create(partNumber, piping.OUTPUT_TYPE_SOLID)
+        builder.create(partNumber, Piping.OUTPUT_TYPE_SOLID)
         document.recompute()
 
 

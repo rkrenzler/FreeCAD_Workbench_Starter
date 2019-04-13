@@ -5,14 +5,13 @@
 
 import FreeCAD
 import Part
-
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Coupling as CouplingMod
 
 
 class Coupling(pypeType):
     def __init__(self, obj, PSize="", dims=CouplingMod.Dimensions()):
-        """Create a coupling"""
+        """Create a coupling."""
         # Run parent __init__ and define common attributes
         super(Coupling, self).__init__(obj)
         obj.PType = "OSE_Coupling"
@@ -114,7 +113,6 @@ class Coupling(pypeType):
     @classmethod
     def createInnerPart(cls, obj):
         dims = cls.extractDimensions(obj)
-        aux = dims.calculateAuxiliararyPoints()
         # Create parts which must be removed from the coupling.
         if dims.PID() == dims.PID1():
             return cls.createInnerPartEqual(obj)

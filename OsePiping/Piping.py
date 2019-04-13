@@ -15,11 +15,12 @@ class Error(Exception):
 
 
 class UnplausibleDimensions(Error):
-    """Exception raised when dimensions are unplausible. For example if
-    outer diameter is larger than the iner one.
+    """Exception raised when dimensions are unplausible.
 
+    For example if outer diameter is larger than the iner one.
     Attributes:
-    message -- explanation of the error
+    message -- explanation of the error.
+
     """
 
     def __init__(self, message):
@@ -27,9 +28,10 @@ class UnplausibleDimensions(Error):
 
 
 def nestedObjects(parent):
+    """Return a list of a nested object contained in the parent parts.
+
+    Children are added before the parents.
     """
-    Return a list of a nested object contained in the parent parts.
-    Children are added before the parents."""
     res = []
     if parent.OutList == []:
         res.append(parent)
@@ -51,7 +53,7 @@ def removePartWithChildren(document, part):
         if part.Name not in names_to_remove:
             names_to_remove.append(part.Name)
     for name in names_to_remove:
-        #print("Deleting temporary objects %s." % name)
+        # print("Deleting temporary objects %s." % name)
         document.removeObject(name)
 
 
@@ -76,14 +78,16 @@ class CsvError(Error):
 
 
 class CsvTable:
-    """ Read pipe dimensions from a csv file.
-    one part of the column must be unique and contains a unique key.
+    """Read pipe dimensions from a csv file.
+
+    One part of the column must be unique and contains a unique key.
 
     Store the data as a list of rows. Each row is a list of values.
     """
 
     def __init__(self, mandatoryDims=None, keyColumnName="PartNumber"):
-        """
+        """Initialize Class.
+
         @param mandatoryDims: list of column names which must be presented in the CSV files apart
         the "keyColumnName" column
         """
@@ -123,7 +127,7 @@ class CsvTable:
             self.hasValidData = self.hasNecessaryColumns()
 
     def hasNecessaryColumns(self):
-        """ Check if the data contains all the columns required to create a part."""
+        """Check if the data contains all the columns required to create a part."""
         return all(h in self.headers for h in (self.mandatoryDims + [self._keyColumnName]))
 
     def findPart(self, key):

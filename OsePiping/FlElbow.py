@@ -5,7 +5,6 @@
 
 import FreeCAD
 import Part
-
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Elbow as ElbowMod
 
@@ -47,6 +46,7 @@ class Elbow(pypeType):
         # Make Ports read only.
         obj.setEditorMode("Ports", 1)
         obj.setEditorMode("PortRotationAngles", 1)
+
     def onChanged(self, obj, prop):
         # if you aim to do something when an attribute is changed
         # place the code here:
@@ -73,8 +73,8 @@ class Elbow(pypeType):
 
     @staticmethod
     def createBentCylinderDoesNotWork(obj, rCirc):
-        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
-        and is streight in the ends.
+        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle and is streight in the ends.
+
         The little streight part is necessary, because otherwise the part is not displayed
         correctly after performing a boolean operations. Thus we need some overlapping
         between bent part and the socket.
@@ -120,7 +120,7 @@ class Elbow(pypeType):
 
     @staticmethod
     def createBentCylinder(obj, rCirc):
-        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
+        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
@@ -214,7 +214,7 @@ class Elbow(pypeType):
     def getPorts(self, obj):
         dims = Elbow.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
-#	 	FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
+        # FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
         return [aux["p5"], aux["p6"]]
 
     def getPortRotationAngles(self, obj):
@@ -225,13 +225,14 @@ class Elbow(pypeType):
         z = Roll
         """
         dims = Elbow.extractDimensions(obj)
-        half = dims.BendAngle/2
-        end0 = FreeCAD.Vector(45-half.Value, 0, 0)
-        end1 = FreeCAD.Vector(45+half.Value, 0, 0)
+        half = dims.BendAngle / 2
+        end0 = FreeCAD.Vector(45 - half.Value, 0, 0)
+        end1 = FreeCAD.Vector(45 + half.Value, 0, 0)
         return [end0, end1]
 
+
 class ElbowBuilder:
-    """ Create elbow using flamingo. """
+    """Create elbow using flamingo."""
 
     def __init__(self, document):
         self.dims = ElbowMod.Dimensions()
@@ -239,7 +240,7 @@ class ElbowBuilder:
         self.document = document
 
     def create(self, obj):
-        """Create an elbow. """
+        """Create an elbow."""
         elbow = Elbow(obj, PSize="", BendAngle=self.dims.BendAngle, M=self.dims.M, POD=self.dims.POD,
                       PThk=self.dims.PThk, H=self.dims.H, J=self.dims.J)
         obj.ViewObject.Proxy = 0
@@ -253,7 +254,7 @@ def TestElbow():
     document = FreeCAD.activeDocument()
     builder = ElbowBuilder(document)
     feature = document.addObject("Part::FeaturePython", "OSE-Elbow")
-    #builder.dims.BendAngle = FreeCAD.Units.parseQuantity("90 deg")
+    # builder.dims.BendAngle = FreeCAD.Units.parseQuantity("90 deg")
     builder.create(feature)
     document.recompute()
 

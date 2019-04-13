@@ -5,7 +5,6 @@
 
 import FreeCAD
 import Part
-
 from pipeFeatures import pypeType  # the parent class
 import SweepElbow as SweepElbowMod
 
@@ -76,12 +75,12 @@ class SweepElbow(pypeType):
 
     @staticmethod
     def createBentCylinder(obj, rCirc):
-        """ Create a cylinder of radius rCirc in x-y plane wich is bent in the middle
+        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
 
-        See documentation picture sweep-elbow-cacluations.png
+        See documentation picture sweep-elbow-cacluations.png.
         """
         # Convert alpha to degree value
         dims = SweepElbow.extractDimensions(obj)
@@ -166,7 +165,7 @@ class SweepElbow(pypeType):
     def getPorts(self, obj):
         dims = SweepElbow.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
-#	 	FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
+        # FreeCAD.Console.PrintMessage("Ports are %s and %s"%(aux["p5"], aux["p6"]))
         return [aux["p5"], aux["p6"]]
 
     def getPortRotationAngles(self, obj):
@@ -177,13 +176,14 @@ class SweepElbow(pypeType):
         z = Roll
         """
         dims = SweepElbow.extractDimensions(obj)
-        half = dims.BendAngle/2
-        end0 = FreeCAD.Vector(45-half.Value, 0, 0)
-        end1 = FreeCAD.Vector(45+half.Value, 0, 0)
+        half = dims.BendAngle / 2
+        end0 = FreeCAD.Vector(45 - half.Value, 0, 0)
+        end1 = FreeCAD.Vector(45 + half.Value, 0, 0)
         return [end0, end1]
 
+
 class SweepElbowBuilder:
-    """ Create a sweep elbow using flamingo. """
+    """Create a sweep elbow using flamingo."""
 
     def __init__(self, document):
         self.dims = SweepElbowMod.Dimensions()

@@ -31,7 +31,7 @@ class PartTableModel(QtCore.QAbstractTableModel):
         return self.table_data[rowIndex][key_index]
 
     def getPartRowIndex(self, key):
-        """ Return row index of the part with key *key*.
+        """Return row index of the part with key *key*.
 
         The *key* is usually refers to the part number.
         :param key: Key of the part.

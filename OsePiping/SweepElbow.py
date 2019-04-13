@@ -5,9 +5,7 @@
 
 import math
 import os.path
-
 import FreeCAD
-
 import OsePipingBase
 import OsePiping.Piping as Piping
 
@@ -60,13 +58,11 @@ class Dimensions:
         return (len(errorMsg) == 0, errorMsg)
 
     def calculateAuxiliararyPoints(self):
-        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2)
-        and the distannce J.
+        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2) and the distannce J.
 
         See documentation picture sweep-elbow-cacluations.png. The code is similar to
         Elbow.Dimensions.calculateAuxiliararyPoints.
         """
-        rBend = self.M / 2.0
         beta = 180 - float(self.BendAngle.getValueAs("deg"))
         beta_rad = math.pi - float(self.BendAngle.getValueAs("rad"))
 
@@ -118,7 +114,7 @@ class SweepElbow:
             raise Piping.UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc, bendEps=0):
-        """ Create 90° bent cylinder in x-z plane with radius r.
+        """Create 90° bent cylinder in x-z plane with radius r.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
@@ -127,7 +123,7 @@ class SweepElbow:
             the inner part from the outher part.
             This parameter is not used now.
 
-        See documentation picture sweep-elbow-cacluations.png
+        See documentation picture sweep-elbow-cacluations.png.
         """
         # Convert alpha to degree value
         aux = self.dims.calculateAuxiliararyPoints()
@@ -211,6 +207,7 @@ class SweepElbow:
 
     def createInnerPartOld(self, group):
         """Create inner bending part and socket cylinders.
+
         See documentation picture sweep-elbow-cacluations.png.
 
         Note: The inner part differs from the outer part not only by socket sizes
@@ -219,7 +216,6 @@ class SweepElbow:
         In the outer part the sockets intesects with bent part (the intersection
         width corresponds to the wall thickness of the fitting).
         """
-
         # Create a bent part.
         socketR = self.dims.POD / 2.0
         innerR = self.dims.POD / 2.0 - self.dims.PThk
@@ -282,8 +278,7 @@ class SweepElbowFromTable:
 
     @classmethod
     def getPThk(cls, row):
-        """ For compatibility results, if there is no "PThk" dimension, calculate it
-        from "PID" and "POD" """
+        """For compatibility results, if there is no "PThk" dimension, calculate it from "PID" and "POD"."""
         if "PThk" not in row.keys():
             return (parseQuantity(row["POD"]) - parseQuantity(row["PID"])) / 2.0
         else:

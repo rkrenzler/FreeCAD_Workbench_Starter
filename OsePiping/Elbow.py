@@ -5,11 +5,10 @@
 
 import math
 import os.path
-
 import FreeCAD
-
 import OsePipingBase
 import OsePiping.Piping as Piping
+
 
 parseQuantity = FreeCAD.Units.parseQuantity
 
@@ -57,12 +56,10 @@ class Dimensions:
         return (len(errorMsg) == 0, errorMsg)
 
     def calculateAuxiliararyPoints(self):
-        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2)
-        and the distannce J.
+        """Calculate auxiliarary points influenced by bentAngle, bentRadius (self.M/2) and the distannce J.
 
-        See documentation picture elbow-cacluations.png
+        See documentation picture elbow-cacluations.png.
         """
-        rBend = self.M / 2.0
         beta = 180 - float(self.BendAngle.getValueAs("deg"))
         beta_rad = math.pi - float(self.BendAngle.getValueAs("rad"))
         J = self.J
@@ -103,12 +100,12 @@ class Elbow:
             raise Piping.UnplausibleDimensions(msg)
 
     def createBentCylinder(self, group, rCirc):
-        """ Create alpha° bent cylinder in x-y plane with radius r.
+        """Create alpha° bent cylinder in x-y plane with radius r.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
 
-        See documentation picture elbow-cacluations.png
+        See documentation picture elbow-cacluations.png.
         """
         # Convert alpha to degree value
         aux = self.dims.calculateAuxiliararyPoints()
@@ -142,7 +139,6 @@ class Elbow:
 
     def createOuterPart(self, group):
         aux = self.dims.calculateAuxiliararyPoints()
-        p1 = aux["p1"]
         p2 = aux["p2"]
         p4 = aux["p4"]
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
@@ -242,8 +238,7 @@ class ElbowFromTable:
 
     @classmethod
     def getPThk(cls, row):
-        """ For compatibility results, if there is no "PThk" dimension, calculate it
-        from "PID" and "POD" """
+        """For compatibility results, if there is no "PThk" dimension, calculate it from "PID" and "POD"."""
         if "PThk" not in row.keys():
             return (parseQuantity(row["POD"]) - parseQuantity(row["PID"])) / 2.0
         else:

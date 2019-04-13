@@ -5,15 +5,13 @@
 # Use the BaseDialog to derive other
 
 import os.path
-
 from PySide import QtCore, QtGui
 import FreeCAD
 import FreeCADGui
-
 import OsePipingBase
 import OsePiping.Piping as Piping
 import OsePiping.PipingGui as PipingGui
-#import rpdb2
+# import rpdb2
 import OsePiping.Port as Port
 
 
@@ -34,10 +32,10 @@ class DialogParams:
 
 def UnicodeUTF8():
     """Return UnicodeUTF8 if it is defined or 0 otherwise.
+
     The old FreeCAD code for Qt4 uses enum QtGui.QApplication.UnicodeUTF8
     but it is not defined for new Qt5. With Qt5 we must to use 0 instead.
     """
-
     if hasattr(QtGui.QApplication, "UnicodeUTF8"):
         QtGui.QApplication.UnicodeUTF8
     else:
@@ -57,7 +55,6 @@ class BaseDialog(QtGui.QDialog):
             self.radioButtonFlamingo.setEnabled(False)
 
     def initUi(self):
-        Dialog = self  # Added
         self.result = -1
         self.setupUi(self)
         # Fill table with dimensions.
@@ -184,13 +181,14 @@ class BaseDialog(QtGui.QDialog):
                 self.tableViewParts.selectRow(row_i)
 
     def createNewPart(self, document, table, partName, outputType):
-        """ This function must be implement by the parent class.
+        """This function must be implement by the parent class.
 
-        It must return a part if succees and None if fail."""
+        It must return a part if succees and None if fail.
+        """
         pass
 
     def acceptCreationMode(self):
-        """User clicked OK"""
+        """User clicked OK."""
         # If there is no active document, show a warning message and do nothing.
         if self.params.document is None:
             text = "I have not found any active document were I can create an {0}.\n"\
@@ -301,7 +299,8 @@ class BaseDialog(QtGui.QDialog):
             return Piping.OUTPUT_TYPE_SOLID
 
     def showForSelection(self, partName=None):
-        """ Show pipe dialog, to select pipe and not to create it.
+        """Show pipe dialog, to select pipe and not to create it.
+
         :param partName: name of the part to be selected. Use None if you do not want to select
         anything.
         """
@@ -384,7 +383,7 @@ class BaseDialog(QtGui.QDialog):
 # Before working with macros, try to load the dimension table.
 def GuiCheckTable(tablePath, dimensionsUsed):
     # Check if the CSV file exists.
-    if os.path.isfile(tablePath) == False:
+    if os.path.isfile(tablePath) is False:
         text = "This tablePath requires %s  but this file does not exist." % (
             tablePath)
         msgBox = QtGui.QMessageBox(QtGui.QMessageBox.Warning,
@@ -392,11 +391,11 @@ def GuiCheckTable(tablePath, dimensionsUsed):
         msgBox.exec_()
         exit(1)  # Error
 
-    #FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s\n"%tablePath)
+    # FreeCAD.Console.PrintMessage("Trying to load CSV file with dimensions: %s\n"%tablePath)
     table = Piping.CsvTable(dimensionsUsed)
     table.load(tablePath)
 
-    if table.hasValidData == False:
+    if table.hasValidData is False:
         text = 'Invalid %s.\n'\
             'It must contain columns %s.' % (
                 tablePath, ", ".join(dimensionsUsed))
@@ -410,4 +409,4 @@ def GuiCheckTable(tablePath, dimensionsUsed):
 
 # doc=FreeCAD.activeDocument()
 # table = GuiCheckTable() # Open a CSV file, check its content, and return it as a piping.CsvTable object.
-#form = BaseDialog(doc, table)
+# form = BaseDialog(doc, table)

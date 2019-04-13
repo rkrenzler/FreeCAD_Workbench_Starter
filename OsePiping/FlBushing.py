@@ -5,15 +5,13 @@
 
 import FreeCAD
 import Part
-import math
 from pipeFeatures import pypeType  # the parent class
 import OsePiping.Bushing as BushingMod
 
 
 class Bushing(pypeType):
     def __init__(self, obj, PSize="", dims=BushingMod.Dimensions()):
-        """Create a bushing"""
-
+        """Create a bushing."""
         # Run parent __init__ and define common attributes
         super(Bushing, self).__init__(obj)
         obj.PType = "OSE_Bushing"
@@ -60,7 +58,7 @@ class Bushing(pypeType):
 
     @classmethod
     def createOctaThing(cls, obj):
-        """ Create Octagonal thing at the end of the bushing. I do not know its name."""
+        """Create Octagonal thing at the end of the bushing. I do not know its name."""
         dims = cls.extractDimensions(obj)
         aux = dims.auxiliararyPoints()
         X1 = dims.ThingThicknessA1()
@@ -115,7 +113,7 @@ class Bushing(pypeType):
         obj.Ports = self.getPorts(obj)
 
     def getPorts(self, obj):
-        """ Calculate coordinates of the ports. """
+        """Calculate coordinates of the ports."""
         dims = self.extractDimensions(obj)
         aux = dims.auxiliararyPoints()
         # For the bottom port use p3 too. Because there is no a1 dimension in my specification.
@@ -134,8 +132,9 @@ class Bushing(pypeType):
 
         return [outer, inner]
 
+
 class BushingBuilder:
-    """ Create a bushing using flamingo. """
+    """Create a bushing using flamingo."""
 
     def __init__(self, document):
         self.dims = BushingMod.Dimensions()

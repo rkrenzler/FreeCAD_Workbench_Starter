@@ -3,13 +3,8 @@
 # Date: 27 January 2018
 # Create a bushing-fitting.
 
-import math
-import csv
 import os.path
-
 import FreeCAD
-import Part
-
 import OsePipingBase
 import OsePiping.Piping as Piping
 
@@ -39,7 +34,7 @@ RELATIVE_EPSILON = 0.1
 
 class Dimensions:
     def __init__(self):
-        """ Inititialize with test dimensions."""
+        """Inititialize with test dimensions."""
         self.POD = parseQuantity("4 cm")
         self.POD1 = parseQuantity("2 cm")
         self.PThk1 = parseQuantity("0.5 cm")
@@ -70,7 +65,6 @@ class Dimensions:
 
     def ThingThicknessA1(self):
         """Return thickness of a hexagonal or octoganal thing."""
-
         # This dimension is missing in specification.
         # I just take a half of (L-N)
         return (self.L - self.N) / 2.0
@@ -245,9 +239,8 @@ class BushingFromTable:
 
     @classmethod
     def getPThk1(cls, row):
-        """ For compatibility results, if there is no "Thk1" dimension, calculate it
-        from "PID1" and "POD1" """
-        if not "PThk" in row.keys():
+        """For compatibility results, if there is no "Thk1" dimension, calculate it from "PID1" and "POD1"."""
+        if "PThk" not in row.keys():
             return (parseQuantity(row["POD1"]) - parseQuantity(row["PID1"])) / 2.0
         else:
             return parseQuantity(row["PThk1"])

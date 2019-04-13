@@ -4,9 +4,7 @@
 # Create a pipe.
 
 import os.path
-
 import FreeCAD
-
 import OsePipingBase
 import OsePiping.Piping as Piping
 
@@ -32,7 +30,7 @@ RELATIVE_EPSILON = 0.1
 
 class Dimensions:
     def __init__(self):
-        """ Inititialize with test dimensions."""
+        """Inititialize with test dimensions."""
         self.OD = parseQuantity("3 cm")
         self.Thk = parseQuantity("0.5 cm")
         self.H = parseQuantity("1 m")
@@ -64,9 +62,9 @@ class Pipe:
         if not valid:
             raise Piping.UnplausibleDimensions(msg)
 
-
     def create(self, convertToSolid):
-        """ A pipe which is a differences of two cilinders: outer cylinder - inner cylinder.
+        """Create a pipe which is a differences of two cilinders: outer cylinder - inner cylinder.
+
         :param convertToSolid: if true, the resulting part will be solid.
                 if false, the resulting part will be a cut.
         :return resulting part.
