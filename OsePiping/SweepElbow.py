@@ -314,7 +314,7 @@ class SweepElbowFromTable:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-SweepElbow")
-            import FlSweepElbow
+            import OsePiping.FlSweepElbow as FlSweepElbow
             builder = FlSweepElbow.SweepElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)

@@ -272,7 +272,7 @@ class CouplingFromTable:
         elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject("Part::FeaturePython", "OSE-Coupling")
-            import FlCoupling
+            import OsePiping.FlCoupling as FlCoupling
             builder = FlCoupling.CouplingBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)

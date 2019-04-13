@@ -394,7 +394,7 @@ class TeeFromTable:
 
         elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             feature = self.document.addObject("Part::FeaturePython", "OSE-Tee")
-            import FlTee
+            import OsePiping.FlTee as FlTee
             builder = FlTee.TeeBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)

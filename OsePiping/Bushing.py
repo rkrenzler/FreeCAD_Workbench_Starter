@@ -270,7 +270,7 @@ class BushingFromTable:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Bushing")
-            import FlBushing
+            import OsePiping.FlBushing as FlBushing
             builder = FlBushing.BushingBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)

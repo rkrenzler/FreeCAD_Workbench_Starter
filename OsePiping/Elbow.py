@@ -275,7 +275,7 @@ class ElbowFromTable:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Elbow")
-            import FlElbow
+            import OsePiping.FlElbow as FlElbow
             builder = FlElbow.ElbowBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)

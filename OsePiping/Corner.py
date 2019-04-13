@@ -188,7 +188,7 @@ class CornerFromTable:
         elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Corner")
-            import FlCorner
+            import OsePiping.FlCorner as FlCorner
             builder = FlCorner.CornerBuilder(self.document)
             builder.dims = dims
             part = builder.create(feature)
