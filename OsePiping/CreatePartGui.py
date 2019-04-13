@@ -32,6 +32,18 @@ class DialogParams:
         self.keyColumnName = "Name"
 
 
+def UnicodeUTF8():
+    """Return UnicodeUTF8 if it is defined or 0 otherwise.
+    The old FreeCAD code for Qt4 uses enum QtGui.QApplication.UnicodeUTF8
+    but it is not defined for new Qt5. With Qt5 we must to use 0 instead.
+    """
+
+    if hasattr(QtGui.QApplication, "UnicodeUTF8"):
+        QtGui.QApplication.UnicodeUTF8
+    else:
+        return 0
+
+
 class BaseDialog(QtGui.QDialog):
     QSETTINGS_APPLICATION = "OSE piping workbench"
 
@@ -137,17 +149,17 @@ class BaseDialog(QtGui.QDialog):
 
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate(
-            "Dialog", self.params.dialogTitle, None, PipingGui.UnicodeUTF8()))
+            "Dialog", self.params.dialogTitle, None, UnicodeUTF8()))
         self.groupBox.setTitle(QtGui.QApplication.translate(
-            "Dialog", "Output type:", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "Output type:", None, UnicodeUTF8()))
         self.radioButtonSolid.setText(QtGui.QApplication.translate(
-            "Dialog", "Solid", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "Solid", None, UnicodeUTF8()))
         self.radioButtonFlamingo.setText(QtGui.QApplication.translate(
-            "Dialog", "Flamingo", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "Flamingo", None, UnicodeUTF8()))
         self.radioButtonParts.setText(QtGui.QApplication.translate(
-            "Dialog", "Parts", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "Parts", None, UnicodeUTF8()))
         self.labelExplanation.setText(QtGui.QApplication.translate(
-            "Dialog", self.params.explanationText, None, PipingGui.UnicodeUTF8()))
+            "Dialog", self.params.explanationText, None, UnicodeUTF8()))
 
     def initTable(self):
         # Read table data from CSV
@@ -296,7 +308,7 @@ class BaseDialog(QtGui.QDialog):
         # If required select
         self.params.selectionMode = True
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.selectionDialogTitle,
-                                                         None, PipingGui.UnicodeUTF8()))
+                                                         None, UnicodeUTF8()))
         self.selectedPart = None
         if partName is not None:
             self.selectPartByName(partName)
@@ -306,7 +318,7 @@ class BaseDialog(QtGui.QDialog):
     def showForCreation(self):
         self.params.selectionMode = False
         self.setWindowTitle(QtGui.QApplication.translate("Dialog", self.params.dialogTitle,
-                                                         None, PipingGui.UnicodeUTF8()))
+                                                         None, UnicodeUTF8()))
         self.exec_()
 
     @staticmethod

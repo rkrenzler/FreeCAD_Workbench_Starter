@@ -4,13 +4,11 @@
 # Create a pipe.
 
 
-import Pipe
-import CreatePartGui
-
 from PySide import QtCore, QtGui
 import FreeCAD
-import Piping
-import PipingGui
+import OsePiping.Pipe as Pipe
+import OsePiping.Piping as Piping
+import OsePiping.CreatePartGui as CreatePartGui
 
 
 class MainDialog(CreatePartGui.BaseDialog):
@@ -46,9 +44,9 @@ class MainDialog(CreatePartGui.BaseDialog):
         self.lineEditLength.setObjectName("lineEditLength")
         # Add text.
         self.labelHeight.setText(QtGui.QApplication.translate(
-            "Dialog", "Height (Length):", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "Height (Length):", None, CreatePartGui.UnicodeUTF8()))
         self.lineEditLength.setText(QtGui.QApplication.translate(
-            "Dialog", "1 m", None, PipingGui.UnicodeUTF8()))
+            "Dialog", "1 m", None, CreatePartGui.UnicodeUTF8()))
         return self.widgetLengthInput
 
     # Add customized UI elements after the type. That is the length ui
