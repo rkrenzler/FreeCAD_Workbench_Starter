@@ -104,7 +104,7 @@ class CsvTable:
         self.hasValidData = False
         with open(filename, "r") as csvfile:
             csv_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
-            self.headers = csv_reader.next()
+            self.headers = next(csv_reader)
             # Fill the talble
             self.data = []
             keys = []
