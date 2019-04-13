@@ -106,14 +106,6 @@ class Tee(pypeType):
             return cls.createOuterPartReducedHorizontal(obj)
 
     @classmethod
-    def createOuterPartEqual(cls, obj):
-        dims = cls.extractDimensions(obj)
-        aux = dims.calculateAuxiliararyPoints()
-        """ Create the outer part is a simple cylinder. This is when M and M1 are the equal."""
-        raise NotImplementedError("createOuterPartEqual not implemented.")
-        return outer
-
-    @classmethod
     def horizontalWallEnhancement(cls, obj):
         """Enchance wall, if the diameter of the vertical part is larger than the diamter of the horizontal partself.
 
