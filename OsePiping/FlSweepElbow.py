@@ -177,8 +177,9 @@ class SweepElbow(pypeType):
         """
         dims = SweepElbow.extractDimensions(obj)
         half = dims.BendAngle / 2
-        end0 = FreeCAD.Vector(45 - half.Value, 0, 0)
-        end1 = FreeCAD.Vector(45 + half.Value, 0, 0)
+        # -45° and 135° are rotation of 0° elbow. They acts as a refence for a bent elbow.
+        end0 = FreeCAD.Vector(-45 + half.Value, 0, 0)
+        end1 = FreeCAD.Vector(135 - half.Value, 0, 0)
         return [end0, end1]
 
 
