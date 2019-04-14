@@ -59,6 +59,9 @@ class Elbow(pypeType):
             # We wait for all dimension.
             if set(ElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
+                # Wait until PortRotationAngles are defined.
+                if hasattr(obj, "PortRotationAngles"):
+                    obj.PortRotationAngles = self.getPortRotationAngles(obj)
 
     @staticmethod
     def extractDimensions(obj):
@@ -205,7 +208,7 @@ class Elbow(pypeType):
         return outer.cut(inner)
 
     def execute(self, obj):
-        # Create the shape of the tee.
+        # Create the shape of the elbow.
         shape = Elbow.createShape(obj)
         obj.Shape = shape
         # Recalculate ports.

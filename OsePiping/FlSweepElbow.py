@@ -61,6 +61,9 @@ class SweepElbow(pypeType):
             # We wait for all dimension.
             if set(SweepElbowMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
+                # Wait until PortRotationAngles are defined.
+                if hasattr(obj, "PortRotationAngles"):
+                    obj.PortRotationAngles = self.getPortRotationAngles(obj)
 
     @staticmethod
     def extractDimensions(obj):

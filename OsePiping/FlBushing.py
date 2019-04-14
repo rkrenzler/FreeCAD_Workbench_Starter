@@ -45,6 +45,11 @@ class Bushing(pypeType):
             # We wait for all dimension.
             if set(BushingMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
+                # We also wait until PortRotationAngles are defined.
+                # We do not need to call getPortRotationAngles, when the fitting is created,
+                # because during the createion getPortRotationAngles is called directly.
+                if hasattr(obj, "PortRotationAngles"):
+                    obj.PortRotationAngles = self.getPortRotationAngles(obj)
 
     @classmethod
     def extractDimensions(cls, obj):

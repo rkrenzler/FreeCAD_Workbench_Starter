@@ -75,6 +75,9 @@ class Tee(pypeType):
             # We wait for all dimension.
             if set(TeeMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
+                # Wait until PortRotationAngles are defined.
+                if hasattr(obj, "PortRotationAngles"):
+                    obj.PortRotationAngles = self.getPortRotationAngles(obj)
 
     @classmethod
     def extractDimensions(cls, obj):
