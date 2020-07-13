@@ -22,4 +22,4 @@ If you get an error message "module ... not found", try to remove all .pyc-files
 
 # License #
 
-GPLv3 (see COPYING)
+GPLv3 (see LICENSE)
