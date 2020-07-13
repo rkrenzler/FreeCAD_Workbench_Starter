@@ -18,7 +18,8 @@ $ git clone https://github.com/rkrenzler/ose-piping-workbench.git
 https://wiki.opensourceecology.org/wiki/OSE_Piping_Workbench
 
 # Troubleshooting #
-If you get an erro rmessage module ... not found, try to remove all .pyc-files in the ose-piping module. Then restart FreeCAD.
+If you get an error message "module ... not found", try to remove all .pyc-files in the ose-piping module. Then restart FreeCAD.
 
+# License #
 
-This will be a OSE piping workbench. As a start point it uses https://github.com/skaiser/FreeCAD_Workbench_Starter.git
+GPLv3 (see LICENSE)
