@@ -76,7 +76,7 @@ class Elbow(pypeType):
 
     @staticmethod
     def createBentCylinderDoesNotWork(obj, rCirc):
-        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle and is streight in the ends.
+        """Create a cylinder of radius rCirc in x-y plane which is bent in the middle and is streight in the ends.
 
         The little streight part is necessary, because otherwise the part is not displayed
         correctly after performing a boolean operations. Thus we need some overlapping
@@ -123,7 +123,7 @@ class Elbow(pypeType):
 
     @staticmethod
     def createBentCylinder(obj, rCirc):
-        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle.
+        """Create a cylinder of radius rCirc in x-y plane which is bent in the middle.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.

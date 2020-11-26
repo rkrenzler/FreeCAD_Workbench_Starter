@@ -22,7 +22,7 @@ class Dimensions:
         # Fill data with test values
         self.G = parseQuantity("3 cm")
         self.G1 = parseQuantity("3 cm")
-        self.H = parseQuantity("4 cm")  # It is L/2 for symetrical cross. Why extra dimension in documentation?
+        self.H = parseQuantity("4 cm")  # It is L/2 for symmetrical cross. Why extra dimension in documentation?
         self.H1 = parseQuantity("5 cm")
         self.L = self.H * 2
         self.L1 = self.H1 * 2
@@ -42,7 +42,7 @@ class Dimensions:
         elif not (self.POD1 > 0):
             errorMsg = "Other pipe outer diameter %s must be positive." % self.POD
         elif not (self.PThk1 <= self.POD1 / 2.0):
-            errorMsg = "Pipe thickness PThk1 %s is too larg: larger than POD1/2 %s." % (self.PThk1, self.POD1 / 2.0)
+            errorMsg = "Pipe thickness PThk1 %s is too large: larger than POD1/2 %s." % (self.PThk1, self.POD1 / 2.0)
         elif not (self.M > self.POD):
             errorMsg = "Outer diameter M %s must be larger than outer pipe diameter POD %s" % (self.M, self.POD)
         elif not (self.M1 > self.POD1):
@@ -109,7 +109,7 @@ class Cross:
         # and with the macros it is FreeCAD.Vector(-L/2,0,0). Differne systems?
         horizontal_outer_cylinder.Placement = FreeCAD.Placement(
             aux["p1"], FreeCAD.Rotation(FreeCAD.Vector(0, 1, 0), 90), FreeCAD.Vector(0, 0, 0))
-        # Fuse outer parts to a cross, fuse inner parts to a cross, substract both parts
+        # Fuse outer parts to a cross, fuse inner parts to a cross, subtract both parts
 
         vertical_outer_cylinder = self.document.addObject("Part::Cylinder", "VerticalOuterCynlider")
         vertical_outer_cylinder.Radius = self.dims.M1 / 2

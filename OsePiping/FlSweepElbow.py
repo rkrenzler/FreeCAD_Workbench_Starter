@@ -78,7 +78,7 @@ class SweepElbow(pypeType):
 
     @staticmethod
     def createBentCylinder(obj, rCirc):
-        """Create a cylinder of radius rCirc in x-y plane wich is bent in the middle.
+        """Create a cylinder of radius rCirc in x-y plane which is bent in the middle.
 
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
@@ -119,7 +119,7 @@ class SweepElbow(pypeType):
         dims = SweepElbow.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
-        # the substraction of the inner part.
+        # the subtraction of the inner part.
         r = ((dims.PID() / 2 + dims.fitThk()) * (1 + RELATIVE_EPSILON))
         bentPart = SweepElbow.createBentCylinder(obj, r)
         # Create socket along the z axis.

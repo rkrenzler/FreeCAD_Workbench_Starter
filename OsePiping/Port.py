@@ -24,7 +24,7 @@ class AdvancedPort:
         return self.placement.Rotation.multVec(FreeCAD.Vector(0, 1, 0))
 
     def getPartRotation(self, other_placement, other_port):
-        """Return a rotation matrix wich will rotate this port to the other port.
+        """Return a rotation matrix wihch will rotate this port to the other port.
 
         param other_part_rot: Rotation of the other pArt.
         param other_port: other pOrt.
@@ -54,7 +54,7 @@ class AdvancedPort:
             other_placement.Rotation.multVec(other_port.placement.Base)
         # Get new rotation.
         B = self.getPartRotation(other_placement, other_port)
-        # Get new port positon taking in account the adjusting rotation.
+        # Get new port position taking in account the adjusting rotation.
         adjusted_base = B.multVec(self.placement.Base)
         return other_g_base - adjusted_base
 

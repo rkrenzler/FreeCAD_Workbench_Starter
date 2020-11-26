@@ -132,7 +132,7 @@ class CsvTable:
 
     def findPart(self, key):
         """Return first row with with key (part name) as a dictionary."""
-        # Search for the first appereance of the name in this column.
+        # Search for the first appearance of the name in this column.
         for row in self.data:
             if row[self._keyColumnIndex] == key:
                 # Convert row to dicionary.
@@ -154,7 +154,7 @@ def GetPressureRatingString(row):
 
     The Pressure rating has a form "SCH-[Schedule]". For example "SCH-40".
 
-    :param	row: a dictionary wich contains non empty elements "Schedule" or "SCH".
+    :param	row: a dictionary which contains non empty elements "Schedule" or "SCH".
     :return: String like "SCH-40" or "SCH-80".
     :return "": if there is no schedule data in the row.
     """
@@ -171,7 +171,7 @@ def GetDnString(row):
 
     The Pressure rating has a form "DN[DN-Value]". For example "DN25".
 
-    :param	row: a dictionary wich contains non empty elements "ND".
+    :param	row: a dictionary which contains non empty elements "ND".
     :return: String like "DN10" or "DN25".
     :return "": if there is no DN data in the row.
     """

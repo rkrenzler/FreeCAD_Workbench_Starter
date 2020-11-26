@@ -234,7 +234,7 @@ class Tee(pypeType):
 
     @classmethod
     def createInnerPartReducedHorizontal(cls, obj):
-        """Create a inner part with a connic middle simmilar to createOuterPartReducedHorizontal()."""
+        """Create a inner part with a connic middle similar to createOuterPartReducedHorizontal()."""
         dims = cls.extractDimensions(obj)
         aux = dims.calculateAuxiliararyPoints()
 

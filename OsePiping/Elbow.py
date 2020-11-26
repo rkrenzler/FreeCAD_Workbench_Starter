@@ -43,7 +43,7 @@ class Dimensions:
             errorMsg = "Bend Angle {}  must be positive.".format(
                 self.BendAngle)
         elif not (self.PThk <= self.POD / 2.0):
-            errorMsg = "Pipe thickness %s is too larg: larger than POD/2 %s." % (
+            errorMsg = "Pipe thickness %s is too large: larger than POD/2 %s." % (
                 self.PThk, self.POD / 2.0)
         elif not (self.M > self.POD):
             errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s." % (
@@ -142,7 +142,7 @@ class Elbow:
         p2 = aux["p2"]
         p4 = aux["p4"]
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
-        # the substraction of the inner part.
+        # the subtraction of the inner part.
         bentPart = self.createBentCylinder(
             group, self.dims.M / 2 * (1 + RELATIVE_EPSILON))
         # Create socket along the z axis.
@@ -172,7 +172,7 @@ class Elbow:
         chan1 = self.document.addObject("Part::Cylinder", "InnerChannel1")
         chan1.Radius = pid / 2
         # This high is longer as necessary but it is even better, because it can prevent
-        # some anomalies when substracting shapes.
+        # some anomalies when subtracting shapes.
         chan1.Height = float(self.dims.H)
         chan1.Placement.Base = aux["p2"]
         chan1.Placement.Rotation = FreeCAD.Rotation(

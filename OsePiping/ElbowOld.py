@@ -34,7 +34,7 @@ class Dimensions:
         if not (self.POD > 0):
             errorMsg = "Pipe outer diameter %s must be positive" % self.POD
         elif not (self.PThk <= self.POD / 2.0):
-            errorMsg = "Pipe thickness %s is too larg: larger than POD/2 %s." % (
+            errorMsg = "Pipe thickness %s is too large: larger than POD/2 %s." % (
                 self.PThk, self.POD / 2.0)
         elif not (self.M > self.POD):
             errorMsg = "Socket outer diameter %s must be greater than pipe outer diameter =%s." % (

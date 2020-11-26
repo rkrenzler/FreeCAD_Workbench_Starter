@@ -377,7 +377,7 @@ class BaseDialog(QtGui.QDialog):
                     "Positioning of Flamingo parts failed: {}\n".format(e))
         else:
             FreeCAD.Console.PrintMessage(
-                "No flamngo parts selected. Insert to the standard positon,\n")
+                "No flamngo parts selected. Insert to the standard position,\n")
 
 
 # Before working with macros, try to load the dimension table.

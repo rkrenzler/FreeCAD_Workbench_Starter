@@ -119,7 +119,7 @@ class SweepElbow:
         :param group: Group where to add created objects.
         :param rCirc: Radius of the cylinder.
         :param bendEps: Make some dimensions smaller by (1+endEps) factor. A positive bendEps
-            is used when creating outer part, to prevent some artifacts, when substracting
+            is used when creating outer part, to prevent some artifacts, when subtracting
             the inner part from the outher part.
             This parameter is not used now.
 
@@ -157,7 +157,7 @@ class SweepElbow:
     def createOuterPart(self, group):
         aux = self.dims.calculateAuxiliararyPoints()
         # Make the outer part slightly larger. Otherwise it can be shown incorrectly after
-        # the substraction of the inner part.
+        # the subtraction of the inner part.
         r = ((self.dims.PID() / 2 + self.dims.fitThk()) * (1 + RELATIVE_EPSILON))
         bentPart = self.createBentCylinder(
             group, r, RELATIVE_EPSILON)

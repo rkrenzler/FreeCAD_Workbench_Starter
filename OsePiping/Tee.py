@@ -23,7 +23,7 @@ class Dimensions:
         self.G = parseQuantity("3 cm")
         self.G1 = parseQuantity("2 cm")
         self.G2 = parseQuantity("3 cm")
-        self.H = parseQuantity("4 cm")  # It is L/2 for symetrical Tee. Why extra dimension?
+        self.H = parseQuantity("4 cm")  # It is L/2 for symmetrical Tee. Why extra dimension?
         self.H1 = parseQuantity("3 cm")
         self.H2 = parseQuantity("5 cm")
         self.PThk = parseQuantity("0.5 cm")
@@ -241,7 +241,7 @@ class Tee:
             return self.createInnerPartReducedHorizontal()
 
     def createInnerPartEqualHorizontal(self):
-        """Create a cylindrical inner part simmilar to createOuterPartEqualHorizontal()."""
+        """Create a cylindrical inner part similar to createOuterPartEqualHorizontal()."""
         aux = self.dims.calculateAuxiliararyPoints()
         L = self.dims.H + self.dims.H1
         vertical_inner_cylinder = self.document.addObject("Part::Cylinder", "VerticalInnerCynlider")
@@ -257,7 +257,7 @@ class Tee:
         return inner
 
     def createInnerPartReducedHorizontal(self):
-        """Create a inner part with a connic middle simmilar to createOuterPartReducedHorizontal()."""
+        """Create a inner part with a connic middle similar to createOuterPartReducedHorizontal()."""
         aux = self.dims.calculateAuxiliararyPoints()
         # Create cylinder 1.
         cylinder1 = self.document.addObject("Part::Cylinder", "InnerCylinder1")

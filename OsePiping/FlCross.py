@@ -62,7 +62,7 @@ class Cross(pypeType):
         dim_properties = ["G", "G1"]
 
         if prop in dim_properties:
-            # This function is called within __init__ too. Thus we need to wait untill
+            # This function is called within __init__ too. Thus we need to wait until
             # we have all dimensions attributes.
             if set(CrossMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)

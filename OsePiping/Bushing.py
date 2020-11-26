@@ -50,7 +50,7 @@ class Dimensions:
             errorMsg = "Other pipe outer diameter {} must be positive.".format(
                 self.POD)
         elif not (self.PThk1 <= self.POD1 / 2.0):
-            errorMsg = "Pipe thickness PThk1 {} is too larg: larger than POD1/2 {}.".format(
+            errorMsg = "Pipe thickness PThk1 {} is too large: larger than POD1/2 {}.".format(
                 self.PThk1, self.POD1 / 2.0)
         elif not (self.N > 0):
             errorMsg = "Length N={} must be positive".format(self.N)

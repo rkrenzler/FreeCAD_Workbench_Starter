@@ -23,7 +23,7 @@ class Dimensions:
     def __init__(self):
         self.M = parseQuantity("5 cm")  # Outer diameter of socket 1.
         self.M1 = parseQuantity("3 cm")  # Outer diameter of socket 2.
-        self.N = parseQuantity("1 cm")  # Lenght of the intemidate section of the coupling.
+        self.N = parseQuantity("1 cm")  # Length of the intemidate section of the coupling.
         self.POD = parseQuantity("4 cm")  # Pipe outer diameter at the socket 1.
         self.POD1 = parseQuantity("2 cm")  # Pipe outer diameter at the socket 2.
         self.PThk = parseQuantity("0.5 cm")  # Pipe inner diameter at the socket 1.

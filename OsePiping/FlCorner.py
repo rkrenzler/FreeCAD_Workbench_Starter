@@ -45,7 +45,7 @@ class Corner(pypeType):
 
         dim_properties = ["G"]  # Dimensions which influence port coordinates.
         if prop in dim_properties:
-            # This function is called within __init__ too. Thus we need to wait untill
+            # This function is called within __init__ too. Thus we need to wait until
             # we have all the required attributes.
             if set(CornerMod.DIMENSIONS_USED).issubset(obj.PropertiesList):
                 obj.Ports = self.getPorts(obj)
