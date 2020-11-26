@@ -1,6 +1,9 @@
 # OSE piping workbench
 
 ## Installation
+Use the FreeCAD built-in [Addon Manager](https://github.com/FreeCAD/FreeCAD-addons#1-builtin-addon-manager) to install this workbench.
+To start the Addon Manger select menu **Tools -> Addon Manager**.
+
 [See](https://www.freecadweb.org/wiki/How_to_install_additional_workbenches)
 
 ### Linux
