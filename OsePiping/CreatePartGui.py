@@ -15,6 +15,7 @@ import OsePiping.PipingGui as PipingGui
 import OsePiping.Port as Port
 
 
+
 class DialogParams:
     def __init__(self):
         self.document = None
@@ -323,9 +324,13 @@ class BaseDialog(QtGui.QDialog):
 
     @staticmethod
     def moveFlamingoPartToSelection(document, part):
-        # Check if something is selected:
-        import pipeCmd
+        # Place the part with Dodo. If Dodo not found, use Flamingo instead.
+        try:
+            import pCmd as dfCmd
+        except ModuleNotFoundError:
+            import pipeCmd as dfCmd
 
+        # Check if something is selected:
         if (len(FreeCADGui.Selection.getSelectionEx()) > 0
                 and len(FreeCADGui.Selection.getSelectionEx()[-1].SubObjects) > 0):
             # Only a pipe has ports on creation. The other fitting can be accessed only through their objects.
@@ -364,12 +369,12 @@ class BaseDialog(QtGui.QDialog):
                     # TODO addopt it to Dodo.
                     FreeCAD.Console.PrintWarning(
                         "Not all parts are OSE Fittings. I will try to use Dodo/Flamingo for positioning.\n")
-                    nearest_ports = pipeCmd.nearestPort(
+                    nearest_ports = dfCmd.nearestPort(
                         target, sub.CenterOfMass)
                     if nearest_ports != []:
                         FreeCAD.Console.PrintMessage("Move new part to port {0}.\n".format(
                             nearest_ports[0]))
-                        pipeCmd.placeThePype(
+                        dfCmd.placeThePype(
                             obj_of_part, 0, target, nearest_ports[0])
                     else:
                         FreeCAD.Console.PrintMessage(
