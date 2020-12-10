@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 # Authors: oddtopus, Ruslan Krenzler
 # Date: 24 March 2018
-# Create a elbow-fitting using Flamingo workbench.
+# Create a elbow-fitting using Dodo/Flamingo workbench.
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.Elbow as ElbowMod
 
 
@@ -236,7 +240,7 @@ class Elbow(pypeType):
 
 
 class ElbowBuilder:
-    """Create elbow using flamingo."""
+    """Create elbow using Dodo/Flamingo."""
 
     def __init__(self, document):
         self.dims = ElbowMod.Dimensions()

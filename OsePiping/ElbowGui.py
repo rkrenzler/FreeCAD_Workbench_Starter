@@ -19,7 +19,7 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.explanationText = """<html><head/><body><p>
 To construct an elbow only these dimensions are used:
 BendingAngle, H, J, M, POD, and PThk.
-In Additinon, Flamingo uses the Schedule dimension if it is present in the table.
+In Additinon, Dodo/Flamingo uses the Schedule dimension if it is present in the table.
 All other dimensions are used for inromation only.
 </p></body></html>"""
         params.settingsName = "elbow user input"
@@ -29,7 +29,7 @@ All other dimensions are used for inromation only.
     def createNewPart(self, document, table, partName, outputType):
         builder = Elbow.ElbowFromTable(self.params.document, self.params.table)
         part = builder.create(partName, outputType)
-        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        if outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             self.moveFlamingoPartToSelection(document, part)
         return part
 
