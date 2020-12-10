@@ -6,7 +6,11 @@
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or Flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.Cross as CrossMod
 
 
@@ -166,7 +170,7 @@ class Cross(pypeType):
 
 
 class CrossBuilder:
-    """Create a cross using flamingo."""
+    """Create a cross using Dodo/Flamingo."""
 
     def __init__(self, document):
         self.dims = CrossMod.Dimensions()

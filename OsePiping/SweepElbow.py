@@ -310,7 +310,7 @@ class SweepElbowFromTable:
             part.Label = "OSE-SweepElbow"
             return part
 
-        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-SweepElbow")
@@ -342,7 +342,7 @@ def TestSweepElbowTable():
         print("Selecting row %d" % i)
         partNumber = table.getPartKey(i)
         print("Creating part %s" % partNumber)
-        builder.create(partNumber, Piping.OUTPUT_TYPE_FLAMINGO)
+        builder.create(partNumber, Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO)
         document.recompute()
 
 # TestSweepElbow()

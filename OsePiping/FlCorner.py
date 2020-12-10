@@ -5,7 +5,11 @@
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or Flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.Corner as CornerMod
 
 
@@ -132,7 +136,7 @@ class Corner(pypeType):
 
 
 class CornerBuilder:
-    """Create a corner using flamingo."""
+    """Create a corner using Dodo/Flamingo."""
 
     def __init__(self, document):
         self.dims = CornerMod.Dimensions()

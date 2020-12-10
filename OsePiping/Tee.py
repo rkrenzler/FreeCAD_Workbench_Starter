@@ -392,7 +392,7 @@ class TeeFromTable:
             part.Label = "OSE-Tee"
             return part
 
-        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             feature = self.document.addObject("Part::FeaturePython", "OSE-Tee")
             import OsePiping.FlTee as FlTee
             builder = FlTee.TeeBuilder(self.document)

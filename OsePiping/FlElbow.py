@@ -5,7 +5,7 @@
 
 import FreeCAD
 import Part
-# Parent class from Dodo or flamingo.
+# Parent class from Dodo or Flamingo.
 try:
     from pFeatures import pypeType
 except ModuleNotFoundError:

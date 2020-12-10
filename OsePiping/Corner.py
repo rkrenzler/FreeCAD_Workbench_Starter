@@ -185,7 +185,7 @@ class CornerFromTable:
             part.Label = "OSE-Corner"
             return part
 
-        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Corner")
             import OsePiping.FlCorner as FlCorner

@@ -29,7 +29,7 @@ All other dimensions are used for inromation.
     def createNewPart(self, document, table, partName, outputType):
         builder = Corner.CornerFromTable(self.params.document, self.params.table)
         part = builder.create(partName, outputType)
-        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        if outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             self.moveFlamingoPartToSelection(document, part)
         return part
 

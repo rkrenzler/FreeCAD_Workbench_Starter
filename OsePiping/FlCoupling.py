@@ -5,7 +5,11 @@
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or Flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.Coupling as CouplingMod
 
 
@@ -189,7 +193,7 @@ class Coupling(pypeType):
 
 
 class CouplingBuilder:
-    """Create a coupling using flamingo."""
+    """Create a coupling using Dodo/Flamingo."""
 
     def __init__(self, document):
         self.dims = CouplingMod.Dimensions()

@@ -5,7 +5,11 @@
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or Flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.SweepElbow as SweepElbowMod
 
 
@@ -187,7 +191,7 @@ class SweepElbow(pypeType):
 
 
 class SweepElbowBuilder:
-    """Create a sweep elbow using flamingo."""
+    """Create a sweep elbow using Dodo/flamingo."""
 
     def __init__(self, document):
         self.dims = SweepElbowMod.Dimensions()

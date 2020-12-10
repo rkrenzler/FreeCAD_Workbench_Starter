@@ -5,7 +5,11 @@
 
 import FreeCAD
 import Part
-from pipeFeatures import pypeType  # the parent class
+# Parent class from Dodo or Flamingo.
+try:
+    from pFeatures import pypeType
+except ModuleNotFoundError:
+    from pipeFeatures import pypeType
 import OsePiping.Tee as TeeMod
 
 
@@ -293,7 +297,7 @@ class Tee(pypeType):
 
 
 class TeeBuilder:
-    """Create a tee using flamingo."""
+    """Create a tee using Dodo/Flamingo."""
 
     def __init__(self, document):
         self.pos = FreeCAD.Vector(0, 0, 0)  # Define default initial position.

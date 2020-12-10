@@ -15,7 +15,6 @@ import OsePiping.PipingGui as PipingGui
 import OsePiping.Port as Port
 
 
-
 class DialogParams:
     def __init__(self):
         self.document = None

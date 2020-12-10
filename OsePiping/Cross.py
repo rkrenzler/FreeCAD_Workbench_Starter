@@ -235,7 +235,7 @@ class CrossFromTable:
             part = cross.create(outputType == Piping.OUTPUT_TYPE_SOLID)
             part.Label = "OSE-Cross"
             return part
-        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject("Part::FeaturePython", "OSE-Cross")
             import OsePiping.FlCross as FlCross
