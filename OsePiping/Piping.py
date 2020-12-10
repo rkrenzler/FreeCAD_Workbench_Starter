@@ -146,7 +146,7 @@ class CsvTable:
 
 OUTPUT_TYPE_PARTS = 1
 OUTPUT_TYPE_SOLID = 2
-OUTPUT_TYPE_FLAMINGO = 3
+OUTPUT_TYPE_DODO_OR_FLAMINGO = 3
 
 
 def GetPressureRatingString(row):
@@ -179,6 +179,12 @@ def GetDnString(row):
         return "DN%s" % row["DN"]
     else:
         return ""  # Nothing found
+
+
+def HasDodoSupport():
+    import pkgutil
+    mod = pkgutil.find_loader("pFeatures")
+    return mod is not None
 
 
 def HasFlamingoSupport():

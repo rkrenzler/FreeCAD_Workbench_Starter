@@ -49,10 +49,10 @@ class BaseDialog(QtGui.QDialog):
         super(BaseDialog, self).__init__()
         self.params = params
         self.initUi()
-        if Piping.HasFlamingoSupport():
-            self.radioButtonFlamingo.setEnabled(True)
+        if Piping.HasDodoSupport() or Piping.HasFlamingoSupport():
+            self.radioButtonDodoFlamingo.setEnabled(True)
         else:
-            self.radioButtonFlamingo.setEnabled(False)
+            self.radioButtonDodoFlamingo.setEnabled(False)
 
     def initUi(self):
         self.result = -1
@@ -92,7 +92,7 @@ class BaseDialog(QtGui.QDialog):
         self.outputTypeWidget.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.outputTypeWidget.setObjectName("outputTypeWidget")
         self.groupBox = QtGui.QGroupBox(self.outputTypeWidget)
-        self.groupBox.setGeometry(QtCore.QRect(10, 0, 263, 58))
+        self.groupBox.setGeometry(QtCore.QRect(10, 0, 301, 58))
         self.groupBox.setObjectName("groupBox")
         self.horizontalLayout = QtGui.QHBoxLayout(self.groupBox)
         self.horizontalLayout.setContentsMargins(0, 0, 0, 0)
@@ -102,11 +102,11 @@ class BaseDialog(QtGui.QDialog):
         self.radioButtonSolid.setChecked(True)
         self.radioButtonSolid.setObjectName("radioButtonSolid")
         self.horizontalLayout.addWidget(self.radioButtonSolid)
-        self.radioButtonFlamingo = QtGui.QRadioButton(self.groupBox)
-        self.radioButtonFlamingo.setEnabled(False)
-        self.radioButtonFlamingo.setChecked(False)
-        self.radioButtonFlamingo.setObjectName("radioButtonFlamingo")
-        self.horizontalLayout.addWidget(self.radioButtonFlamingo)
+        self.radioButtonDodoFlamingo = QtGui.QRadioButton(self.groupBox)
+        self.radioButtonDodoFlamingo.setEnabled(False)
+        self.radioButtonDodoFlamingo.setChecked(False)
+        self.radioButtonDodoFlamingo.setObjectName("radioButtonDodoFlamingo")
+        self.horizontalLayout.addWidget(self.radioButtonDodoFlamingo)
         self.radioButtonParts = QtGui.QRadioButton(self.groupBox)
         self.radioButtonParts.setObjectName("radioButtonParts")
         self.horizontalLayout.addWidget(self.radioButtonParts)
@@ -151,8 +151,8 @@ class BaseDialog(QtGui.QDialog):
             "Dialog", "Output type:", None, UnicodeUTF8()))
         self.radioButtonSolid.setText(QtGui.QApplication.translate(
             "Dialog", "Solid", None, UnicodeUTF8()))
-        self.radioButtonFlamingo.setText(QtGui.QApplication.translate(
-            "Dialog", "Flamingo", None, UnicodeUTF8()))
+        self.radioButtonDodoFlamingo.setText(QtGui.QApplication.translate(
+            "Dialog", "Dodo/Flamingo", None, UnicodeUTF8()))
         self.radioButtonParts.setText(QtGui.QApplication.translate(
             "Dialog", "Parts", None, UnicodeUTF8()))
         self.labelExplanation.setText(QtGui.QApplication.translate(
@@ -257,9 +257,9 @@ class BaseDialog(QtGui.QDialog):
         settings = QtCore.QSettings(
             BaseDialog.QSETTINGS_APPLICATION, self.params.settingsName)
 
-        if self.radioButtonFlamingo.isChecked():
+        if self.radioButtonDodoFlamingo.isChecked():
             settings.setValue("radioButtonsOutputType",
-                              Piping.OUTPUT_TYPE_FLAMINGO)
+                              Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO)
         elif self.radioButtonParts.isChecked():
             settings.setValue("radioButtonsOutputType",
                               Piping.OUTPUT_TYPE_PARTS)
@@ -280,8 +280,9 @@ class BaseDialog(QtGui.QDialog):
 
         output = int(settings.value(
             "radioButtonsOutputType", Piping.OUTPUT_TYPE_SOLID))
-        if output == Piping.OUTPUT_TYPE_FLAMINGO and Piping.HasFlamingoSupport():
-            self.radioButtonFlamingo.setChecked(True)
+        if output == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO  \
+                and (Piping.HasDodoSupport() or Piping.HasFlamingoSupport()):
+            self.radioButtonDodoFlamingo.setChecked(True)
         elif output == Piping.OUTPUT_TYPE_PARTS:
             self.radioButtonParts.setChecked(True)
         else:  # Default is solid. output == piping.OUTPUT_TYPE_SOLID
@@ -291,8 +292,8 @@ class BaseDialog(QtGui.QDialog):
         self.restoreAdditionalInput(settings)
 
     def getOutputType(self):
-        if self.radioButtonFlamingo.isChecked():
-            return Piping.OUTPUT_TYPE_FLAMINGO
+        if self.radioButtonDodoFlamingo.isChecked():
+            return Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO
         elif self.radioButtonParts.isChecked():
             return Piping.OUTPUT_TYPE_PARTS
         else:  # Default is solid.
@@ -360,8 +361,9 @@ class BaseDialog(QtGui.QDialog):
                         target.Placement, closest_port)
                     # print(obj_of_part.Placement)
                 else:
+                    # TODO addopt it to Dodo.
                     FreeCAD.Console.PrintWarning(
-                        "Not all parts are OSE Fittings. I will try to use Flamingo for positioning.\n")
+                        "Not all parts are OSE Fittings. I will try to use Dodo/Flamingo for positioning.\n")
                     nearest_ports = pipeCmd.nearestPort(
                         target, sub.CenterOfMass)
                     if nearest_ports != []:

@@ -30,8 +30,8 @@
        <rect>
         <x>10</x>
         <y>0</y>
-        <width>263</width>
-        <height>58</height>
+        <width>301</width>
+        <height>61</height>
        </rect>
       </property>
       <property name="title">
@@ -52,12 +52,12 @@
         </widget>
        </item>
        <item>
-        <widget class="QRadioButton" name="radioButtonFlamingo">
+        <widget class="QRadioButton" name="radioButtonDodoOrFlamingo">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="text">
-          <string>Flamingo</string>
+          <string>Dodo/Flamingo</string>
          </property>
          <property name="checked">
           <bool>false</bool>
@@ -104,7 +104,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap>../../../../.FreeCAD/Mod/ose-piping-workbench/Resources/images/coupling-dimensions.png</pixmap>
+      <pixmap>../Resources/images/coupling-dimensions.png</pixmap>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

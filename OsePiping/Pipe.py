@@ -102,6 +102,18 @@ class Pipe:
         return pipe
 
 
+def getDFPipe(obj, DN, OD, thk, H):
+    """Get pipe features from Dodo or from Flamingo workbench. """
+    try:
+        import pFeatures
+        FreeCAD.Console.PrintMessage("Creating Dodo pipe.")
+        return pFeatures.Pipe(obj, DN=DN, OD=OD, thk=thk, H=H)
+    except ModuleNotFoundError:
+        FreeCAD.Console.PrintMessage("Dodo workbench is not found. I will use Flamingo instead.")
+        import pipeFeatures
+        return pipeFeatures.Pipe(obj, DN=DN, OD=OD, thk=thk, H=H)
+
+
 class PipeFromTable:
     """Create a part with dimensions from a CSV table."""
 
@@ -121,15 +133,14 @@ class PipeFromTable:
             pipe.H = length
             part = pipe.create(outputType == Piping.OUTPUT_TYPE_SOLID)
             return part
-        elif outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        elif outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             # See Code in pipeCmd.makePipe in the Flamingo workbench.
             feature = self.document.addObject(
                 "Part::FeaturePython", "OSE-Pipe")
-            import pipeFeatures
             DN = Piping.GetDnString(row)
             OD = parseQuantity(row["OD"])
             Thk = parseQuantity(row["Thk"])
-            part = pipeFeatures.Pipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
+            part = getDFPipe(feature, DN=DN, OD=OD, thk=Thk, H=length)
             feature.PRating = Piping.GetPressureRatingString(row)
             # Currently I do not know how to interprite table data as a profile.
             feature.Profile = ""

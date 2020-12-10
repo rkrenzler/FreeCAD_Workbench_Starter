@@ -21,7 +21,7 @@ class MainDialog(CreatePartGui.BaseDialog):
         params.explanationText = """<html><head/><body><p>
 To construct a part, only these dimensions are used:
 OD, Thk and the pipe height (length).
-Flamingo also uses Schedule and DN if they are present in the table. All other dimensions are used for inromation.
+Dodo/Flamingo also uses Schedule and DN if they are present in the table. All other dimensions are used for inromation.
 </p></body></html>"""
         params.keyColumnName = "PartNumber"
         super(MainDialog, self).__init__(params)
@@ -72,7 +72,7 @@ Flamingo also uses Schedule and DN if they are present in the table. All other d
         length = FreeCAD.Units.parseQuantity(self.lineEditLength.text())
         builder = Pipe.PipeFromTable(self.params.document, self.params.table)
         part = builder.create(partName, length, outputType)
-        if outputType == Piping.OUTPUT_TYPE_FLAMINGO:
+        if outputType == Piping.OUTPUT_TYPE_DODO_OR_FLAMINGO:
             self.moveFlamingoPartToSelection(document, part)
         return part
 
