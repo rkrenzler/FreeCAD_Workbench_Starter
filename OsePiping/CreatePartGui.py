@@ -52,13 +52,12 @@ class BaseDialog(QtGui.QDialog):
         if Piping.HasFlamingoSupport() and not Piping.HasDodoSupport():
             self.labelFlamingoIsDepricated.show()
         else:
-            self.labelExplanation.hide()
+            self.labelFlamingoIsDepricated.hide()
 
         if Piping.HasDodoSupport() or Piping.HasFlamingoSupport():
             self.radioButtonDodoFlamingo.setEnabled(True)
         else:
             self.radioButtonDodoFlamingo.setEnabled(False)
-
 
     def initUi(self):
         self.result = -1
