@@ -49,10 +49,16 @@ class BaseDialog(QtGui.QDialog):
         super(BaseDialog, self).__init__()
         self.params = params
         self.initUi()
+        if Piping.HasFlamingoSupport() and not Piping.HasDodoSupport():
+            self.labelFlamingoIsDepricated.show()
+        else:
+            self.labelExplanation.hide()
+
         if Piping.HasDodoSupport() or Piping.HasFlamingoSupport():
             self.radioButtonDodoFlamingo.setEnabled(True)
         else:
             self.radioButtonDodoFlamingo.setEnabled(False)
+
 
     def initUi(self):
         self.result = -1
@@ -87,6 +93,16 @@ class BaseDialog(QtGui.QDialog):
         Dialog.resize(800, 733)
         self.verticalLayout = QtGui.QVBoxLayout(Dialog)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.labelFlamingoIsDepricated = QtGui.QLabel(Dialog)
+        self.labelFlamingoIsDepricated.setEnabled(True)
+        font = QtGui.QFont()
+        font.setWeight(75)
+        font.setBold(True)
+        self.labelFlamingoIsDepricated.setFont(font)
+        self.labelFlamingoIsDepricated.setTabletTracking(False)
+        self.labelFlamingoIsDepricated.setAutoFillBackground(False)
+        self.labelFlamingoIsDepricated.setObjectName("labelFlamingoIsDepricated")
+        self.verticalLayout.addWidget(self.labelFlamingoIsDepricated)
         self.outputTypeWidget = QtGui.QWidget(Dialog)
         self.outputTypeWidget.setMinimumSize(QtCore.QSize(0, 55))
         self.outputTypeWidget.setLayoutDirection(QtCore.Qt.LeftToRight)
@@ -147,6 +163,10 @@ class BaseDialog(QtGui.QDialog):
     def retranslateUi(self, Dialog):
         Dialog.setWindowTitle(QtGui.QApplication.translate(
             "Dialog", self.params.dialogTitle, None, UnicodeUTF8()))
+        self.labelFlamingoIsDepricated.setText(QtGui.QApplication.translate(
+             "Dialog",
+             "<html><head/><body><p><span style=\" color:#ef2929;\">The Flamingo-Workbench is deprecated, please install Dodo instead.</span></p></body></html>", None, -1))
+
         self.groupBox.setTitle(QtGui.QApplication.translate(
             "Dialog", "Output type:", None, UnicodeUTF8()))
         self.radioButtonSolid.setText(QtGui.QApplication.translate(
@@ -365,7 +385,6 @@ class BaseDialog(QtGui.QDialog):
                         target.Placement, closest_port)
                     # print(obj_of_part.Placement)
                 else:
-                    # TODO addopt it to Dodo.
                     FreeCAD.Console.PrintWarning(
                         "Not all parts are OSE Fittings. I will try to use Dodo/Flamingo for positioning.\n")
                     nearest_ports = dfCmd.nearestPort(
